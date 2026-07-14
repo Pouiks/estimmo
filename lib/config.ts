@@ -7,7 +7,12 @@ export const SITE = {
   baseline: "Estimation immobilière gratuite, partout en France",
   description:
     "Estimez gratuitement le prix de vente ou le loyer de votre bien immobilier en 2 minutes, sur la base des données officielles DVF et ANIL.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  // Slash final retiré : SITE.url est concaténé (sitemap, canoniques JSON-LD,
+  // robots, emails) — un "/" final produirait des URLs à double slash.
+  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(
+    /\/+$/,
+    ""
+  ),
   agent: {
     name: "Carenza Brown",
     phone: "06 12 34 56 78",
