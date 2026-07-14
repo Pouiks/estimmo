@@ -67,6 +67,11 @@ export default function SiteLayout({
                 </Link>
               </li>
               <li>
+                <Link href="/prix-immobilier" className="hover:text-foreground">
+                  Prix immobilier par commune
+                </Link>
+              </li>
+              <li>
                 <Link href="/blog" className="hover:text-foreground">
                   Blog
                 </Link>
