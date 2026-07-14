@@ -37,9 +37,9 @@ Vitest · pnpm. Déploiement Vercel.
 
 ## État d'avancement
 - [x] Phase 1 — Socle (Next, migrations, auth admin)
-- [ ] Phase 1bis — Clés Supabase client + migrations appliquées
-- [ ] Phase 2 — Imports DVF/ANIL + communes_stats
-- [ ] Phase 3 — Moteur estimation + tests
+- [ ] Phase 1bis — Clés Supabase client + migrations appliquées + imports exécutés
+- [x] Phase 2 — Scripts imports DVF/ANIL + communes_stats (code prêt, dry-run validé ; exécution réelle en attente des clés)
+- [x] Phase 3 — Moteur estimation + tests (64 tests Vitest)
 - [ ] Phase 4 — Formulaire 4 étapes + API leads + résultat
 - [ ] Phase 5 — Brevo + file CRM + cron
 - [ ] Phase 6 — Admin (leads, manuelles, blog TipTap, stats)
