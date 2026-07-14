@@ -14,7 +14,8 @@
     "admin:create": "node --env-file-if-exists=.env.local --import tsx scripts/create-admin.ts",
     "import:dvf": "node --env-file-if-exists=.env.local --import tsx scripts/import-dvf.ts",
     "import:loyers": "node --env-file-if-exists=.env.local --import tsx scripts/import-loyers.ts",
-    "sql": "node --env-file-if-exists=.env.local --import tsx scripts/sql.ts"
+    "sql": "node --env-file-if-exists=.env.local --import tsx scripts/sql.ts",
+    "email:preview": "node --import tsx scripts/preview-email.ts"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
