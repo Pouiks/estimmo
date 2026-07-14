@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const navItems = [
   { href: "/admin/leads", label: "Leads", icon: Inbox },
@@ -50,6 +51,12 @@ export default async function AdminProtectedLayout({
     redirect("/admin/login");
   }
 
+  const { count: manuellesEnAttente } = await createAdminClient()
+    .from("leads")
+    .select("id", { count: "exact", head: true })
+    .eq("estimation_manuelle", true)
+    .eq("statut", "nouveau");
+
   return (
     <div className="flex min-h-screen">
       <aside className="hidden w-60 shrink-0 flex-col border-r bg-muted/30 md:flex">
@@ -70,6 +77,12 @@ export default async function AdminProtectedLayout({
             >
               <item.icon className="size-4" />
               {item.label}
+              {item.href === "/admin/estimations-manuelles" &&
+                (manuellesEnAttente ?? 0) > 0 && (
+                  <span className="ml-auto rounded-full bg-red-600 px-2 py-0.5 text-xs font-bold text-white">
+                    {manuellesEnAttente}
+                  </span>
+                )}
             </Link>
           ))}
         </nav>
