@@ -46,6 +46,14 @@ Vitest · pnpm. Déploiement Vercel.
 - [x] Phase 7 — SEO : ~35 k pages communes ISR, sitemap 34 923 URLs, JSON-LD Dataset+FAQ
 - [x] Phase 8 — Lighthouse prod : landing Perf 95/SEO 100 ; commune Perf 96/SEO 100
 
+## Contraintes déploiement
+- Plan Vercel **Pro** → cron toutes les 5 min autorisé (vercel.json = `*/5 * * * *`).
+  NB : le plan Hobby (gratuit) limite les crons à 1×/jour et ferait échouer le
+  déploiement avec ce schedule ; en cas de retour en gratuit, repasser en quotidien
+  (ex. `0 3 * * *`) ou brancher un déclencheur externe (Supabase pg_cron /
+  cron-job.org) sur /api/cron/crm-sync (`Authorization: Bearer $CRON_SECRET`).
+  Sans CRM_WEBHOOK_URL le cron ne fait rien.
+
 ## Reste à faire (nécessite le client)
 - Clé Brevo + email expéditeur vérifié (sinon simulation console)
 - URL + clé du webhook CRM du propriétaire
