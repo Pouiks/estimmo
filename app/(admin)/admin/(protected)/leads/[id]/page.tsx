@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Mail, PhoneCall } from "lucide-react";
+import { ArrowLeft, Mail, PhoneCall, PhoneIncoming } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -117,6 +117,11 @@ export default async function LeadDetailPage({
                 <PhoneCall className="size-3" /> Estimation manuelle à faire
               </Badge>
             )}
+            {lead.demande_rappel && (
+              <Badge className="ml-2 bg-teal-100 text-teal-800">
+                <PhoneIncoming className="size-3" /> Rappel demandé
+              </Badge>
+            )}
           </p>
         </div>
         <LeadStatutSelect leadId={lead.id} statut={lead.statut} />
@@ -146,6 +151,16 @@ export default async function LeadDetailPage({
               {PROJET_LABELS[lead.projet]}
               {lead.horizon ? ` · ${HORIZON_LABELS[lead.horizon]}` : ""}
             </Row>
+            {lead.demande_rappel && (
+              <Row label="Demande de rappel">
+                <span className="text-teal-700">
+                  Oui
+                  {lead.demande_rappel_at
+                    ? ` — ${dateFmt.format(new Date(lead.demande_rappel_at))}`
+                    : ""}
+                </span>
+              </Row>
+            )}
           </CardContent>
         </Card>
 

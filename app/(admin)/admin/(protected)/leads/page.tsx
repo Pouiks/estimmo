@@ -42,7 +42,7 @@ export default async function AdminLeadsPage({
   let query = supabase
     .from("leads")
     .select(
-      "id, created_at, prenom, nom, telephone, email, projet, type_bien, surface, adresse_libelle, score_lead, statut, estimation_manuelle",
+      "id, created_at, prenom, nom, telephone, email, projet, type_bien, surface, adresse_libelle, score_lead, statut, estimation_manuelle, demande_rappel",
       { count: "exact" }
     );
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PhoneCall } from "lucide-react";
+import { PhoneCall, PhoneIncoming } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -25,6 +25,7 @@ export interface LeadRow {
   score_lead: number | null;
   statut: string;
   estimation_manuelle: boolean;
+  demande_rappel?: boolean;
 }
 
 const dateFormat = new Intl.DateTimeFormat("fr-FR", {
@@ -71,6 +72,11 @@ export function LeadsTable({ leads }: { leads: LeadRow[] }) {
                   {/* étend la zone cliquable à toute la ligne */}
                   <span className="absolute inset-0" aria-hidden />
                 </Link>
+                {lead.demande_rappel && (
+                  <Badge className="relative z-10 ml-2 bg-teal-100 text-teal-800">
+                    <PhoneIncoming className="size-3" /> Rappel demandé
+                  </Badge>
+                )}
                 <p className="text-xs text-muted-foreground">
                   {lead.telephone} · {lead.email}
                 </p>

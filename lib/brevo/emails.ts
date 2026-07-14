@@ -2,6 +2,7 @@ import "server-only";
 import type { EstimationResultat } from "@/lib/crm/payload";
 import type { LeadPayload } from "@/lib/leads/schema";
 import { normaliserTelephone } from "@/lib/leads/schema";
+import { rappelToken } from "@/lib/leads/rappel-token";
 import { SITE } from "@/lib/config";
 import { renderEmailProspect } from "./template";
 
@@ -71,7 +72,9 @@ export async function envoyerEmailsLead(params: {
   const { lead, leadId, score, estimation } = params;
 
   // --- 1. Email prospect (template designé) ---
-  const { subject, html } = renderEmailProspect({ lead, estimation });
+  // Lien signé « être rappelé » → pose le flag demande_rappel (RGPD).
+  const rappelUrl = `${SITE.url}/rappel?lead=${leadId}&t=${rappelToken(leadId)}`;
+  const { subject, html } = renderEmailProspect({ lead, estimation, rappelUrl });
   await envoyerEmail({
     to: [{ email: lead.email, name: `${lead.prenom} ${lead.nom}` }],
     subject,

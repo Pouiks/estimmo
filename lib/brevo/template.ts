@@ -142,7 +142,11 @@ function blocEstimation(estimation: EstimationResultat): string {
 }
 
 /** Carte « Carenza vous rappelle » — cœur de l'email (recontact + vente). */
-function blocCarenza(lead: LeadPayload, estimation: EstimationResultat): string {
+function blocCarenza(
+  lead: LeadPayload,
+  estimation: EstimationResultat,
+  ctaHref: string
+): string {
   const message =
     estimation === null
       ? `Bonjour ${lead.prenom}, je prépare personnellement votre estimation et je vous rappelle très vite. Ensemble, nous verrons comment valoriser au mieux votre bien.`
@@ -170,11 +174,11 @@ function blocCarenza(lead: LeadPayload, estimation: EstimationResultat): string 
           </tr>
         </table>
 
-        <p style="margin:16px 0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.65;color:${COL.ink};font-style:italic">
-          «&nbsp;${message}&nbsp;»
+        <p style="margin:16px 0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.65;color:${COL.ink}">
+          ${message}
         </p>
 
-        ${bouton(SITE.agent.phoneHref, "📞 Je souhaite être rappelé(e)")}
+        ${bouton(ctaHref, "📞 Je souhaite être rappelé(e)")}
 
         <p style="margin:12px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:${COL.muted};text-align:center">
           Ou appelez directement Carenza :
@@ -273,8 +277,11 @@ export interface EmailRendu {
 export function renderEmailProspect(params: {
   lead: LeadPayload;
   estimation: EstimationResultat;
+  /** URL signée de demande de rappel (flag RGPD). Défaut : lien tel: (preview). */
+  rappelUrl?: string;
 }): EmailRendu {
   const { lead, estimation } = params;
+  const ctaHref = params.rappelUrl ?? SITE.agent.phoneHref;
 
   const subject =
     estimation === null
@@ -294,7 +301,7 @@ export function renderEmailProspect(params: {
     </p>
     ${recapBien(lead)}
     ${blocEstimation(estimation)}
-    ${blocCarenza(lead, estimation)}
+    ${blocCarenza(lead, estimation, ctaHref)}
     ${blocHonoraires(lead)}
   `;
 

@@ -15,7 +15,7 @@ export default async function AdminEstimationsManuellesPage() {
   const { data, error } = await supabase
     .from("leads")
     .select(
-      "id, created_at, prenom, nom, telephone, email, projet, type_bien, surface, adresse_libelle, score_lead, statut, estimation_manuelle"
+      "id, created_at, prenom, nom, telephone, email, projet, type_bien, surface, adresse_libelle, score_lead, statut, estimation_manuelle, demande_rappel"
     )
     .eq("estimation_manuelle", true)
     .order("statut", { ascending: true }) // 'nouveau' est alphabétiquement après... trié ci-dessous
