@@ -46,7 +46,7 @@ export default function PolitiqueConfidentialitePage() {
         <p className="text-muted-foreground">
           Les données sont hébergées par Supabase (base de données) et Vercel
           (hébergement du site). L'envoi des emails transactionnels est assuré
-          par Brevo. Les données sont également transmises à l'outil de gestion
+          par Resend. Les données sont également transmises à l'outil de gestion
           de la relation client (CRM) du responsable de traitement.
         </p>
       </section>

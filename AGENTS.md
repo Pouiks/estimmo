@@ -11,7 +11,7 @@ Estimateur immobilier (vente/location) + générateur de leads, France entière.
 
 ## Stack
 Next.js 16 App Router (TS) · Tailwind v4 + shadcn/ui (base-ui, pas radix) ·
-Supabase cloud (Postgres + PostGIS, Auth, Storage) · Brevo (email) · Zod v4 ·
+Supabase cloud (Postgres + PostGIS, Auth, Storage) · Resend (email, domaine earlypanel.fr) · Zod v4 ·
 Vitest · pnpm. Déploiement Vercel.
 
 ## Commandes
@@ -30,7 +30,8 @@ Vitest · pnpm. Déploiement Vercel.
 ## Décisions actées (avec le client)
 - Honoraires affichés : « à partir de 3 % » exclusif vs « minimum 6 % » simple
 - Import DVF : France entière, 3 dernières années (Supabase plan Pro requis)
-- Brevo/CRM sans clés en dev → mode simulation (emails loggés, file CRM en pending)
+- Email : Resend (pas Brevo — Brevo bloquait l'envoi des comptes gratuits). `lib/email`, `EMAIL_FROM` sur domaine vérifié earlypanel.fr. Sans clé en dev → simulation console
+- CRM sans clé en dev → file en pending
 - Départements sans DVF : 57, 67, 68, 976 (le brief inversait 67/68) → fallback estimation manuelle
 - `annee_construction` stockée en texte (tranches du formulaire), pas en int
 - Slug commune : `nom-cp` (ex. `nice-06000`), désambiguïsé par code INSEE si homonymes
@@ -55,7 +56,7 @@ Vitest · pnpm. Déploiement Vercel.
   Sans CRM_WEBHOOK_URL le cron ne fait rien.
 
 ## Reste à faire (nécessite le client)
-- Clé Brevo + email expéditeur vérifié (sinon simulation console)
+- Clé Resend (RESEND_API_KEY) + EMAIL_FROM sur domaine vérifié (sinon simulation console)
 - URL + clé du webhook CRM du propriétaire
 - Repo GitHub (secrets SUPABASE_DB_URL, CRON_SECRET, var SITE_URL) + déploiement Vercel
 - Vérifier le plan Supabase Pro (base 647 Mo > free tier)

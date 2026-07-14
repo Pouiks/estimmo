@@ -7,52 +7,53 @@ import { SITE } from "@/lib/config";
 import { renderEmailProspect } from "./template";
 
 /**
- * Emails transactionnels Brevo (API v3).
- * Sans BREVO_API_KEY / BREVO_SENDER_EMAIL (dev) : mode simulation, contenu
- * loggé en console. Les échecs sont remontés à l'appelant qui ne doit JAMAIS
- * bloquer le lead.
+ * Emails transactionnels via Resend.
+ * Sans RESEND_API_KEY / EMAIL_FROM (dev) : mode simulation, contenu loggé en
+ * console. Les échecs sont remontés à l'appelant qui ne doit JAMAIS bloquer
+ * le lead.
+ *
+ * EMAIL_FROM doit utiliser un domaine vérifié dans Resend, au format
+ * « Nom affiché <adresse@domaine-verifie> » (ex. earlypanel.fr).
  */
-const BREVO_URL = "https://api.brevo.com/v3/smtp/email";
+const RESEND_URL = "https://api.resend.com/emails";
 
 interface EmailParams {
-  to: { email: string; name?: string }[];
+  to: string[];
   subject: string;
-  htmlContent: string;
-  replyTo?: { email: string; name?: string };
+  html: string;
+  replyTo?: string;
 }
 
 async function envoyerEmail(params: EmailParams): Promise<void> {
-  const apiKey = process.env.BREVO_API_KEY;
-  const senderEmail = process.env.BREVO_SENDER_EMAIL;
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.EMAIL_FROM;
 
-  if (!apiKey || !senderEmail) {
+  if (!apiKey || !from) {
     console.log(
-      `[brevo:simulation] À: ${params.to.map((t) => t.email).join(", ")} — ` +
-        `Sujet: ${params.subject}`
+      `[email:simulation] À: ${params.to.join(", ")} — Sujet: ${params.subject}`
     );
     return;
   }
 
-  const res = await fetch(BREVO_URL, {
+  const res = await fetch(RESEND_URL, {
     method: "POST",
     headers: {
-      "api-key": apiKey,
+      Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
-      Accept: "application/json",
     },
     body: JSON.stringify({
-      sender: { email: senderEmail, name: `${SITE.agent.name} · ${SITE.name}` },
+      from,
       to: params.to,
-      replyTo: params.replyTo,
+      reply_to: params.replyTo,
       subject: params.subject,
-      htmlContent: params.htmlContent,
+      html: params.html,
     }),
     signal: AbortSignal.timeout(10_000),
   });
 
   if (!res.ok) {
     const detail = await res.text().catch(() => "");
-    throw new Error(`Brevo ${res.status} : ${detail.slice(0, 300)}`);
+    throw new Error(`Resend ${res.status} : ${detail.slice(0, 300)}`);
   }
 }
 
@@ -76,11 +77,11 @@ export async function envoyerEmailsLead(params: {
   const rappelUrl = `${SITE.url}/rappel?lead=${leadId}&t=${rappelToken(leadId)}`;
   const { subject, html } = renderEmailProspect({ lead, estimation, rappelUrl });
   await envoyerEmail({
-    to: [{ email: lead.email, name: `${lead.prenom} ${lead.nom}` }],
+    to: [lead.email],
     subject,
-    htmlContent: html,
+    html,
     // Les réponses des prospects arrivent directement à l'agent.
-    replyTo: { email: SITE.agent.email, name: SITE.agent.name },
+    replyTo: SITE.agent.email,
   });
 
   // --- 2. Notification interne à l'agent ---
@@ -109,11 +110,11 @@ export async function envoyerEmailsLead(params: {
   </div>`;
 
   await envoyerEmail({
-    to: [{ email: adminEmail }],
+    to: [adminEmail],
     subject: `[Lead ${score}/100] ${lead.prenom} ${lead.nom} — ${lead.projet} ${lead.typeBien}${
       estimation === null ? " — MANUELLE" : ""
     }`,
-    htmlContent: htmlInterne,
-    replyTo: { email: lead.email, name: `${lead.prenom} ${lead.nom}` },
+    html: htmlInterne,
+    replyTo: lead.email,
   });
 }

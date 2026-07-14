@@ -17,7 +17,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
  *  2. calcul de l'estimation (ou bascule en estimation manuelle)
  *  3. écriture du lead en base — TOUJOURS, quoi qu'il arrive ensuite
  *  4. enqueue CRM (jamais bloquant) — le cron /api/cron/crm-sync dépile
- *  5. emails Brevo (prospect + notification interne, jamais bloquants)
+ *  5. emails Resend (prospect + notification interne, jamais bloquants)
  */
 export async function POST(request: NextRequest) {
   let body: unknown;
@@ -170,7 +170,7 @@ export async function POST(request: NextRequest) {
 
   // --- Emails (Phase 5 — branchés ici, jamais bloquants) ---
   try {
-    const { envoyerEmailsLead } = await import("@/lib/brevo/emails");
+    const { envoyerEmailsLead } = await import("@/lib/email/emails");
     await envoyerEmailsLead({ lead, leadId, score, estimation });
   } catch (err) {
     console.error("[leads] envoi emails échoué (lead conservé) :", err);

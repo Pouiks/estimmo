@@ -1,12 +1,12 @@
 /**
  * Génère un aperçu HTML des emails prospect (vente / location / manuelle)
- * dans un dossier temporaire, sans passer par Brevo.
+ * dans un dossier temporaire, sans passer par le fournisseur d'email.
  * Usage : pnpm email:preview
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { tmpdir } from "node:os";
-import { renderEmailProspect } from "../lib/brevo/template";
+import { renderEmailProspect } from "../lib/email/template";
 import type { LeadPayload } from "../lib/leads/schema";
 import type {
   EstimationLocation,

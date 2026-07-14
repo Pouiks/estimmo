@@ -12,7 +12,7 @@ et confirmé par email.
 ## Stack
 
 Next.js 16 (App Router, TypeScript) · Supabase (Postgres + PostGIS, Auth,
-Storage) · Tailwind CSS v4 + shadcn/ui · TipTap (blog) · Brevo (emails) ·
+Storage) · Tailwind CSS v4 + shadcn/ui · TipTap (blog) · Resend (emails) ·
 Zod v4 · Vitest · pnpm · déploiement Vercel.
 
 ## Démarrage
@@ -37,7 +37,7 @@ Import partiel pour développer plus vite :
 | `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Projet Supabase (Dashboard → Settings → API) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Accès serveur (jamais côté client) |
 | `SUPABASE_DB_URL` | Chaîne Postgres « Session pooler » — scripts locaux/CI uniquement |
-| `BREVO_API_KEY` / `BREVO_SENDER_EMAIL` | Emails transactionnels (absents = simulation en console) |
+| `RESEND_API_KEY` / `EMAIL_FROM` | Emails transactionnels via Resend (absents = simulation en console) ; `EMAIL_FROM` sur domaine vérifié |
 | `CRM_WEBHOOK_URL` / `CRM_API_KEY` | Webhook du CRM externe (absents = file en attente) |
 | `CRON_SECRET` | Protège `/api/cron/crm-sync` et `/api/revalidate` |
 | `ADMIN_NOTIFICATION_EMAIL` | Destinataire des notifications de nouveaux leads |

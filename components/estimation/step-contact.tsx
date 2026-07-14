@@ -88,7 +88,10 @@ export function StepContact({ state, setField, errors }: StepProps) {
           className="mt-0.5"
         />
         <div>
-          <Label htmlFor="consentement" className="text-sm leading-snug font-normal">
+          <label
+            htmlFor="consentement"
+            className="block text-sm leading-relaxed text-foreground select-none"
+          >
             J'accepte que mes données soient utilisées pour me recontacter au
             sujet de mon projet immobilier — voir la{" "}
             <Link
@@ -99,7 +102,7 @@ export function StepContact({ state, setField, errors }: StepProps) {
               politique de confidentialité
             </Link>
             .
-          </Label>
+          </label>
           <FieldError message={errors["consentement"]} />
         </div>
       </div>
