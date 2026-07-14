@@ -1,0 +1,52 @@
+# Import semestriel DVF (publication DGFiP en avril et octobre).
+# Requiert le secret SUPABASE_DB_URL (chaîne Postgres « Session pooler »).
+name: Import DVF
+
+on:
+  schedule:
+    - cron: "0 3 20 4,10 *" # 20 avril et 20 octobre à 03h00 UTC
+  workflow_dispatch:
+    inputs:
+      years:
+        description: "Millésimes (ex. 2024,2025) — vide = 3 derniers"
+        required: false
+      depts:
+        description: "Départements (ex. 06,75) — vide = France entière"
+        required: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Import DVF
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          ARGS=""
+          if [ -n "${{ inputs.years }}" ]; then ARGS="$ARGS --years ${{ inputs.years }}"; fi
+          if [ -n "${{ inputs.depts }}" ]; then ARGS="$ARGS --depts ${{ inputs.depts }}"; fi
+          pnpm import:dvf -- $ARGS
+
+      - name: Revalider les pages communes
+        if: ${{ vars.SITE_URL != '' }}
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -sf -X POST "${{ vars.SITE_URL }}/api/revalidate" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            -H "Content-Type: application/json" \
+            -d '{"paths":["/prix-immobilier","/sitemap.xml"]}'

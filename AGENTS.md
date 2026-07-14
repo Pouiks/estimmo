@@ -35,13 +35,20 @@ Vitest · pnpm. Déploiement Vercel.
 - `annee_construction` stockée en texte (tranches du formulaire), pas en int
 - Slug commune : `nom-cp` (ex. `nice-06000`), désambiguïsé par code INSEE si homonymes
 
-## État d'avancement
-- [x] Phase 1 — Socle (Next, migrations, auth admin)
-- [ ] Phase 1bis — Clés Supabase client + migrations appliquées + imports exécutés
-- [x] Phase 2 — Scripts imports DVF/ANIL + communes_stats (code prêt, dry-run validé ; exécution réelle en attente des clés)
-- [x] Phase 3 — Moteur estimation + tests (64 tests Vitest)
-- [ ] Phase 4 — Formulaire 4 étapes + API leads + résultat
-- [ ] Phase 5 — Brevo + file CRM + cron
-- [ ] Phase 6 — Admin (leads, manuelles, blog TipTap, stats)
-- [ ] Phase 7 — SEO programmatique
-- [ ] Phase 8 — Finitions
+## État d'avancement — PROJET LIVRÉ (14/07/2026)
+- [x] Phase 1 — Socle (Next 16, migrations, auth admin)
+- [x] Phase 1bis — Supabase cloud (eu-west-1, pooler aws-0) : migrations + admin + imports
+- [x] Phase 2 — Imports : DVF France 2023-2025 (2 290 975 ventes, ~650 Mo), ANIL 2025 (34 900 communes)
+- [x] Phase 3 — Moteur estimation (64 tests Vitest)
+- [x] Phase 4 — Formulaire 4 étapes + API leads + résultat (E2E : Nice vente/location, Strasbourg→manuelle)
+- [x] Phase 5 — Brevo (simulation sans clé) + file CRM + cron (E2E mock : 500→retry backoff→sent, idempotence)
+- [x] Phase 6 — Admin complet (E2E session réelle)
+- [x] Phase 7 — SEO : ~35 k pages communes ISR, sitemap 34 923 URLs, JSON-LD Dataset+FAQ
+- [x] Phase 8 — Lighthouse prod : landing Perf 95/SEO 100 ; commune Perf 96/SEO 100
+
+## Reste à faire (nécessite le client)
+- Clé Brevo + email expéditeur vérifié (sinon simulation console)
+- URL + clé du webhook CRM du propriétaire
+- Repo GitHub (secrets SUPABASE_DB_URL, CRON_SECRET, var SITE_URL) + déploiement Vercel
+- Vérifier le plan Supabase Pro (base 647 Mo > free tier)
+- Purger les leads de test : delete from leads (cascade crm_sync_queue)

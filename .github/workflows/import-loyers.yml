@@ -1,0 +1,30 @@
+# Import annuel de la Carte des loyers ANIL.
+# Déclenchement manuel : mettre d'abord à jour MILLESIME et les URLs des
+# ressources dans scripts/import-loyers.ts à chaque nouvelle publication.
+name: Import loyers ANIL
+
+on:
+  workflow_dispatch:
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Import loyers
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: pnpm import:loyers
