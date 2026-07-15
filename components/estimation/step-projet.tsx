@@ -2,6 +2,7 @@
 
 import { Building2, Home, KeyRound, Lock, Tag } from "lucide-react";
 import { AddressAutocomplete } from "./address-autocomplete";
+import { QuartierStrip } from "./quartier-block";
 import {
   C,
   ChoiceCard,
@@ -34,20 +35,24 @@ export function StepProjet({ state, setField, errors }: StepProps) {
         value={state.adresse}
         onChange={(adresse) => setField("adresse", adresse)}
       />
-      <p
-        style={{
-          margin: "9px 2px 0",
-          fontSize: 12.5,
-          color: C.faint,
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-        }}
-      >
-        <Lock size={13} />
-        L&apos;adresse affine la comparaison. Elle reste strictement
-        confidentielle.
-      </p>
+      {state.adresse ? (
+        <QuartierStrip key={state.adresse.libelle} adresse={state.adresse} />
+      ) : (
+        <p
+          style={{
+            margin: "9px 2px 0",
+            fontSize: 12.5,
+            color: C.faint,
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+          }}
+        >
+          <Lock size={13} />
+          L&apos;adresse affine la comparaison. Elle reste strictement
+          confidentielle.
+        </p>
+      )}
       <FieldMsg
         message={
           errors["adresse"] ??

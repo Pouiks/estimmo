@@ -366,8 +366,10 @@ export function EstimationForm() {
                 color: "#fff",
                 fontWeight: 700,
                 fontSize: 15.5,
-                cursor: peutAvancer && !submitting ? "pointer" : "not-allowed",
-                opacity: peutAvancer && !submitting ? 1 : 0.45,
+                // Toujours cliquable : un clic sur le bouton grisé affiche
+                // les messages d'erreur sous les champs concernés.
+                cursor: submitting ? "wait" : "pointer",
+                opacity: peutAvancer && !submitting ? 1 : 0.55,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",

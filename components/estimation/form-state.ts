@@ -55,7 +55,9 @@ export const initialFormState: EstimationFormState = {
   pieces: "3",
   chambres: "2",
   etage: "",
-  ascenseur: null,
+  // Un interrupteur affiché "off" est une réponse : non. Jamais null,
+  // sinon la validation bloque sans que l'utilisateur comprenne pourquoi.
+  ascenseur: false,
   surfaceTerrain: "",
   anneeConstruction: null,
   exterieur: [],

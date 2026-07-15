@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bus, GraduationCap, ShoppingBag, Trees } from "lucide-react";
+import { Bus, GraduationCap, ShoppingBag, Sparkles, Trees } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { Adresse } from "@/lib/leads/schema";
 import { C } from "./design";
@@ -14,28 +14,104 @@ interface QuartierStats {
 }
 
 /**
- * Bloc "Votre quartier" : équipements autour de l'adresse estimée
- * (OpenStreetMap). Chargé après l'affichage du résultat, jamais bloquant :
- * si l'API échoue ou que tout est à zéro, le bloc ne s'affiche pas.
+ * Stats de quartier autour d'une adresse (OpenStreetMap via /api/quartier).
+ * Jamais bloquant : en cas d'échec, stats reste null et l'UI n'affiche rien.
+ * Monter le composant avec key={adresse.libelle} pour réinitialiser l'état
+ * quand l'adresse change.
  */
-export function QuartierBlock({ adresse }: { adresse: Adresse | null }) {
+function useQuartierStats(adresse: Adresse | null) {
   const [stats, setStats] = useState<QuartierStats | null>(null);
+  const [done, setDone] = useState(false);
 
   useEffect(() => {
     if (!adresse) return;
+    let alive = true;
     const controller = new AbortController();
     fetch(`/api/quartier?lat=${adresse.lat}&lon=${adresse.lon}`, {
       signal: controller.signal,
     })
       .then((res) => (res.ok ? res.json() : null))
       .then((data: { stats?: QuartierStats | null } | null) => {
+        if (!alive) return;
         if (data?.stats) setStats(data.stats);
+        setDone(true);
       })
       .catch(() => {
-        // dégradation silencieuse
+        if (alive) setDone(true);
       });
-    return () => controller.abort();
+    return () => {
+      alive = false;
+      controller.abort();
+    };
   }, [adresse]);
+
+  return { stats, loading: adresse !== null && !done };
+}
+
+function libelles(stats: QuartierStats): string[] {
+  const parts: string[] = [];
+  if (stats.ecoles > 0)
+    parts.push(`${stats.ecoles} école${stats.ecoles > 1 ? "s" : ""}`);
+  if (stats.transports > 0)
+    parts.push(`${stats.transports} transport${stats.transports > 1 ? "s" : ""}`);
+  if (stats.commerces > 0)
+    parts.push(`${stats.commerces} commerce${stats.commerces > 1 ? "s" : ""}`);
+  if (stats.parcs > 0)
+    parts.push(`${stats.parcs} espace${stats.parcs > 1 ? "s" : ""} vert${stats.parcs > 1 ? "s" : ""}`);
+  return parts;
+}
+
+/**
+ * Bandelette compacte affichée à l'étape 1 dès la sélection de l'adresse :
+ * l'analyse du quartier démarre immédiatement, l'utilisateur le voit.
+ */
+export function QuartierStrip({ adresse }: { adresse: Adresse | null }) {
+  const { stats, loading } = useQuartierStats(adresse);
+
+  if (!adresse) return null;
+
+  const parts = stats ? libelles(stats) : [];
+  if (!loading && parts.length === 0) return null;
+
+  return (
+    <div
+      className="dcx-step"
+      style={{
+        marginTop: 10,
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 8,
+        padding: "10px 14px",
+        borderRadius: 12,
+        background: C.sel,
+        border: `1px solid #BBD9F5`,
+        fontSize: 13,
+        color: C.accentDark,
+        lineHeight: 1.5,
+      }}
+    >
+      <Sparkles
+        size={15}
+        className={loading ? "animate-pulse" : undefined}
+        style={{ color: C.accent, flexShrink: 0, marginTop: 2 }}
+      />
+      {loading ? (
+        <span className="animate-pulse">Analyse de votre quartier en cours…</span>
+      ) : (
+        <span>
+          <strong>Quartier analysé :</strong> {parts.join(" · ")} à proximité.
+          Détail complet avec votre estimation.
+        </span>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Bloc "Votre quartier" de l'écran résultat : tuiles détaillées.
+ */
+export function QuartierBlock({ adresse }: { adresse: Adresse | null }) {
+  const { stats } = useQuartierStats(adresse);
 
   if (!stats) return null;
 
