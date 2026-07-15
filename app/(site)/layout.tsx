@@ -72,6 +72,14 @@ export default function SiteLayout({
                 </Link>
               </li>
               <li>
+                <Link
+                  href="/barometre-immobilier"
+                  className="hover:text-foreground"
+                >
+                  Baromètre des prix
+                </Link>
+              </li>
+              <li>
                 <Link href="/blog" className="hover:text-foreground">
                   Blog
                 </Link>

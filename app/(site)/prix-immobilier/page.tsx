@@ -28,9 +28,16 @@ export default async function PrixImmobilierIndexPage() {
         communes. Sélectionnez une ville ou estimez directement votre bien.
       </p>
 
-      <div className="mt-6">
+      <div className="mt-6 flex flex-wrap gap-3">
         <Button size="lg" render={<Link href="/estimation" />}>
           Estimer mon bien gratuitement
+        </Button>
+        <Button
+          size="lg"
+          variant="outline"
+          render={<Link href="/barometre-immobilier" />}
+        >
+          Voir le baromètre des prix
         </Button>
       </div>
 

@@ -12,6 +12,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: base, changeFrequency: "weekly", priority: 1 },
     { url: `${base}/estimation`, changeFrequency: "monthly", priority: 0.9 },
     { url: `${base}/prix-immobilier`, changeFrequency: "daily", priority: 0.8 },
+    {
+      url: `${base}/barometre-immobilier`,
+      changeFrequency: "daily",
+      priority: 0.8,
+    },
     { url: `${base}/blog`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${base}/mentions-legales`, changeFrequency: "yearly", priority: 0.1 },
     {
