@@ -1,5 +1,18 @@
 import type { Metadata } from "next";
+import { Hanken_Grotesk, Instrument_Serif } from "next/font/google";
 import { EstimationForm } from "@/components/estimation/estimation-form";
+import { MENTIONS } from "@/lib/config";
+
+const hanken = Hanken_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-hanken",
+});
+const instrument = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-instrument",
+});
 
 export const metadata: Metadata = {
   title: "Estimation gratuite de votre bien",
@@ -9,17 +22,34 @@ export const metadata: Metadata = {
 
 export default function EstimationPage() {
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10 sm:py-14">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold tracking-tight">
-          Estimez votre bien gratuitement
-        </h1>
-        <p className="mt-2 text-muted-foreground">
-          2 minutes suffisent — résultat immédiat, basé sur les ventes réelles
-          de votre quartier.
+    <div
+      className={`${hanken.variable} ${instrument.variable} dcx`}
+      style={{
+        minHeight: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "40px 18px",
+        color: "#0C1F1C",
+        background:
+          "radial-gradient(1200px 600px at 15% -10%,#E9F3EE 0%,rgba(233,243,238,0) 55%),radial-gradient(1000px 620px at 110% 10%,#E6EEF6 0%,rgba(230,238,246,0) 50%),linear-gradient(180deg,#F5F8F6 0%,#EFF3F1 100%)",
+      }}
+    >
+      <div style={{ width: "100%", maxWidth: 660 }}>
+        <EstimationForm />
+        <p
+          style={{
+            textAlign: "center",
+            margin: "16px auto 0",
+            maxWidth: 520,
+            fontSize: 12,
+            color: "#9BA8A4",
+            lineHeight: 1.5,
+          }}
+        >
+          {MENTIONS.disclaimer}
         </p>
       </div>
-      <EstimationForm />
     </div>
   );
 }

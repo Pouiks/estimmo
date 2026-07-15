@@ -2,9 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Loader2, MapPin, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import type { Adresse } from "@/lib/leads/schema";
-import { cn } from "@/lib/utils";
+import { C } from "./design";
 
 interface Suggestion {
   label: string;
@@ -78,9 +77,29 @@ export function AddressAutocomplete({
 
   if (value) {
     return (
-      <div className="flex items-center justify-between gap-2 rounded-xl border-2 border-primary bg-primary/5 px-4 py-3">
-        <span className="flex items-center gap-2 text-sm font-medium">
-          <MapPin className="size-4 shrink-0 text-primary" />
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 8,
+          padding: "13px 16px",
+          borderRadius: 14,
+          border: `2px solid ${C.accent}`,
+          background: C.sel,
+        }}
+      >
+        <span
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            fontSize: 14.5,
+            fontWeight: 600,
+            color: C.ink,
+          }}
+        >
+          <MapPin size={16} style={{ flexShrink: 0, color: C.accent }} />
           {value.libelle}
         </span>
         <button
@@ -90,42 +109,109 @@ export function AddressAutocomplete({
             setQuery("");
           }}
           aria-label="Modifier l'adresse"
-          className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+          style={{
+            border: "none",
+            background: "none",
+            cursor: "pointer",
+            color: C.muted,
+            padding: 2,
+            display: "flex",
+          }}
         >
-          <X className="size-4" />
+          <X size={16} />
         </button>
       </div>
     );
   }
 
   return (
-    <div ref={containerRef} className="relative">
-      <div className="relative">
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => suggestions.length > 0 && setOpen(true)}
-          placeholder="12 rue de la République, Nice"
-          autoComplete="off"
-          inputMode="text"
-          aria-label="Adresse du bien"
-          className="h-11 pr-9"
+    <div ref={containerRef} style={{ position: "relative" }}>
+      <span
+        style={{
+          position: "absolute",
+          left: 15,
+          top: "50%",
+          transform: "translateY(-50%)",
+          color: C.accent,
+          pointerEvents: "none",
+        }}
+      >
+        <MapPin size={18} />
+      </span>
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        onFocus={() => suggestions.length > 0 && setOpen(true)}
+        placeholder="12 rue des Lilas, 75011 Paris"
+        autoComplete="off"
+        inputMode="text"
+        aria-label="Adresse du bien"
+        style={{
+          width: "100%",
+          padding: "15px 44px 15px 44px",
+          borderRadius: 14,
+          border: `1.5px solid ${C.border}`,
+          fontSize: 15,
+          background: C.inputBg,
+          color: C.ink,
+          transition: "border-color .15s",
+        }}
+      />
+      {loading && (
+        <Loader2
+          size={16}
+          className="animate-spin"
+          style={{
+            position: "absolute",
+            right: 15,
+            top: "50%",
+            transform: "translateY(-50%)",
+            color: C.faint,
+          }}
         />
-        {loading && (
-          <Loader2 className="absolute top-1/2 right-3 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />
-        )}
-      </div>
+      )}
 
       {open && suggestions.length > 0 && (
-        <ul className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border bg-popover shadow-lg">
+        <ul
+          style={{
+            position: "absolute",
+            zIndex: 20,
+            marginTop: 6,
+            width: "100%",
+            listStyle: "none",
+            padding: 6,
+            overflow: "hidden",
+            borderRadius: 14,
+            border: `1px solid ${C.borderSoft}`,
+            background: "#fff",
+            boxShadow: "0 16px 40px -18px rgba(12,31,28,.3)",
+          }}
+        >
           {suggestions.map((s, i) => (
             <li key={`${s.label}-${i}`}>
               <button
                 type="button"
-                className={cn(
-                  "flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm",
-                  "hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"
-                )}
+                style={{
+                  display: "flex",
+                  width: "100%",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "10px 10px",
+                  borderRadius: 10,
+                  border: "none",
+                  background: "none",
+                  textAlign: "left",
+                  fontSize: 14,
+                  color: C.ink,
+                  cursor: "pointer",
+                  font: "inherit",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = C.cardBg)
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = "none")
+                }
                 onClick={() => {
                   onChange({
                     libelle: s.label,
@@ -137,7 +223,7 @@ export function AddressAutocomplete({
                   setOpen(false);
                 }}
               >
-                <MapPin className="size-4 shrink-0 text-muted-foreground" />
+                <MapPin size={16} style={{ flexShrink: 0, color: C.faint }} />
                 {s.label}
               </button>
             </li>
@@ -146,7 +232,21 @@ export function AddressAutocomplete({
       )}
 
       {open && !loading && suggestions.length === 0 && query.length >= 3 && (
-        <p className="absolute z-20 mt-1 w-full rounded-xl border bg-popover px-4 py-2.5 text-sm text-muted-foreground shadow-lg">
+        <p
+          style={{
+            position: "absolute",
+            zIndex: 20,
+            marginTop: 6,
+            width: "100%",
+            borderRadius: 14,
+            border: `1px solid ${C.borderSoft}`,
+            background: "#fff",
+            padding: "12px 14px",
+            fontSize: 14,
+            color: C.muted,
+            boxShadow: "0 16px 40px -18px rgba(12,31,28,.3)",
+          }}
+        >
           Aucune adresse trouvée — précisez le numéro et la ville.
         </p>
       )}

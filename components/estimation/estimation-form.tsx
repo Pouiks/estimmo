@@ -3,8 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import {
   etape1Schema,
   etape2Schema,
@@ -22,15 +20,14 @@ import { StepBien } from "./step-bien";
 import { StepEtat } from "./step-etat";
 import { StepContact } from "./step-contact";
 import { ResultatEstimation, type ResultatApi } from "./resultat";
+import { C } from "./design";
 
-const STEP_TITLES = [
-  "Votre projet",
-  "Votre bien",
-  "État du bien",
-  "Vos coordonnées",
-];
-
+const STEP_NAMES = ["Votre projet", "Le bien", "État & atouts", "Vos coordonnées"];
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"];
+
+type ParseResult =
+  | { success: true }
+  | { success: false; error: { issues: { path: PropertyKey[]; message: string }[] } };
 
 function track(sessionId: string | null, step: number, event: string) {
   if (!sessionId) return;
@@ -83,48 +80,48 @@ export function EstimationForm() {
     []
   );
 
-  function validerEtape(n: number): boolean {
-    let parsed:
-      | { success: true }
-      | { success: false; error: { issues: { path: PropertyKey[]; message: string }[] } };
-
+  function parseEtape(n: number, s: EstimationFormState): ParseResult {
     if (n === 1) {
-      parsed = etape1Schema.safeParse({
-        projet: state.projet ?? undefined,
-        horizon: state.horizon,
-        typeBien: state.typeBien ?? undefined,
-        adresse: state.adresse ?? undefined,
-      });
-    } else if (n === 2) {
-      parsed = etape2Schema(state.typeBien ?? "appartement").safeParse({
-        surface: toNumber(state.surface),
-        pieces: toNumber(state.pieces),
-        chambres: toNumber(state.chambres),
-        etage: toNumber(state.etage) ?? null,
-        ascenseur: state.ascenseur,
-        surfaceTerrain: toNumber(state.surfaceTerrain) ?? null,
-        anneeConstruction: state.anneeConstruction ?? undefined,
-        exterieur: state.exterieur,
-        stationnement: state.stationnement ?? undefined,
-      });
-    } else if (n === 3) {
-      parsed = etape3Schema.safeParse({
-        etatGeneral: state.etatGeneral ?? undefined,
-        ageCuisine: state.ageCuisine ?? undefined,
-        ageSdb: state.ageSdb ?? undefined,
-        dpe: state.dpe ?? undefined,
-        atouts: state.atouts,
-      });
-    } else {
-      parsed = etape4Schema.safeParse({
-        prenom: state.prenom,
-        nom: state.nom,
-        email: state.email,
-        telephone: state.telephone,
-        consentement: state.consentement,
+      return etape1Schema.safeParse({
+        projet: s.projet ?? undefined,
+        horizon: s.horizon,
+        typeBien: s.typeBien ?? undefined,
+        adresse: s.adresse ?? undefined,
       });
     }
+    if (n === 2) {
+      return etape2Schema(s.typeBien ?? "appartement").safeParse({
+        surface: toNumber(s.surface),
+        pieces: toNumber(s.pieces),
+        chambres: toNumber(s.chambres),
+        etage: toNumber(s.etage) ?? null,
+        ascenseur: s.ascenseur,
+        surfaceTerrain: null,
+        anneeConstruction: s.anneeConstruction ?? undefined,
+        exterieur: s.exterieur,
+        stationnement: s.stationnement ?? undefined,
+      });
+    }
+    if (n === 3) {
+      return etape3Schema.safeParse({
+        etatGeneral: s.etatGeneral ?? undefined,
+        ageCuisine: s.ageCuisine ?? undefined,
+        ageSdb: s.ageSdb ?? undefined,
+        dpe: s.dpe ?? undefined,
+        atouts: s.atouts,
+      });
+    }
+    return etape4Schema.safeParse({
+      prenom: s.prenom,
+      nom: s.nom,
+      email: s.email,
+      telephone: s.telephone,
+      consentement: s.consentement,
+    });
+  }
 
+  function validerEtape(n: number): boolean {
+    const parsed = parseEtape(n, state);
     if (parsed.success) {
       setErrors({});
       return true;
@@ -165,8 +162,7 @@ export function EstimationForm() {
       chambres: toNumber(state.chambres),
       etage: state.typeBien === "appartement" ? toNumber(state.etage) ?? null : null,
       ascenseur: state.typeBien === "appartement" ? state.ascenseur : null,
-      surfaceTerrain:
-        state.typeBien === "maison" ? toNumber(state.surfaceTerrain) ?? null : null,
+      surfaceTerrain: null,
       anneeConstruction: state.anneeConstruction,
       exterieur: state.exterieur,
       stationnement: state.stationnement,
@@ -217,75 +213,184 @@ export function EstimationForm() {
     }
   }
 
-  if (resultat) {
-    return (
-      <div ref={topRef}>
-        <ResultatEstimation resultat={resultat} />
-      </div>
-    );
-  }
+  const isResult = resultat !== null;
+  const peutAvancer = isResult || parseEtape(step, state).success;
+  const stepLabel = isResult
+    ? "Estimation"
+    : `Étape ${step} sur 4 · ${STEP_NAMES[step - 1]}`;
+  const progressWidth = isResult ? "100%" : `${(step / 4) * 100}%`;
 
   return (
     <div ref={topRef}>
-      <div className="mb-8">
-        <div className="mb-2 flex items-baseline justify-between">
-          <p className="text-sm font-semibold">
-            Étape {step} sur 4 — {STEP_TITLES[step - 1]}
-          </p>
-          <p className="text-xs text-muted-foreground">
-            {Math.round(((step - 1) / 4) * 100)} %
-          </p>
-        </div>
-        <Progress value={((step - 1) / 4) * 100} aria-label="Progression" />
-      </div>
-
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (step < 4) suivant();
-          else void soumettre();
+      <div
+        style={{
+          background: "#fff",
+          border: `1px solid ${C.borderSoft}`,
+          borderRadius: 26,
+          boxShadow:
+            "0 26px 60px -28px rgba(12,31,28,.34),0 2px 6px rgba(12,31,28,.04)",
+          overflow: "hidden",
         }}
-        noValidate
       >
-        {step === 1 && (
-          <StepProjet state={state} setField={setField} errors={errors} />
-        )}
-        {step === 2 && (
-          <StepBien state={state} setField={setField} errors={errors} />
-        )}
-        {step === 3 && (
-          <StepEtat state={state} setField={setField} errors={errors} />
-        )}
-        {step === 4 && (
-          <StepContact state={state} setField={setField} errors={errors} />
-        )}
+        {/* Progression */}
+        <div style={{ padding: "22px 30px 0" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 12,
+            }}
+          >
+            <span
+              style={{
+                fontSize: 12.5,
+                fontWeight: 600,
+                letterSpacing: ".04em",
+                color: C.muted,
+                textTransform: "uppercase",
+              }}
+            >
+              {stepLabel}
+            </span>
+            <span style={{ fontSize: 12.5, fontWeight: 700, color: C.accent }}>
+              {progressWidth}
+            </span>
+          </div>
+          <div
+            style={{
+              height: 6,
+              borderRadius: 99,
+              background: "#EAEFEC",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                height: "100%",
+                borderRadius: 99,
+                background: `linear-gradient(90deg,${C.accent},${C.accentLight})`,
+                width: progressWidth,
+                transition: "width .55s cubic-bezier(.22,1,.36,1)",
+              }}
+            />
+          </div>
+        </div>
 
-        <div className="mt-10 flex items-center justify-between gap-3">
-          {step > 1 ? (
-            <Button type="button" variant="ghost" onClick={precedent}>
-              <ArrowLeft className="size-4" /> Précédent
-            </Button>
+        {/* Contenu */}
+        <div style={{ padding: "26px 30px 30px", minHeight: 360 }}>
+          {isResult ? (
+            <ResultatEstimation
+              resultat={resultat}
+              state={state}
+              onRestart={() => {
+                setResultat(null);
+                setState(initialFormState);
+                setStep(1);
+                setErrors({});
+                topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+            />
           ) : (
-            <span />
+            <form
+              className="dcx-step"
+              key={step}
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (step < 4) suivant();
+                else void soumettre();
+              }}
+              noValidate
+            >
+              {step === 1 && (
+                <StepProjet state={state} setField={setField} errors={errors} />
+              )}
+              {step === 2 && (
+                <StepBien state={state} setField={setField} errors={errors} />
+              )}
+              {step === 3 && (
+                <StepEtat state={state} setField={setField} errors={errors} />
+              )}
+              {step === 4 && (
+                <StepContact state={state} setField={setField} errors={errors} />
+              )}
+            </form>
           )}
+        </div>
 
-          {step < 4 ? (
-            <Button type="submit" size="lg">
-              Continuer <ArrowRight className="size-4" />
-            </Button>
-          ) : (
-            <Button type="submit" size="lg" disabled={submitting}>
+        {/* Navigation */}
+        {!isResult && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              padding: "18px 30px",
+              borderTop: "1px solid #F0F3F1",
+              background: "#FCFDFC",
+            }}
+          >
+            {step > 1 && (
+              <button
+                type="button"
+                onClick={precedent}
+                style={{
+                  padding: "14px 20px",
+                  borderRadius: 13,
+                  border: `1.5px solid ${C.border}`,
+                  background: "#fff",
+                  color: C.label,
+                  fontWeight: 700,
+                  fontSize: 15,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 7,
+                  font: "inherit",
+                }}
+              >
+                <ArrowLeft size={16} strokeWidth={2.4} />
+                Retour
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => (step < 4 ? suivant() : void soumettre())}
+              disabled={submitting}
+              style={{
+                flex: 1,
+                padding: "15px 22px",
+                borderRadius: 13,
+                border: "none",
+                background: C.accent,
+                color: "#fff",
+                fontWeight: 700,
+                fontSize: 15.5,
+                cursor: peutAvancer && !submitting ? "pointer" : "not-allowed",
+                opacity: peutAvancer && !submitting ? 1 : 0.45,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                boxShadow: `0 8px 20px -8px ${C.accent}`,
+                transition: "opacity .18s",
+                font: "inherit",
+              }}
+            >
               {submitting ? (
                 <>
-                  <Loader2 className="size-4 animate-spin" /> Calcul en cours…
+                  <Loader2 size={17} className="animate-spin" /> Calcul en cours…
                 </>
               ) : (
-                "Voir mon estimation"
+                <>
+                  {step === 4 ? "Voir mon estimation" : "Continuer"}
+                  <ArrowRight size={17} strokeWidth={2.4} />
+                </>
               )}
-            </Button>
-          )}
-        </div>
-      </form>
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

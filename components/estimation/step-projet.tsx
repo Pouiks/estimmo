@@ -1,9 +1,15 @@
 "use client";
 
-import { Building2, Home, KeyRound, Tag } from "lucide-react";
-import { Label } from "@/components/ui/label";
+import { Building2, Home, KeyRound, Lock, Tag } from "lucide-react";
 import { AddressAutocomplete } from "./address-autocomplete";
-import { FieldError, OptionCard, OptionChip } from "./option-card";
+import {
+  C,
+  ChoiceCard,
+  FieldMsg,
+  Pill,
+  SectionLabel,
+  StepHeader,
+} from "./design";
 import type { StepProps } from "./form-state";
 
 const HORIZONS = [
@@ -15,82 +21,103 @@ const HORIZONS = [
 
 export function StepProjet({ state, setField, errors }: StepProps) {
   return (
-    <div className="space-y-8">
-      <div>
-        <Label className="text-base font-semibold">Votre projet</Label>
-        <div className="mt-3 grid grid-cols-2 gap-3">
-          <OptionCard
-            icon={Tag}
-            title="Vendre"
-            description="Estimer le prix de vente"
-            selected={state.projet === "vente"}
-            onClick={() => setField("projet", "vente")}
-          />
-          <OptionCard
-            icon={KeyRound}
-            title="Mettre en location"
-            description="Estimer le loyer mensuel"
-            selected={state.projet === "location"}
-            onClick={() => {
-              setField("projet", "location");
-              setField("horizon", null);
-            }}
-          />
-        </div>
-        <FieldError message={errors["projet"]} />
+    <div>
+      <StepHeader
+        title="Votre projet immobilier"
+        subtitle="Dites-nous ce que vous souhaitez estimer."
+      />
+
+      <SectionLabel>Je souhaite</SectionLabel>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 12,
+          marginBottom: 6,
+        }}
+      >
+        <ChoiceCard
+          icon={Tag}
+          title="Vendre"
+          sub="Prix de vente estimé"
+          selected={state.projet === "vente"}
+          onClick={() => setField("projet", "vente")}
+        />
+        <ChoiceCard
+          icon={KeyRound}
+          title="Louer"
+          sub="Loyer mensuel estimé"
+          selected={state.projet === "location"}
+          onClick={() => {
+            setField("projet", "location");
+            setField("horizon", null);
+          }}
+        />
       </div>
+      <FieldMsg message={errors["projet"]} />
 
       {state.projet === "vente" && (
-        <div>
-          <Label className="text-base font-semibold">
-            Quel est votre horizon de vente&nbsp;?
-          </Label>
-          <div className="mt-3 flex flex-wrap gap-2">
+        <div style={{ marginTop: 24 }}>
+          <SectionLabel>Votre horizon de vente</SectionLabel>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {HORIZONS.map((h) => (
-              <OptionChip
+              <Pill
                 key={h.value}
                 label={h.label}
+                showMark={false}
                 selected={state.horizon === h.value}
                 onClick={() => setField("horizon", h.value)}
               />
             ))}
           </div>
-          <FieldError message={errors["horizon"]} />
+          <FieldMsg message={errors["horizon"]} />
         </div>
       )}
 
-      <div>
-        <Label className="text-base font-semibold">Type de bien</Label>
-        <div className="mt-3 grid grid-cols-2 gap-3">
-          <OptionCard
+      <div style={{ marginTop: 24 }}>
+        <SectionLabel>Type de bien</SectionLabel>
+        <div
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
+        >
+          <ChoiceCard
+            orientation="row"
             icon={Building2}
             title="Appartement"
             selected={state.typeBien === "appartement"}
             onClick={() => setField("typeBien", "appartement")}
           />
-          <OptionCard
+          <ChoiceCard
+            orientation="row"
             icon={Home}
             title="Maison"
             selected={state.typeBien === "maison"}
             onClick={() => setField("typeBien", "maison")}
           />
         </div>
-        <FieldError message={errors["typeBien"]} />
+        <FieldMsg message={errors["typeBien"]} />
       </div>
 
-      <div>
-        <Label className="text-base font-semibold">Adresse du bien</Label>
-        <p className="mt-1 text-sm text-muted-foreground">
-          L'adresse précise permet de comparer avec les ventes de votre
-          quartier. Elle reste confidentielle.
+      <div style={{ marginTop: 24 }}>
+        <SectionLabel>Adresse du bien</SectionLabel>
+        <AddressAutocomplete
+          value={state.adresse}
+          onChange={(adresse) => setField("adresse", adresse)}
+        />
+        <p
+          style={{
+            margin: "9px 2px 0",
+            fontSize: 12.5,
+            color: C.faint,
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+          }}
+        >
+          <Lock size={13} />
+          L&apos;adresse affine la comparaison. Elle reste strictement
+          confidentielle.
         </p>
-        <div className="mt-3">
-          <AddressAutocomplete
-            value={state.adresse}
-            onChange={(adresse) => setField("adresse", adresse)}
-          />
-        </div>
-        <FieldError
+        <FieldMsg
           message={
             errors["adresse"] ??
             errors["adresse.libelle"] ??

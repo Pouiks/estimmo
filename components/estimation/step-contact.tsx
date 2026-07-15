@@ -1,111 +1,118 @@
 "use client";
 
 import Link from "next/link";
-import { Lock } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { FieldError } from "./option-card";
+import { Check } from "lucide-react";
+import { C, FieldMsg, SectionLabel, StepHeader, TextField } from "./design";
 import type { StepProps } from "./form-state";
 
 export function StepContact({ state, setField, errors }: StepProps) {
   return (
-    <div className="space-y-6">
-      <p className="rounded-xl bg-primary/5 px-4 py-3 text-sm">
-        <Lock className="mr-1.5 inline size-4 text-primary" />
-        Dernière étape : votre estimation s'affiche immédiatement après et vous
-        est envoyée par email.
-      </p>
+    <div>
+      <StepHeader
+        title="Recevez votre estimation"
+        subtitle="Résultat immédiat à l'écran et récapitulatif par email."
+      />
 
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 12,
+          marginBottom: 14,
+        }}
+      >
         <div>
-          <Label htmlFor="prenom" className="text-base font-semibold">
-            Prénom
-          </Label>
-          <Input
-            id="prenom"
+          <SectionLabel>Prénom</SectionLabel>
+          <TextField
             autoComplete="given-name"
+            placeholder="Camille"
             value={state.prenom}
             onChange={(e) => setField("prenom", e.target.value)}
-            className="mt-2 h-11"
           />
-          <FieldError message={errors["prenom"]} />
+          <FieldMsg message={errors["prenom"]} />
         </div>
         <div>
-          <Label htmlFor="nom" className="text-base font-semibold">
-            Nom
-          </Label>
-          <Input
-            id="nom"
+          <SectionLabel>Nom</SectionLabel>
+          <TextField
             autoComplete="family-name"
+            placeholder="Durand"
             value={state.nom}
             onChange={(e) => setField("nom", e.target.value)}
-            className="mt-2 h-11"
           />
-          <FieldError message={errors["nom"]} />
+          <FieldMsg message={errors["nom"]} />
         </div>
       </div>
 
-      <div>
-        <Label htmlFor="email" className="text-base font-semibold">
-          Email
-        </Label>
-        <Input
-          id="email"
+      <div style={{ marginBottom: 14 }}>
+        <SectionLabel>Email</SectionLabel>
+        <TextField
           type="email"
           autoComplete="email"
-          placeholder="vous@exemple.fr"
+          placeholder="camille.durand@email.fr"
           value={state.email}
           onChange={(e) => setField("email", e.target.value)}
-          className="mt-2 h-11"
         />
-        <FieldError message={errors["email"]} />
+        <FieldMsg message={errors["email"]} />
       </div>
 
-      <div>
-        <Label htmlFor="telephone" className="text-base font-semibold">
-          Téléphone
-        </Label>
-        <Input
-          id="telephone"
+      <div style={{ marginBottom: 16 }}>
+        <SectionLabel hint="pour être rappelé(e)">Téléphone</SectionLabel>
+        <TextField
           type="tel"
           autoComplete="tel"
           placeholder="06 12 34 56 78"
           value={state.telephone}
           onChange={(e) => setField("telephone", e.target.value)}
-          className="mt-2 h-11"
         />
-        <FieldError message={errors["telephone"]} />
+        <FieldMsg message={errors["telephone"]} />
       </div>
 
-      <div className="flex items-start gap-3 rounded-xl border p-4">
-        <Checkbox
-          id="consentement"
-          checked={state.consentement}
-          onCheckedChange={(checked) =>
-            setField("consentement", checked === true)
-          }
-          className="mt-0.5"
-        />
-        <div>
-          <label
-            htmlFor="consentement"
-            className="block text-sm leading-relaxed text-foreground select-none"
+      <div
+        onClick={() => setField("consentement", !state.consentement)}
+        style={{
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 11,
+          padding: 14,
+          borderRadius: 14,
+          background: C.cardBg,
+          border: `1px solid ${C.borderSoft}`,
+        }}
+      >
+        <span
+          style={{
+            width: 22,
+            height: 22,
+            borderRadius: 7,
+            border: `2px solid ${state.consentement ? C.accent : "#C9D3CF"}`,
+            background: state.consentement ? C.accent : "#fff",
+            color: "#fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            marginTop: 1,
+            transition: "all .15s",
+          }}
+        >
+          {state.consentement && <Check size={13} strokeWidth={3} />}
+        </span>
+        <span style={{ fontSize: 13, color: "#4A5C58", lineHeight: 1.4 }}>
+          J&apos;accepte que mes données soient utilisées pour me recontacter au
+          sujet de mon projet immobilier — voir la{" "}
+          <Link
+            href="/politique-confidentialite"
+            target="_blank"
+            onClick={(e) => e.stopPropagation()}
+            style={{ color: C.accent, textDecoration: "underline" }}
           >
-            J'accepte que mes données soient utilisées pour me recontacter au
-            sujet de mon projet immobilier — voir la{" "}
-            <Link
-              href="/politique-confidentialite"
-              target="_blank"
-              className="underline underline-offset-4"
-            >
-              politique de confidentialité
-            </Link>
-            .
-          </label>
-          <FieldError message={errors["consentement"]} />
-        </div>
+            politique de confidentialité
+          </Link>
+          .
+        </span>
       </div>
+      <FieldMsg message={errors["consentement"]} />
     </div>
   );
 }

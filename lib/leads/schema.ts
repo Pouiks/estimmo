@@ -74,10 +74,10 @@ export const etape2Base = z.object({
     .min(0)
     .max(1_000_000, "Surface de terrain invalide")
     .nullish(),
-  anneeConstruction: z.enum(
-    ["avant_1950", "1950_1975", "1975_2000", "2000_2012", "apres_2012"],
-    "Indiquez l'année de construction"
-  ),
+  // Retirés du formulaire (design concis) mais conservés en base : optionnels.
+  anneeConstruction: z
+    .enum(["avant_1950", "1950_1975", "1975_2000", "2000_2012", "apres_2012"])
+    .nullish(),
   exterieur: z.array(z.enum(["balcon", "terrasse", "jardin"])).default([]),
   stationnement: z.enum(
     ["aucun", "place", "garage_box"],
@@ -98,16 +98,6 @@ export function etape2Schema(typeBien: "appartement" | "maison") {
           message: "Ascenseur : oui ou non ?",
         });
       }
-    }
-    if (
-      typeBien === "maison" &&
-      (data.surfaceTerrain === null || data.surfaceTerrain === undefined)
-    ) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["surfaceTerrain"],
-        message: "Indiquez la surface du terrain (0 si aucun)",
-      });
     }
   });
 }

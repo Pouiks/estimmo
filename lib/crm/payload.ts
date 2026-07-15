@@ -130,7 +130,7 @@ export function buildCrmPayload(params: {
       etage: lead.etage ?? null,
       ascenseur: lead.ascenseur ?? null,
       surface_terrain: lead.surfaceTerrain ?? null,
-      annee_construction: lead.anneeConstruction,
+      annee_construction: lead.anneeConstruction ?? "",
       exterieur: lead.exterieur,
       stationnement: lead.stationnement,
       etat_general: lead.etatGeneral,
