@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "./server";
 
 /**
- * Garde d'autorisation admin — à appeler en tête de CHAQUE page protégée,
+ * Garde d'autorisation admin - à appeler en tête de CHAQUE page protégée,
  * server action et route handler d'administration (le proxy ne vérifie que
  * l'authentification, pas le rôle).
  */

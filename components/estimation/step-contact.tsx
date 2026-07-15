@@ -100,7 +100,7 @@ export function StepContact({ state, setField, errors }: StepProps) {
         </span>
         <span style={{ fontSize: 13, color: "#4A5C58", lineHeight: 1.4 }}>
           J&apos;accepte que mes données soient utilisées pour me recontacter au
-          sujet de mon projet immobilier — voir la{" "}
+          sujet de mon projet immobilier - voir la{" "}
           <Link
             href="/politique-confidentialite"
             target="_blank"

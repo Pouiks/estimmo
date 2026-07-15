@@ -1,4 +1,4 @@
-# PROMPT MAÎTRE — Estimateur immobilier & générateur de leads
+# PROMPT MAÎTRE - Estimateur immobilier & générateur de leads
 
 
 ---
@@ -11,17 +11,17 @@ Objectif business : capter les coordonnées AVANT d'afficher le résultat, score
 
 **Marque / nom du site** : `ESTIMMO`
 **Honoraires affichés** : `entre 3 et 7% en mandat exclusif` vs `Entre 3 et 6% en mandat simple`
-**Coordonnées de l'agent (email résultat + footer)** : `Carenza Brown — 06 12 34 56 78 — browncarenza@gmail.com`
+**Coordonnées de l'agent (email résultat + footer)** : `Carenza Brown - 06 12 34 56 78 - browncarenza@gmail.com`
 
 ---
 
 ## Stack imposée (non négociable)
 
-- **Next.js 15+ (App Router, TypeScript)** — monorepo unique, un seul déploiement
+- **Next.js 15+ (App Router, TypeScript)** - monorepo unique, un seul déploiement
 - **Hébergement : Vercel**
 - **Base de données : Supabase** (Postgres + extension **PostGIS** activée + Supabase Auth + Storage)
 - **Email transactionnel : Brevo** (API v3)
-- **Géocodage : Géoplateforme IGN** — `https://data.geopf.fr/geocodage/search/` (ne PAS utiliser api-adresse.data.gouv.fr, décommissionnée)
+- **Géocodage : Géoplateforme IGN** - `https://data.geopf.fr/geocodage/search/` (ne PAS utiliser api-adresse.data.gouv.fr, décommissionnée)
 - **Styling : Tailwind CSS + shadcn/ui**
 - **Éditeur blog : TipTap** (contenu stocké en JSON dans Supabase)
 - Validation : **Zod** partout (formulaires + API)
@@ -203,10 +203,10 @@ Fonctions pures, testées unitairement (Vitest).
    - `mediane = prix_m2_ajusté × surface`
    - fourchette = médiane ± un pourcentage fonction de la **dispersion** des comparables (écart interquartile) : min ±6 %, max ±15 %
    - `confiance` : haute (≥15 comparables, rayon ≤800 m), moyenne (≥8, rayon ≤3 km), faible (sinon)
-6. **Fallback estimation manuelle** : si code INSEE en Haut-Rhin (67), Bas-Rhin (68), Moselle (57) ou Mayotte (976) — absents de DVF — OU si <8 comparables même au niveau département : ne pas afficher de chiffre. Afficher l'écran « Votre secteur nécessite une analyse personnalisée — estimation offerte sous 24 h, nous vous rappelons ». Le lead est créé avec `estimation_manuelle = true` et apparaît en tête de la file admin.
+6. **Fallback estimation manuelle** : si code INSEE en Haut-Rhin (67), Bas-Rhin (68), Moselle (57) ou Mayotte (976) - absents de DVF - OU si <8 comparables même au niveau département : ne pas afficher de chiffre. Afficher l'écran « Votre secteur nécessite une analyse personnalisée - estimation offerte sous 24 h, nous vous rappelons ». Le lead est créé avec `estimation_manuelle = true` et apparaît en tête de la file admin.
 
 ### Location
-Loyer mensuel estimé = `loyer_m2` de la commune (choisir la colonne selon type et typologie : T1-T2 si ≤2 pièces, T3+ sinon, maison) × surface. Fourchette ±10 %. Ajustements limités : état général (−8 % à +5 %) et DPE (F/G −8 % — mentionner l'interdiction de louer les passoires selon le calendrier légal en vigueur). Confiance toujours « indicative » + mention source ANIL.
+Loyer mensuel estimé = `loyer_m2` de la commune (choisir la colonne selon type et typologie : T1-T2 si ≤2 pièces, T3+ sinon, maison) × surface. Fourchette ±10 %. Ajustements limités : état général (−8 % à +5 %) et DPE (F/G −8 % - mentionner l'interdiction de louer les passoires selon le calendrier légal en vigueur). Confiance toujours « indicative » + mention source ANIL.
 
 ---
 
@@ -214,13 +214,13 @@ Loyer mensuel estimé = `loyer_m2` de la commune (choisir la colonne selon type 
 
 Composant multi-étapes avec barre de progression, state persisté (localStorage n'est pas nécessaire : state React + parametre de reprise), validation Zod par étape, navigation retour possible. Mobile-first. Tracker le taux d'abandon par étape (event simple en base ou analytics).
 
-**Étape 1 — Votre projet**
+**Étape 1 - Votre projet**
 - Vendre / Mettre en location (toggle)
 - Si vente : horizon → « Déjà en vente » / « Moins de 3 mois » / « 3 à 6 mois » / « Simple curiosité »
 - Type de bien : Appartement / Maison
 - Adresse : champ avec **autocomplétion Géoplateforme IGN** (debounce 300 ms, via le proxy `/api/geocode` pour cacher et logger). Stocker libellé + code INSEE + lat/lon.
 
-**Étape 2 — Votre bien**
+**Étape 2 - Votre bien**
 - Surface : label dynamique → « Surface Carrez » si appartement (tooltip : « Surface privative hors caves, parkings, balcons et parties sous 1,80 m ») / « Surface habitable » si maison
 - Nombre de pièces, nombre de chambres
 - Si appartement : étage + ascenseur (oui/non)
@@ -229,16 +229,16 @@ Composant multi-étapes avec barre de progression, state persisté (localStorage
 - Extérieur (multi) : aucun / balcon / terrasse / jardin
 - Stationnement : aucun / place / garage-box
 
-**Étape 3 — État du bien**
+**Étape 3 - État du bien**
 - État général : à rénover / à rafraîchir / bon état / refait à neuf (cartes cliquables illustrées)
 - Âge de la cuisine : moins de 5 ans / 5-10 ans / 10-20 ans / plus de 20 ans
 - Âge de la salle de bain : mêmes tranches
 - DPE : A → G / « Je ne sais pas »
 - Atouts (multi, optionnel) : vue dégagée / lumineux / calme / dernier étage / traversant
 
-**Étape 4 — Vos coordonnées** (l'estimation ne s'affiche qu'après)
+**Étape 4 - Vos coordonnées** (l'estimation ne s'affiche qu'après)
 - Prénom, Nom, Email (validé), **Téléphone (obligatoire, format FR validé)**
-- Case à cocher obligatoire : consentement explicite RGPD (« J'accepte que mes données soient utilisées pour me recontacter au sujet de mon projet immobilier — voir politique de confidentialité »)
+- Case à cocher obligatoire : consentement explicite RGPD (« J'accepte que mes données soient utilisées pour me recontacter au sujet de mon projet immobilier - voir politique de confidentialité »)
 - Bouton « Voir mon estimation »
 
 À la soumission : POST `/api/leads` → calcul estimation + score + insertion lead + enqueue CRM + envoi email Brevo → redirection écran résultat.
@@ -256,7 +256,7 @@ Composant multi-étapes avec barre de progression, state persisté (localStorage
 
 ## Email de confirmation (Brevo)
 
-Template transactionnel envoyé immédiatement : récapitulatif du bien, fourchette d'estimation (ou « analyse manuelle sous 24 h »), coordonnées complètes de l'agent `Carenza Brown — 06 12 34 56 78 — browncarenza@gmail.com`, CTA « Prendre rendez-vous », rappel honoraires exclusif vs simple, lien politique de confidentialité et désinscription. Envoyer aussi une **notification interne** à l'agent pour chaque lead avec le score et le téléphone.
+Template transactionnel envoyé immédiatement : récapitulatif du bien, fourchette d'estimation (ou « analyse manuelle sous 24 h »), coordonnées complètes de l'agent `Carenza Brown - 06 12 34 56 78 - browncarenza@gmail.com`, CTA « Prendre rendez-vous », rappel honoraires exclusif vs simple, lien politique de confidentialité et désinscription. Envoyer aussi une **notification interne** à l'agent pour chaque lead avec le score et le téléphone.
 
 ---
 
@@ -292,9 +292,9 @@ Payload :
 1. **Pages programmatiques** `/prix-immobilier/[slug-commune]` générées depuis `communes_stats` :
    - contenu : prix m² médian appartement/maison, nombre de ventes 12 mois, évolution, loyer moyen ANIL, texte généré par template avec variables (pas de duplicate content brut : varier les structures de phrases selon des gabarits), CTA estimation pré-rempli avec la commune
    - **ISR** avec revalidation 24 h ; `generateStaticParams` sur les ~2 000 communes les plus peuplées au build, le reste à la demande
-   - metadata dynamiques (title « Prix immobilier à {Commune} ({CP}) — Prix au m² {année} »), OpenGraph, JSON-LD (`Dataset` + `FAQPage` avec 3-4 Q/R sur les prix locaux)
+   - metadata dynamiques (title « Prix immobilier à {Commune} ({CP}) - Prix au m² {année} »), OpenGraph, JSON-LD (`Dataset` + `FAQPage` avec 3-4 Q/R sur les prix locaux)
    - maillage interne : communes voisines du même département en bas de page
-2. **CONTRAINTE LÉGALE DVF** : n'afficher publiquement que des **statistiques agrégées**. Ne jamais publier ni rendre indexable une liste de transactions individuelles (adresse + prix) — la licence DGFiP interdit la ré-identification et l'indexation des données par les moteurs de recherche.
+2. **CONTRAINTE LÉGALE DVF** : n'afficher publiquement que des **statistiques agrégées**. Ne jamais publier ni rendre indexable une liste de transactions individuelles (adresse + prix) - la licence DGFiP interdit la ré-identification et l'indexation des données par les moteurs de recherche.
 3. Blog : rendu SSG/ISR depuis Supabase, revalidation on-demand à la publication (`/api/revalidate`), slugs propres, images optimisées `next/image`.
 4. `sitemap.xml` dynamique (pages communes + articles publiés + pages statiques), `robots.txt` (bloquer `/admin` et `/api`).
 5. Core Web Vitals : composants server par défaut, JS client minimal (formulaire uniquement), fonts locales, pas de layout shift.
@@ -316,7 +316,7 @@ Payload :
 - Consentement explicite stocké avec horodatage ; finalité claire.
 - Page politique de confidentialité : responsable de traitement `CARENZA BROWN`, finalités (estimation + recontact commercial), durée de conservation des leads **3 ans après dernier contact**, droits d'accès/rectification/suppression via `browncarenza@gmail.com`.
 - Mentions légales complètes ; bannière cookies uniquement si un outil analytics dépose des cookies (préférer un analytics sans cookie type Vercel Analytics).
-- Mention source ANIL sur tout affichage de loyer ; mention « source : DVF — data.gouv.fr » sur les stats de vente.
+- Mention source ANIL sur tout affichage de loyer ; mention « source : DVF - data.gouv.fr » sur les stats de vente.
 
 ---
 

@@ -1,5 +1,5 @@
 /**
- * Couche data du moteur d'estimation — appelle les fonctions SQL PostGIS
+ * Couche data du moteur d'estimation - appelle les fonctions SQL PostGIS
  * via le client service_role. Volontairement NON exportée par index.ts :
  * le cœur du moteur reste pur et testable sans base.
  */

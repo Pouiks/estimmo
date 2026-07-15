@@ -1,5 +1,5 @@
 /**
- * Score du lead (0-100) — cf. starter.md :
+ * Score du lead (0-100) - cf. starter.md :
  *   horizon : en_vente 40 / <3 mois 35 / 3-6 mois 20 / curiosité 5
  *   projet : vente 20 / location 10
  *   téléphone valide : 20

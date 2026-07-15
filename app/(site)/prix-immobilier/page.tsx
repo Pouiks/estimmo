@@ -8,7 +8,7 @@ import { euro } from "@/lib/seo/templates";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: "Prix immobilier par commune — prix au m² en France",
+  title: "Prix immobilier par commune - prix au m² en France",
   description:
     "Consultez les prix immobiliers au m² de plus de 30 000 communes françaises : prix médians appartement et maison issus des ventes réelles (DVF) et loyers ANIL.",
   alternates: { canonical: "/prix-immobilier" },

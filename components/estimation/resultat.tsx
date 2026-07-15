@@ -119,7 +119,7 @@ function CarenzaCard({ vente }: { vente: boolean }) {
           textDecoration: "none",
         }}
       >
-        <PhoneCall size={16} /> Être rappelé(e) — {SITE.agent.phone}
+        <PhoneCall size={16} /> Être rappelé(e) - {SITE.agent.phone}
       </a>
     </div>
   );

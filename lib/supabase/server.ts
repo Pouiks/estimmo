@@ -3,7 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 
 /**
  * Client Supabase côté serveur (Server Components, Server Actions, Route
- * Handlers) — porte la session de l'utilisateur via les cookies. Soumis à RLS.
+ * Handlers) - porte la session de l'utilisateur via les cookies. Soumis à RLS.
  */
 export async function createClient() {
   const cookieStore = await cookies();

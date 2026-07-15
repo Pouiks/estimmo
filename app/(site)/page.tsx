@@ -33,6 +33,36 @@ const steps = [
   },
 ];
 
+// FAQ visible + balisage FAQPage : les questions que tapent réellement les
+// vendeurs dans Google. Le contenu affiché et le JSON-LD sont identiques.
+const faq = [
+  {
+    question: "Comment est calculée mon estimation immobilière ?",
+    reponse:
+      "Nous comparons votre bien aux ventes réellement enregistrées par l'État (base DVF) dans votre quartier : même type de bien, surface proche, ventes de moins de 30 mois. Le prix au m² obtenu est ensuite ajusté selon l'état, le DPE, l'étage, l'extérieur et le stationnement. Pour une location, nous utilisons les loyers de référence ANIL de votre commune.",
+  },
+  {
+    question: "L'estimation en ligne est-elle fiable ?",
+    reponse:
+      "Elle repose sur des transactions réelles, pas sur des annonces. La fourchette affichée reflète l'hétérogénéité des ventes de votre secteur. Pour transformer cette fourchette en prix de mise en vente précis, un avis de valeur sur place reste indispensable : Carenza Brown vous l'offre, sans engagement.",
+  },
+  {
+    question: "Est-ce vraiment gratuit et sans engagement ?",
+    reponse:
+      "Oui. L'estimation est gratuite, immédiate et sans aucune obligation. Vous n'êtes recontacté qu'avec votre consentement explicite, et vos données ne sont jamais revendues.",
+  },
+  {
+    question: "Quelle différence entre estimation en ligne et avis de valeur ?",
+    reponse:
+      "L'estimation en ligne donne une fourchette statistique immédiate fondée sur les ventes comparables. L'avis de valeur est réalisé sur place par un professionnel : il intègre les spécificités invisibles dans les données (vue, agencement, travaux, copropriété) et débouche sur un prix de commercialisation.",
+  },
+  {
+    question: "Puis-je estimer un loyer ?",
+    reponse:
+      "Oui. Le même formulaire estime le loyer mensuel de votre appartement ou maison à partir des indicateurs officiels ANIL de votre commune, avec les alertes réglementaires DPE (interdiction progressive de louer les passoires thermiques).",
+  },
+];
+
 const reassurances = [
   {
     icon: Timer,
@@ -60,8 +90,52 @@ const reassurances = [
 ];
 
 export default function HomePage() {
+  const jsonLdAgent = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    name: SITE.name,
+    url: SITE.url,
+    telephone: "+33612345678",
+    email: SITE.agent.email,
+    priceRange: `Honoraires ${SITE.honoraires.exclusif} en mandat exclusif`,
+    areaServed: { "@type": "Country", name: "France" },
+    employee: {
+      "@type": "Person",
+      name: SITE.agent.name,
+      jobTitle: "Conseillère immobilière",
+    },
+    makesOffer: {
+      "@type": "Offer",
+      itemOffered: {
+        "@type": "Service",
+        name: "Estimation immobilière gratuite en ligne",
+      },
+      price: "0",
+      priceCurrency: "EUR",
+    },
+  };
+
+  const jsonLdFaq = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.reponse },
+    })),
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdAgent) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }}
+      />
+
       {/* Hero */}
       <section className="border-b bg-gradient-to-b from-primary/5 to-background">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-20 text-center sm:py-28">
@@ -72,7 +146,7 @@ export default function HomePage() {
             Combien vaut votre bien immobilier&nbsp;?
           </h1>
           <p className="max-w-2xl text-lg text-muted-foreground">
-            Estimation gratuite en 2 minutes — vente ou location. Fourchette de
+            Estimation gratuite en 2 minutes - vente ou location. Fourchette de
             prix immédiate, fondée sur les transactions réelles de votre
             quartier.
           </p>
@@ -184,6 +258,25 @@ export default function HomePage() {
               </Button>
             </CardContent>
           </Card>
+        </div>
+      </section>
+
+      {/* FAQ (contenu identique au JSON-LD FAQPage) */}
+      <section className="border-t bg-muted/40">
+        <div className="mx-auto max-w-3xl px-4 py-16 sm:py-20">
+          <h2 className="text-center text-3xl font-bold tracking-tight">
+            Questions fréquentes
+          </h2>
+          <div className="mt-10 space-y-8">
+            {faq.map((f) => (
+              <div key={f.question}>
+                <h3 className="font-semibold">{f.question}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {f.reponse}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </>

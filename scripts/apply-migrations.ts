@@ -2,7 +2,7 @@
  * Applique les migrations SQL de supabase/migrations sur la base cible.
  *
  * Usage : pnpm db:migrate
- * Requiert SUPABASE_DB_URL (chaîne Postgres — utiliser le « Session pooler »
+ * Requiert SUPABASE_DB_URL (chaîne Postgres - utiliser le « Session pooler »
  * de Supabase, port 5432, compatible IPv4).
  *
  * Idempotent : les fichiers déjà appliqués (table _migrations) sont ignorés.

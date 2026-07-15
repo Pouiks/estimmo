@@ -2,7 +2,7 @@
  * Import DVF géolocalisé (Etalab) → table dvf_mutations.
  *
  * Source : https://files.data.gouv.fr/geo-dvf/latest/csv/{année}/departements/{dept}.csv.gz
- * Publication semestrielle (avril / octobre) — exécuter en local ou GitHub
+ * Publication semestrielle (avril / octobre) - exécuter en local ou GitHub
  * Action, JAMAIS sur Vercel.
  *
  * Usage :
@@ -36,7 +36,7 @@ const BASE_URL = "https://files.data.gouv.fr/geo-dvf/latest/csv";
 const BATCH_SIZE = 5_000;
 
 // Départements couverts par DVF. Absents : 57 (Moselle), 67 (Bas-Rhin),
-// 68 (Haut-Rhin) — Livre foncier d'Alsace-Moselle — et 976 (Mayotte).
+// 68 (Haut-Rhin) - Livre foncier d'Alsace-Moselle - et 976 (Mayotte).
 export const DVF_DEPARTEMENTS: string[] = [
   ...Array.from({ length: 19 }, (_, i) => String(i + 1).padStart(2, "0")),
   "2A",
@@ -90,7 +90,7 @@ async function detectYears(count: number): Promise<number[]> {
     if (res.ok) found.push(y);
   }
   if (found.length === 0) {
-    throw new Error("Aucun millésime DVF détecté — vérifier files.data.gouv.fr");
+    throw new Error("Aucun millésime DVF détecté - vérifier files.data.gouv.fr");
   }
   return found.sort();
 }
@@ -216,7 +216,7 @@ async function importDeptYear(
 
   console.log(
     `  ${year} · ${dept.padEnd(3)} : ${formatCount(stats.rows)} lignes → ` +
-      `${formatCount(stats.kept)} mutations gardées / ${formatCount(stats.mutations)}`
+    `${formatCount(stats.kept)} mutations gardées / ${formatCount(stats.mutations)}`
   );
   return "ok";
 }
@@ -229,22 +229,22 @@ async function main() {
   const years =
     typeof args.get("years") === "string"
       ? String(args.get("years"))
-          .split(",")
-          .map((y) => Number.parseInt(y.trim(), 10))
+        .split(",")
+        .map((y) => Number.parseInt(y.trim(), 10))
       : await detectYears(3);
 
   const depts =
     typeof args.get("depts") === "string"
       ? String(args.get("depts"))
-          .split(",")
-          .map((d) => d.trim().toUpperCase().padStart(2, "0"))
+        .split(",")
+        .map((d) => d.trim().toUpperCase().padStart(2, "0"))
       : DVF_DEPARTEMENTS;
 
   const fullScope = depts.length === DVF_DEPARTEMENTS.length;
 
   console.log(
-    `Import DVF ${dryRun ? "(DRY-RUN) " : ""}— millésimes ${years.join(", ")} — ` +
-      `${fullScope ? "France entière" : depts.join(", ")}`
+    `Import DVF ${dryRun ? "(DRY-RUN) " : ""}- millésimes ${years.join(", ")} - ` +
+    `${fullScope ? "France entière" : depts.join(", ")}`
   );
 
   const client = dryRun ? null : getDbClient();
@@ -260,18 +260,18 @@ async function main() {
         // Idempotence : purge du millésime sur le périmètre traité
         const deleted = fullScope
           ? await client.query(
-              `delete from dvf_mutations
+            `delete from dvf_mutations
                where date_mutation >= make_date($1, 1, 1)
                  and date_mutation < make_date($1 + 1, 1, 1)`,
-              [year]
-            )
+            [year]
+          )
           : await client.query(
-              `delete from dvf_mutations
+            `delete from dvf_mutations
                where date_mutation >= make_date($1, 1, 1)
                  and date_mutation < make_date($1 + 1, 1, 1)
                  and code_departement = any($2)`,
-              [year, depts]
-            );
+            [year, depts]
+          );
         console.log(
           `${year} : ${formatCount(deleted.rowCount ?? 0)} lignes existantes purgées`
         );

@@ -144,7 +144,7 @@ export default async function LeadDetailPage({
               </a>
             </Row>
             <Row label="Consentement RGPD">
-              {lead.consentement_rgpd ? "Oui" : "Non"} —{" "}
+              {lead.consentement_rgpd ? "Oui" : "Non"} -{" "}
               {dateFmt.format(new Date(lead.date_consentement))}
             </Row>
             <Row label="Projet">
@@ -156,7 +156,7 @@ export default async function LeadDetailPage({
                 <span className="text-blue-700">
                   Oui
                   {lead.demande_rappel_at
-                    ? ` — ${dateFmt.format(new Date(lead.demande_rappel_at))}`
+                    ? ` - ${dateFmt.format(new Date(lead.demande_rappel_at))}`
                     : ""}
                 </span>
               </Row>
@@ -171,14 +171,14 @@ export default async function LeadDetailPage({
           <CardContent>
             {est === null ? (
               <p className="text-sm text-muted-foreground">
-                Aucune estimation automatique — analyse personnalisée à envoyer
+                Aucune estimation automatique - analyse personnalisée à envoyer
                 sous 24 h.
               </p>
             ) : lead.projet === "vente" ? (
               <>
                 <Row label="Fourchette">
-                  {euro(Number(est.fourchetteBasse))} —{" "}
-                  <strong>{euro(Number(est.mediane))}</strong> —{" "}
+                  {euro(Number(est.fourchetteBasse))} -{" "}
+                  <strong>{euro(Number(est.mediane))}</strong> -{" "}
                   {euro(Number(est.fourchetteHaute))}
                 </Row>
                 <Row label="Prix/m² zone">{euro(Number(est.prixM2Zone))}</Row>
@@ -192,8 +192,8 @@ export default async function LeadDetailPage({
             ) : (
               <>
                 <Row label="Loyer estimé">
-                  {euro(Number(est.loyerBas))} —{" "}
-                  <strong>{euro(Number(est.loyerMedian))}</strong> —{" "}
+                  {euro(Number(est.loyerBas))} -{" "}
+                  <strong>{euro(Number(est.loyerMedian))}</strong> -{" "}
                   {euro(Number(est.loyerHaut))}
                 </Row>
                 <Row label="Loyer m² ANIL">
@@ -232,7 +232,7 @@ export default async function LeadDetailPage({
               <Row label="Terrain">{Number(lead.surface_terrain ?? 0)} m²</Row>
             )}
             <Row label="Construction">
-              {LABELS.annee[lead.annee_construction ?? ""] ?? "—"}
+              {LABELS.annee[lead.annee_construction ?? ""] ?? "-"}
             </Row>
             <Row label="Extérieur">
               {(lead.exterieur as string[]).length > 0
@@ -240,7 +240,7 @@ export default async function LeadDetailPage({
                 : "Aucun"}
             </Row>
             <Row label="Stationnement">
-              {LABELS.stationnement[lead.stationnement ?? ""] ?? "—"}
+              {LABELS.stationnement[lead.stationnement ?? ""] ?? "-"}
             </Row>
           </CardContent>
         </Card>
@@ -251,11 +251,11 @@ export default async function LeadDetailPage({
           </CardHeader>
           <CardContent>
             <Row label="État général">
-              {LABELS.etat[lead.etat_general ?? ""] ?? "—"}
+              {LABELS.etat[lead.etat_general ?? ""] ?? "-"}
             </Row>
-            <Row label="Cuisine">{LABELS.age[lead.age_cuisine ?? ""] ?? "—"}</Row>
+            <Row label="Cuisine">{LABELS.age[lead.age_cuisine ?? ""] ?? "-"}</Row>
             <Row label="Salle de bain">
-              {LABELS.age[lead.age_sdb ?? ""] ?? "—"}
+              {LABELS.age[lead.age_sdb ?? ""] ?? "-"}
             </Row>
             <Row label="DPE">
               {lead.dpe === "ne_sait_pas" ? "Ne sait pas" : lead.dpe}
@@ -263,9 +263,9 @@ export default async function LeadDetailPage({
             <Row label="Atouts">
               {(lead.atouts as string[]).length > 0
                 ? (lead.atouts as string[])
-                    .map((a) => LABELS.atout[a] ?? a)
-                    .join(", ")
-                : "—"}
+                  .map((a) => LABELS.atout[a] ?? a)
+                  .join(", ")
+                : "-"}
             </Row>
           </CardContent>
         </Card>

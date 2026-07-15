@@ -13,7 +13,7 @@ async function main() {
   try {
     const result = await client.query(sql);
     if (result.rows.length > 0) console.table(result.rows);
-    console.log(`(${result.rowCount ?? 0} ligne(s) — ${result.command})`);
+    console.log(`(${result.rowCount ?? 0} ligne(s) - ${result.command})`);
   } finally {
     await client.end();
   }

@@ -1,5 +1,5 @@
 /**
- * Construction du payload CRM — contrat d'interface défini dans starter.md.
+ * Construction du payload CRM - contrat d'interface défini dans starter.md.
  * Fonction pure (testée) : le lead est TOUJOURS en base avant l'enqueue.
  */
 import type {

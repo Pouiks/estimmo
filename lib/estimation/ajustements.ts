@@ -1,5 +1,5 @@
 /**
- * Coefficients d'ajustement du prix/m² (vente) — cf. starter.md.
+ * Coefficients d'ajustement du prix/m² (vente) - cf. starter.md.
  * Chaque coefficient est borné par construction ; la SOMME est plafonnée
  * à ±25 % avant application.
  */

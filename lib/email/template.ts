@@ -1,7 +1,7 @@
 /**
  * Templates HTML des emails transactionnels ESTIMMO.
  * HTML « email-safe » : layout en tables, styles inline, largeur 600 px,
- * polices web-safe — compatible Gmail, Outlook, Apple Mail.
+ * polices web-safe - compatible Gmail, Outlook, Apple Mail.
  * Aucune dépendance serveur ici (pur rendu) → réutilisable en preview.
  */
 import type { EstimationResultat } from "@/lib/crm/payload";
@@ -141,7 +141,7 @@ function blocEstimation(estimation: EstimationResultat): string {
     <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:${COL.faint};text-align:center;line-height:1.6">${MENTIONS.anil}.</p>`;
 }
 
-/** Carte « Carenza vous rappelle » — cœur de l'email (recontact + vente). */
+/** Carte « Carenza vous rappelle » - cœur de l'email (recontact + vente). */
 function blocCarenza(
   lead: LeadPayload,
   estimation: EstimationResultat,
@@ -189,7 +189,7 @@ function blocCarenza(
   </table>`;
 }
 
-/** Bloc honoraires (exclusif vs simple) — uniquement pour un projet de vente. */
+/** Bloc honoraires (exclusif vs simple) - uniquement pour un projet de vente. */
 function blocHonoraires(lead: LeadPayload): string {
   if (lead.projet !== "vente") return "";
   return `

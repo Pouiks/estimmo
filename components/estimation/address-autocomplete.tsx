@@ -254,7 +254,7 @@ export function AddressAutocomplete({
             boxShadow: "0 16px 40px -18px rgba(12,31,28,.3)",
           }}
         >
-          Aucune adresse trouvée — précisez le numéro et la ville.
+          Aucune adresse trouvée - précisez le numéro et la ville.
         </p>
       )}
     </div>

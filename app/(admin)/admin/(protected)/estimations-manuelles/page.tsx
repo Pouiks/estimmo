@@ -47,7 +47,7 @@ export default async function AdminEstimationsManuellesPage() {
               <strong className="text-red-600">
                 {aTraiter} estimation(s) à envoyer sous 24 h
               </strong>{" "}
-              — zone non couverte par les données publiques (Alsace-Moselle,
+              - zone non couverte par les données publiques (Alsace-Moselle,
               Mayotte) ou comparables insuffisants.
             </>
           ) : (

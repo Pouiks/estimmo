@@ -1,4 +1,4 @@
-# ESTIMMO — Estimateur immobilier & générateur de leads
+# ESTIMMO - Estimateur immobilier & générateur de leads
 
 Application web d'estimation immobilière (vente et location) couvrant toute la
 France, conçue pour capter des leads vendeurs/bailleurs qualifiés. Le visiteur
@@ -36,7 +36,7 @@ Import partiel pour développer plus vite :
 | --- | --- |
 | `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Projet Supabase (Dashboard → Settings → API) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Accès serveur (jamais côté client) |
-| `SUPABASE_DB_URL` | Chaîne Postgres « Session pooler » — scripts locaux/CI uniquement |
+| `SUPABASE_DB_URL` | Chaîne Postgres « Session pooler » - scripts locaux/CI uniquement |
 | `RESEND_API_KEY` / `EMAIL_FROM` | Emails transactionnels via Resend (absents = simulation en console) ; `EMAIL_FROM` sur domaine vérifié |
 | `CRM_WEBHOOK_URL` / `CRM_API_KEY` | Webhook du CRM externe (absents = file en attente) |
 | `CRON_SECRET` | Protège `/api/cron/crm-sync` et `/api/revalidate` |
@@ -90,7 +90,7 @@ supabase/          Migrations SQL (RLS verrouillé partout)
 
 1. Importer le repo dans Vercel, renseigner toutes les variables d'environnement
    (sans `SUPABASE_DB_URL`, inutile au runtime).
-2. `vercel.json` programme le cron CRM (`*/5 * * * *`) — définir `CRON_SECRET`.
+2. `vercel.json` programme le cron CRM (`*/5 * * * *`) - définir `CRON_SECRET`.
 3. Secrets GitHub Actions : `SUPABASE_DB_URL`, `CRON_SECRET` + variable
    `SITE_URL` pour la revalidation post-import.
 4. Supabase : plan **Pro** requis (la base DVF France ≈ 650 Mo).

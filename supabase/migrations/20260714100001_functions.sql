@@ -1,10 +1,10 @@
 -- ============================================================================
--- ESTIMMO — fonctions SQL
+-- ESTIMMO - fonctions SQL
 --   * recherche de comparables DVF (rayon / commune / département)
 --   * recalcul des stats agrégées par commune
 --
 -- Ces fonctions retournent des mutations individuelles : leur exécution est
--- RÉVOQUÉE pour anon/authenticated (licence DGFiP — pas d'exposition publique).
+-- RÉVOQUÉE pour anon/authenticated (licence DGFiP - pas d'exposition publique).
 -- Seul le service_role (côté serveur) peut les appeler.
 -- ============================================================================
 
@@ -140,7 +140,7 @@ $$;
 -- ----------------------------------------------------------------------------
 -- Recalcul complet de communes_stats.
 --   * médianes de prix/m² sur les 12 derniers mois de données disponibles
---     (ancrées sur max(date_mutation) — DVF est publié avec ~6 mois de retard)
+--     (ancrées sur max(date_mutation) - DVF est publié avec ~6 mois de retard)
 --   * évolution : médiane 12 derniers mois vs les 12 mois précédents
 --   * slug : nom-commune + code postal (ex. nice-06000), désambiguïsé par
 --     code INSEE en cas d'homonymie

@@ -70,7 +70,7 @@ export async function retryCrmSync(queueId: number): Promise<ActionResult> {
     }
     return {
       ok: false,
-      message: "Nouvel échec — voir le détail de l'erreur sur la fiche.",
+      message: "Nouvel échec - voir le détail de l'erreur sur la fiche.",
     };
   } catch (err) {
     return {

@@ -2,7 +2,7 @@ import "server-only";
 import { createClient } from "@supabase/supabase-js";
 
 /**
- * Client service_role — contourne RLS. À n'utiliser QUE côté serveur
+ * Client service_role - contourne RLS. À n'utiliser QUE côté serveur
  * (API routes, Server Actions, moteur d'estimation). Jamais exposé au client.
  */
 export function createAdminClient() {

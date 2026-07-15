@@ -18,7 +18,7 @@ export default function MentionsLegalesPage() {
           <br />
           {/* À COMPLÉTER : forme juridique, SIREN/SIRET, carte professionnelle
               (CPI), garantie financière, RCP, adresse du siège. */}
-          Contact : {SITE.agent.email} — {SITE.agent.phone}.
+          Contact : {SITE.agent.email} - {SITE.agent.phone}.
         </p>
       </section>
 

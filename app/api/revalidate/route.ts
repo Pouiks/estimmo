@@ -6,7 +6,7 @@ import { z } from "zod";
  * Revalidation ISR à la demande (publication d'article, mise à jour des
  * stats communes après import). Protégé par CRON_SECRET.
  * NB : la publication depuis l'admin revalide déjà directement via les
- * server actions — cette route sert aux déclenchements externes
+ * server actions - cette route sert aux déclenchements externes
  * (GitHub Action post-import, CRM, etc.).
  */
 const bodySchema = z.object({

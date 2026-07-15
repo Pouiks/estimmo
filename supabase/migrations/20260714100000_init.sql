@@ -1,5 +1,5 @@
 -- ============================================================================
--- ESTIMMO — schéma initial
+-- ESTIMMO - schéma initial
 --
 -- Sécurité : RLS activé sur TOUTES les tables. Aucune policy publique sur les
 -- tables métier → seules les requêtes service_role (côté serveur) y accèdent.
@@ -12,7 +12,7 @@ create extension if not exists postgis;
 create extension if not exists unaccent;
 
 -- ----------------------------------------------------------------------------
--- Transactions DVF nettoyées (import semestriel — scripts/import-dvf.ts)
+-- Transactions DVF nettoyées (import semestriel - scripts/import-dvf.ts)
 -- ----------------------------------------------------------------------------
 create table dvf_mutations (
   id bigserial primary key,
@@ -45,7 +45,7 @@ create table communes_ref (
 );
 
 -- ----------------------------------------------------------------------------
--- Indicateurs de loyers ANIL (import annuel — scripts/import-loyers.ts)
+-- Indicateurs de loyers ANIL (import annuel - scripts/import-loyers.ts)
 -- Mention légale obligatoire à chaque affichage :
 -- « Estimations ANIL, à partir des données du Groupe SeLoger et de leboncoin »
 -- ----------------------------------------------------------------------------

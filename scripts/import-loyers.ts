@@ -1,7 +1,7 @@
 /**
  * Import « Carte des loyers » ANIL → table loyers_communes.
  *
- * Source : data.gouv.fr — indicateurs de loyers d'annonce par commune
+ * Source : data.gouv.fr - indicateurs de loyers d'annonce par commune
  * (données Groupe SeLoger + leboncoin, publication annuelle par l'ANIL).
  * Couverture : toute la France hors Mayotte.
  *
@@ -22,7 +22,7 @@ import {
   parseFrenchNumber,
 } from "./util";
 
-// Millésime 2025 (loyers observés T3 2025) — liens pérennes data.gouv.fr.
+// Millésime 2025 (loyers observés T3 2025) - liens pérennes data.gouv.fr.
 // À mettre à jour à chaque publication annuelle de l'ANIL.
 const MILLESIME = 2025;
 const RESOURCES: Record<ColumnKey, string> = {
@@ -121,7 +121,7 @@ async function main() {
   const dryRun = args.has("dry-run");
 
   console.log(
-    `Import Carte des loyers ANIL ${dryRun ? "(DRY-RUN) " : ""}— millésime ${MILLESIME}`
+    `Import Carte des loyers ANIL ${dryRun ? "(DRY-RUN) " : ""}- millésime ${MILLESIME}`
   );
 
   const communes = new Map<string, CommuneLoyers>();

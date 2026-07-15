@@ -51,7 +51,7 @@ export async function processCrmQueue(ids?: number[]): Promise<SyncSummary> {
 
   if (!webhookUrl) {
     // Pas de CRM configuré (dev) : les éléments restent en pending.
-    console.log("[crm-sync] CRM_WEBHOOK_URL absent — file laissée en attente");
+    console.log("[crm-sync] CRM_WEBHOOK_URL absent - file laissée en attente");
     summary.skipped = true;
     return summary;
   }

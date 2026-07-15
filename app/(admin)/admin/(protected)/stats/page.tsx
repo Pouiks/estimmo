@@ -133,7 +133,7 @@ export default async function AdminStatsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-base">
-            Leads par jour — {JOURS_SERIE} derniers jours
+            Leads par jour - {JOURS_SERIE} derniers jours
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -191,7 +191,7 @@ export default async function AdminStatsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">
-              Complétion du formulaire — 30 jours
+              Complétion du formulaire - 30 jours
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -202,7 +202,7 @@ export default async function AdminStatsPage() {
                 <div key={label} className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span>
-                      Étape {i + 1} — {label}
+                      Étape {i + 1} - {label}
                     </span>
                     <span className="font-semibold">
                       {n} <span className="text-muted-foreground">({pct} %)</span>

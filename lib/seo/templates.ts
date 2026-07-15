@@ -1,5 +1,5 @@
 /**
- * Gabarits de contenu des pages communes — plusieurs structures de phrases
+ * Gabarits de contenu des pages communes - plusieurs structures de phrases
  * choisies de façon déterministe (hash du code INSEE) pour éviter le
  * duplicate content massif entre les ~35 000 pages.
  */
@@ -57,8 +57,8 @@ export function introCommune(stats: CommuneStats): string {
     );
   }
   return (
-    `À ${nom}, les ventes immobilières officiellement enregistrées ces douze derniers mois — ` +
-    `${ventes.toLocaleString("fr-FR")} au total — établissent le prix médian à ${prixTexte}. ` +
+    `À ${nom}, les ventes immobilières officiellement enregistrées ces douze derniers mois - ` +
+    `${ventes.toLocaleString("fr-FR")} au total - établissent le prix médian à ${prixTexte}. ` +
     `Ces chiffres proviennent des données publiques DVF, les mêmes que celles utilisées ` +
     `par les notaires et les professionnels.`
   );
@@ -130,7 +130,7 @@ export function faqCommune(
     question: `Comment obtenir une estimation précise de mon bien à ${nom} ?`,
     reponse:
       `Utilisez notre estimateur en ligne gratuit : il compare votre bien aux ventes réelles de votre quartier ` +
-      `et vous donne une fourchette immédiate. Pour un avis de valeur précis, une visite reste indispensable — ` +
+      `et vous donne une fourchette immédiate. Pour un avis de valeur précis, une visite reste indispensable - ` +
       `votre conseillère locale vous rappelle gratuitement.`,
   });
 

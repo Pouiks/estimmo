@@ -1,5 +1,5 @@
 /**
- * Schémas Zod du parcours d'estimation — partagés entre le formulaire
+ * Schémas Zod du parcours d'estimation - partagés entre le formulaire
  * (validation par étape) et l'API /api/leads (revalidation serveur complète).
  */
 import { z } from "zod";
@@ -21,14 +21,14 @@ export const adresseSchema = z.object({
   libelle: z.string().min(3, "Sélectionnez une adresse dans la liste"),
   codeInsee: z
     .string()
-    .regex(CODE_INSEE_REGEX, "Adresse invalide — sélectionnez-la dans la liste"),
+    .regex(CODE_INSEE_REGEX, "Adresse invalide - sélectionnez-la dans la liste"),
   codePostal: z.string().optional(),
   lat: z.number().min(-90).max(90),
   lon: z.number().min(-180).max(180),
 });
 
 // ---------------------------------------------------------------------------
-// Étape 1 — Votre projet
+// Étape 1 - Votre projet
 // ---------------------------------------------------------------------------
 export const etape1Schema = z
   .object({
@@ -50,7 +50,7 @@ export const etape1Schema = z
   });
 
 // ---------------------------------------------------------------------------
-// Étape 2 — Votre bien
+// Étape 2 - Votre bien
 // ---------------------------------------------------------------------------
 export const etape2Base = z.object({
   surface: z
@@ -121,7 +121,7 @@ export function etape2Schema(typeBien: "appartement" | "maison") {
 }
 
 // ---------------------------------------------------------------------------
-// Étape 3 — État & atouts
+// Étape 3 - État & atouts
 // (extérieur et stationnement sont posés à cette étape depuis le reskin)
 // ---------------------------------------------------------------------------
 export const etape3Schema = z.object({
@@ -154,7 +154,7 @@ export const etape3Schema = z.object({
 });
 
 // ---------------------------------------------------------------------------
-// Étape 4 — Vos coordonnées
+// Étape 4 - Vos coordonnées
 // ---------------------------------------------------------------------------
 export const etape4Schema = z.object({
   prenom: z.string().trim().min(1, "Votre prénom"),

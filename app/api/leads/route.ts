@@ -15,8 +15,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * Création d'un lead (transactionnel) :
  *  1. validation Zod complète
  *  2. calcul de l'estimation (ou bascule en estimation manuelle)
- *  3. écriture du lead en base — TOUJOURS, quoi qu'il arrive ensuite
- *  4. enqueue CRM (jamais bloquant) — le cron /api/cron/crm-sync dépile
+ *  3. écriture du lead en base - TOUJOURS, quoi qu'il arrive ensuite
+ *  4. enqueue CRM (jamais bloquant) - le cron /api/cron/crm-sync dépile
  *  5. emails Resend (prospect + notification interne, jamais bloquants)
  */
 export async function POST(request: NextRequest) {
@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
     console.error("[leads] enqueue CRM échoué (lead conservé) :", err);
   }
 
-  // --- Emails (Phase 5 — branchés ici, jamais bloquants) ---
+  // --- Emails (Phase 5 - branchés ici, jamais bloquants) ---
   try {
     const { envoyerEmailsLead } = await import("@/lib/email/emails");
     await envoyerEmailsLead({ lead, leadId, score, estimation });

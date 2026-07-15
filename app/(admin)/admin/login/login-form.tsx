@@ -46,7 +46,7 @@ export function LoginForm({ next }: { next: string }) {
     <Card className="w-full max-w-sm">
       <CardHeader>
         <CardTitle>
-          ESTI<span className="text-primary">MMO</span> — Administration
+          ESTI<span className="text-primary">MMO</span> - Administration
         </CardTitle>
         <CardDescription>Connectez-vous pour accéder aux leads.</CardDescription>
       </CardHeader>

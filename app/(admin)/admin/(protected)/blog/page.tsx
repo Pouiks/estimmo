@@ -40,7 +40,7 @@ export default async function AdminBlogPage() {
 
       {(articles ?? []).length === 0 ? (
         <p className="rounded-xl border border-dashed p-10 text-center text-sm text-muted-foreground">
-          Aucun article pour le moment — créez le premier !
+          Aucun article pour le moment - créez le premier !
         </p>
       ) : (
         <div className="overflow-x-auto rounded-xl border">
@@ -82,7 +82,7 @@ export default async function AdminBlogPage() {
                   <TableCell className="text-sm text-muted-foreground">
                     {article.published_at
                       ? dateFmt.format(new Date(article.published_at))
-                      : "—"}
+                      : "-"}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {dateFmt.format(new Date(article.updated_at))}

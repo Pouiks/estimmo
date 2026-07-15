@@ -1,5 +1,5 @@
 /**
- * Nettoyage DVF — logique pure (testée dans dvf-clean.test.ts).
+ * Nettoyage DVF - logique pure (testée dans dvf-clean.test.ts).
  *
  * Règles (cf. starter.md) :
  *  - nature_mutation = 'Vente' uniquement (exclut VEFA, échanges, adjudications)

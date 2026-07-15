@@ -30,7 +30,7 @@ async function envoyerEmail(params: EmailParams): Promise<void> {
 
   if (!apiKey || !from) {
     console.log(
-      `[email:simulation] À: ${params.to.join(", ")} — Sujet: ${params.subject}`
+      `[email:simulation] À: ${params.to.join(", ")} - Sujet: ${params.subject}`
     );
     return;
   }
@@ -87,33 +87,30 @@ export async function envoyerEmailsLead(params: {
   // --- 2. Notification interne à l'agent ---
   const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL ?? SITE.agent.email;
   const tel = normaliserTelephone(lead.telephone);
-  const recapBien = `${lead.typeBien === "appartement" ? "Appartement" : "Maison"} · ${lead.surface} m² · ${lead.pieces} pièce(s) — ${lead.adresse.libelle}`;
+  const recapBien = `${lead.typeBien === "appartement" ? "Appartement" : "Maison"} · ${lead.surface} m² · ${lead.pieces} pièce(s) - ${lead.adresse.libelle}`;
 
   const htmlInterne = `
   <div style="font-family:Arial,Helvetica,sans-serif;color:#111827;max-width:560px">
-    <h2 style="font-size:18px">Nouveau lead ${SITE.name} — score ${score}/100${
-      estimation === null ? " — ⚠️ ESTIMATION MANUELLE" : ""
+    <h2 style="font-size:18px">Nouveau lead ${SITE.name} - score ${score}/100${estimation === null ? " - ⚠️ ESTIMATION MANUELLE" : ""
     }</h2>
     <ul style="line-height:1.7">
-      <li><strong>${lead.prenom} ${lead.nom}</strong> — <a href="tel:${tel}">${tel}</a> — ${lead.email}</li>
+      <li><strong>${lead.prenom} ${lead.nom}</strong> - <a href="tel:${tel}">${tel}</a> - ${lead.email}</li>
       <li>Projet : ${lead.projet}${lead.horizon ? ` (${lead.horizon})` : ""}</li>
       <li>Bien : ${recapBien}</li>
-      <li>Estimation : ${
-        estimation === null
-          ? "manuelle à réaliser sous 24 h"
-          : estimation.projet === "vente"
-            ? `${euro(estimation.mediane)} (${euro(estimation.fourchetteBasse)} – ${euro(estimation.fourchetteHaute)})`
-            : `${euro(estimation.loyerMedian)}/mois`
-      }</li>
+      <li>Estimation : ${estimation === null
+      ? "manuelle à réaliser sous 24 h"
+      : estimation.projet === "vente"
+        ? `${euro(estimation.mediane)} (${euro(estimation.fourchetteBasse)} – ${euro(estimation.fourchetteHaute)})`
+        : `${euro(estimation.loyerMedian)}/mois`
+    }</li>
     </ul>
     <p><a href="${SITE.url}/admin/leads">Ouvrir la fiche dans l'admin</a> (lead ${leadId})</p>
   </div>`;
 
   await envoyerEmail({
     to: [adminEmail],
-    subject: `[Lead ${score}/100] ${lead.prenom} ${lead.nom} — ${lead.projet} ${lead.typeBien}${
-      estimation === null ? " — MANUELLE" : ""
-    }`,
+    subject: `[Lead ${score}/100] ${lead.prenom} ${lead.nom} - ${lead.projet} ${lead.typeBien}${estimation === null ? " - MANUELLE" : ""
+      }`,
     html: htmlInterne,
     replyTo: lead.email,
   });

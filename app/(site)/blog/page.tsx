@@ -8,7 +8,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 export const revalidate = 86400; // + revalidation on-demand à la publication
 
 export const metadata: Metadata = {
-  title: "Blog immobilier — conseils pour vendre, louer et estimer",
+  title: "Blog immobilier - conseils pour vendre, louer et estimer",
   description:
     "Conseils pour vendre, louer et estimer votre bien immobilier : prix, fiscalité, diagnostics, tendances du marché.",
   alternates: { canonical: "/blog" },

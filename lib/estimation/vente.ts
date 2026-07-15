@@ -1,5 +1,5 @@
 /**
- * Estimation VENTE — fonctions pures.
+ * Estimation VENTE - fonctions pures.
  *
  * Méthode (cf. starter.md) :
  *  1. comparables DVF (même type, surface ×0,7–1,3, < 30 mois) par paliers
@@ -29,7 +29,7 @@ export const RATIO_SURFACE_MAX = 1.3;
 
 /** Comparables collectés par la couche data (repository) pour chaque palier. */
 export interface ComparablesParPalier {
-  /** Toutes les ventes ≤ 3 000 m (avec distance) — filtrées par palier ici. */
+  /** Toutes les ventes ≤ 3 000 m (avec distance) - filtrées par palier ici. */
   rayon3000: Comparable[];
   commune: Comparable[];
   departement: Comparable[];

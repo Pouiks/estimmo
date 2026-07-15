@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 /**
- * Proxy d'autocomplétion d'adresses — Géoplateforme IGN.
+ * Proxy d'autocomplétion d'adresses - Géoplateforme IGN.
  * (api-adresse.data.gouv.fr est décommissionnée, ne pas l'utiliser.)
  * Cache en mémoire par instance + cache CDN via s-maxage.
  */

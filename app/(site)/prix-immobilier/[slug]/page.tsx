@@ -42,13 +42,12 @@ export async function generateMetadata({
 
   const annee = new Date(stats.updated_at).getFullYear();
   const cp = stats.code_postal ?? stats.departement;
-  const title = `Prix immobilier à ${stats.nom_commune} (${cp}) — Prix au m² ${annee}`;
+  const title = `Prix immobilier à ${stats.nom_commune} (${cp}) - Prix au m² ${annee}`;
   const description = stats.prix_m2_median_appartement
-    ? `Prix médian à ${stats.nom_commune} : ${euro(stats.prix_m2_median_appartement)}/m² en appartement${
-        stats.prix_m2_median_maison
-          ? `, ${euro(stats.prix_m2_median_maison)}/m² en maison`
-          : ""
-      }. Données officielles DVF, loyers ANIL et estimation gratuite en ligne.`
+    ? `Prix médian à ${stats.nom_commune} : ${euro(stats.prix_m2_median_appartement)}/m² en appartement${stats.prix_m2_median_maison
+      ? `, ${euro(stats.prix_m2_median_maison)}/m² en maison`
+      : ""
+    }. Données officielles DVF, loyers ANIL et estimation gratuite en ligne.`
     : `Marché immobilier de ${stats.nom_commune} : loyers de référence ANIL et estimation gratuite de votre bien par une conseillère locale.`;
 
   return {
@@ -93,13 +92,13 @@ export default async function CommunePage({
     variableMeasured: [
       stats.prix_m2_median_appartement && {
         "@type": "PropertyValue",
-        name: "Prix médian au m² — appartement",
+        name: "Prix médian au m² - appartement",
         value: stats.prix_m2_median_appartement,
         unitText: "EUR/m2",
       },
       stats.prix_m2_median_maison && {
         "@type": "PropertyValue",
-        name: "Prix médian au m² — maison",
+        name: "Prix médian au m² - maison",
         value: stats.prix_m2_median_maison,
         unitText: "EUR/m2",
       },
@@ -116,6 +115,27 @@ export default async function CommunePage({
     })),
   };
 
+  // Reflète le fil d'Ariane visible en haut de page.
+  const jsonLdBreadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Accueil", item: SITE.url },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Prix immobilier",
+        item: `${SITE.url}/prix-immobilier`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: stats.nom_commune,
+        item: `${SITE.url}/prix-immobilier/${slug}`,
+      },
+    ],
+  };
+
   return (
     <>
       <script
@@ -125,6 +145,10 @@ export default async function CommunePage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
       />
 
       <div className="mx-auto max-w-4xl px-4 py-10 sm:py-14">
@@ -156,7 +180,7 @@ export default async function CommunePage({
             <CardContent className="pt-6">
               <Building2 className="size-5 text-primary" />
               <p className="mt-2 text-sm text-muted-foreground">
-                Appartement — prix médian
+                Appartement - prix médian
               </p>
               <p className="text-2xl font-bold">
                 {stats.prix_m2_median_appartement
@@ -169,7 +193,7 @@ export default async function CommunePage({
             <CardContent className="pt-6">
               <Home className="size-5 text-primary" />
               <p className="mt-2 text-sm text-muted-foreground">
-                Maison — prix médian
+                Maison - prix médian
               </p>
               <p className="text-2xl font-bold">
                 {stats.prix_m2_median_maison
@@ -204,7 +228,7 @@ export default async function CommunePage({
 
         {aDesVentes && (
           <p className="mt-3 text-xs text-muted-foreground">
-            {MENTIONS.dvf} — statistiques agrégées sur les 12 derniers mois de
+            {MENTIONS.dvf} - statistiques agrégées sur les 12 derniers mois de
             données publiées, mises à jour le{" "}
             {new Date(stats.updated_at).toLocaleDateString("fr-FR")}.
           </p>
@@ -234,11 +258,11 @@ export default async function CommunePage({
               <Card>
                 <CardContent className="pt-6">
                   <p className="text-sm text-muted-foreground">
-                    Studio / T2 — T3 et plus
+                    Studio / T2 - T3 et plus
                   </p>
                   <p className="text-xl font-bold">
                     {loyers.loyer_m2_appt_t1_t2?.toLocaleString("fr-FR") ?? "n.d."}{" "}
-                    <span className="text-sm font-normal">—</span>{" "}
+                    <span className="text-sm font-normal">-</span>{" "}
                     {loyers.loyer_m2_appt_t3_plus?.toLocaleString("fr-FR") ?? "n.d."}{" "}
                     €/m²
                   </p>
@@ -271,7 +295,7 @@ export default async function CommunePage({
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 Estimation gratuite en 2 minutes, basée sur les ventes réelles
-                de votre quartier — résultat immédiat.
+                de votre quartier - résultat immédiat.
               </p>
             </div>
             <Button size="lg" render={<Link href="/estimation" />}>
@@ -283,7 +307,7 @@ export default async function CommunePage({
         {/* FAQ */}
         <section className="mt-12">
           <h2 className="text-2xl font-bold tracking-tight">
-            Questions fréquentes — {stats.nom_commune}
+            Questions fréquentes - {stats.nom_commune}
           </h2>
           <div className="mt-4 space-y-6">
             {faq.map((f) => (

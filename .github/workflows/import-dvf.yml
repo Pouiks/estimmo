@@ -8,10 +8,10 @@ on:
   workflow_dispatch:
     inputs:
       years:
-        description: "Millésimes (ex. 2024,2025) — vide = 3 derniers"
+        description: "Millésimes (ex. 2024,2025) - vide = 3 derniers"
         required: false
       depts:
-        description: "Départements (ex. 06,75) — vide = France entière"
+        description: "Départements (ex. 06,75) - vide = France entière"
         required: false
 
 jobs:

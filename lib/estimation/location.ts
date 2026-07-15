@@ -1,5 +1,5 @@
 /**
- * Estimation LOCATION — fonctions pures.
+ * Estimation LOCATION - fonctions pures.
  *
  * Loyer mensuel = loyer_m2 ANIL de la commune (colonne selon type et
  * typologie : T1-T2 si ≤ 2 pièces, T3+ sinon, maison) × surface.

@@ -17,7 +17,7 @@ export default function PolitiqueConfidentialitePage() {
         <h2 className="text-xl font-semibold">Responsable de traitement</h2>
         <p className="text-muted-foreground">
           Le responsable de traitement des données collectées sur {SITE.name}{" "}
-          est CARENZA BROWN — {SITE.agent.email} — {SITE.agent.phone}.
+          est CARENZA BROWN - {SITE.agent.email} - {SITE.agent.phone}.
         </p>
       </section>
 
@@ -55,7 +55,7 @@ export default function PolitiqueConfidentialitePage() {
         <h2 className="text-xl font-semibold">Durée de conservation</h2>
         <p className="text-muted-foreground">
           Les données des prospects sont conservées <strong>3 ans après le
-          dernier contact</strong>, puis supprimées ou anonymisées.
+            dernier contact</strong>, puis supprimées ou anonymisées.
         </p>
       </section>
 
