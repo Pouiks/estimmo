@@ -57,7 +57,7 @@ const estimationVente: EstimationVente = {
   palier: "rayon",
   confiance: "haute",
   ajustementPct: 1,
-  fourchettePct: 15,
+  fourchettePct: 10,
 };
 
 const estimationLocation: EstimationLocation = {

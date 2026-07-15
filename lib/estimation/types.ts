@@ -67,7 +67,7 @@ export interface EstimationVente {
   confiance: Confiance;
   /** Somme des coefficients d'ajustement appliquée (déjà plafonnée ±25 %). */
   ajustementPct: number;
-  /** Demi-largeur de la fourchette en % (6 à 15 selon dispersion). */
+  /** Demi-largeur de la fourchette en % (5 à 10 selon dispersion). */
   fourchettePct: number;
 }
 

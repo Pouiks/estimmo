@@ -119,7 +119,7 @@ describe("estimerVente", () => {
     expect(estimation!.fourchetteBasse).toBeLessThan(estimation!.mediane);
     expect(estimation!.fourchetteHaute).toBeGreaterThan(estimation!.mediane);
     // Cluster serré → fourchette resserrée
-    expect(estimation!.fourchettePct).toBe(6);
+    expect(estimation!.fourchettePct).toBe(5);
     // Arrondis au millier
     expect(estimation!.mediane % 1000).toBe(0);
   });
@@ -201,6 +201,6 @@ describe("estimerVente", () => {
       comp(2000 + i * 400, 300, 6) // 2 000 → 8 000 €/m²
     );
     const estimation = estimerVente(bien(), palier({ rayon3000 }), NOW)!;
-    expect(estimation.fourchettePct).toBe(15);
+    expect(estimation.fourchettePct).toBe(10);
   });
 });

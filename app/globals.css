@@ -130,9 +130,10 @@
   }
 }
 
-/* Estimation (design Estimation.dc) — focus/placeholder scopés */
+/* Estimation (design Estimation.dc) : focus/placeholder scopés.
+   Police harmonisée en Arial partout (demande client). */
 .dcx {
-  font-family: var(--font-hanken), system-ui, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 .dcx input:focus {
   outline: none;
@@ -143,7 +144,7 @@
   color: #9ba8a4;
 }
 .dcx-serif {
-  font-family: var(--font-instrument), Georgia, serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 @keyframes dcx-step-in {
   from {

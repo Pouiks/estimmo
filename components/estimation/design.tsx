@@ -68,11 +68,10 @@ export function StepHeader({
   return (
     <>
       <h2
-        className="dcx-serif"
         style={{
-          fontWeight: 400,
-          fontSize: 30,
-          lineHeight: 1.15,
+          fontWeight: 700,
+          fontSize: 25,
+          lineHeight: 1.2,
           margin: "0 0 4px",
           letterSpacing: "-.01em",
           color: C.ink,

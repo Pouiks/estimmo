@@ -1,18 +1,6 @@
 import type { Metadata } from "next";
-import { Hanken_Grotesk, Instrument_Serif } from "next/font/google";
 import { EstimationForm } from "@/components/estimation/estimation-form";
 import { MENTIONS } from "@/lib/config";
-
-const hanken = Hanken_Grotesk({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-hanken",
-});
-const instrument = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-instrument",
-});
 
 export const metadata: Metadata = {
   title: "Estimation gratuite de votre bien",
@@ -23,7 +11,7 @@ export const metadata: Metadata = {
 export default function EstimationPage() {
   return (
     <div
-      className={`${hanken.variable} ${instrument.variable} dcx`}
+      className="dcx"
       style={{
         minHeight: "100%",
         display: "flex",

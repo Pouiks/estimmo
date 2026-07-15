@@ -29,6 +29,9 @@ Vitest · pnpm. Déploiement Vercel.
 
 ## Décisions actées (avec le client)
 - Honoraires affichés : « à partir de 3 % » exclusif vs « minimum 6 % » simple
+- Fourchette d'estimation vente resserrée à ±5-10 % selon dispersion (le ±6-15 %
+  du brief donnait des écarts de 60 k€ jugés peu crédibles). Marque en bleu
+  #2E90E5, tunnel d'estimation en Arial (15/07/2026)
 - Import DVF : France entière, 3 dernières années (Supabase plan Pro requis)
 - Email : Resend (pas Brevo — Brevo bloquait l'envoi des comptes gratuits). `lib/email`, `EMAIL_FROM` sur domaine vérifié earlypanel.fr. Sans clé en dev → simulation console
 - CRM sans clé en dev → file en pending

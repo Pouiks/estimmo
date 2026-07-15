@@ -194,11 +194,10 @@ export function ResultatEstimation({
       <div className="dcx-step" style={{ textAlign: "center", paddingTop: 6 }}>
         <Badge label="Analyse personnalisée" />
         <div
-          className="dcx-serif"
           style={{
-            fontWeight: 400,
-            fontSize: 30,
-            lineHeight: 1.15,
+            fontWeight: 700,
+            fontSize: 25,
+            lineHeight: 1.2,
             margin: "0 0 8px",
             color: C.ink,
           }}
@@ -234,7 +233,7 @@ export function ResultatEstimation({
   const low = vente ? est.fourchetteBasse : est.loyerBas;
   const high = vente ? est.fourchetteHaute : est.loyerHaut;
   const perM2 = vente ? est.prixM2Ajuste : est.loyerM2Zone;
-  const fourchetteLarge = vente && est.fourchettePct >= 12;
+  const fourchetteLarge = vente && est.fourchettePct >= 9;
   const confidence = vente
     ? est.confiance === "haute"
       ? "Élevée"
@@ -246,28 +245,85 @@ export function ResultatEstimation({
   return (
     <div className="dcx-step" style={{ textAlign: "center", paddingTop: 6 }}>
       <Badge label="Estimation prête" />
-      <p style={{ margin: "0 0 6px", color: C.muted, fontSize: 15 }}>
-        {vente ? "Notre estimation de votre bien" : "Loyer mensuel estimé"}
+      <p style={{ margin: "0 0 14px", color: C.muted, fontSize: 15 }}>
+        {vente
+          ? "Notre estimation de votre bien"
+          : "Loyer mensuel estimé (charges comprises)"}
       </p>
+
+      {/* Fourchette basse · estimation (médiane) · haute */}
       <div
-        className="dcx-serif"
         style={{
-          fontWeight: 400,
-          fontSize: 52,
-          lineHeight: 1.05,
-          letterSpacing: "-.02em",
-          margin: "0 0 6px",
-          color: C.ink,
+          display: "grid",
+          gridTemplateColumns: "1fr 1.4fr 1fr",
+          gap: 8,
+          alignItems: "end",
+          marginBottom: 10,
         }}
       >
-        {euro(mediane)}
-        {!vente && (
-          <span style={{ fontSize: 24, color: C.faint }}> / mois</span>
-        )}
+        <div>
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: ".05em",
+              textTransform: "uppercase",
+              color: C.faint,
+              marginBottom: 4,
+            }}
+          >
+            Basse
+          </div>
+          <div style={{ fontSize: 19, fontWeight: 800, color: C.ink }}>
+            {euro(low)}
+          </div>
+        </div>
+        <div
+          style={{
+            background: C.accent,
+            borderRadius: 14,
+            padding: "14px 8px",
+            color: "#fff",
+          }}
+        >
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: ".05em",
+              textTransform: "uppercase",
+              color: "#BBDCFB",
+              marginBottom: 2,
+            }}
+          >
+            Estimation
+          </div>
+          <div style={{ fontSize: 28, fontWeight: 800, lineHeight: 1.15 }}>
+            {euro(mediane)}
+            {!vente && <span style={{ fontSize: 14 }}> /mois</span>}
+          </div>
+        </div>
+        <div>
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: ".05em",
+              textTransform: "uppercase",
+              color: C.faint,
+              marginBottom: 4,
+            }}
+          >
+            Haute
+          </div>
+          <div style={{ fontSize: 19, fontWeight: 800, color: C.ink }}>
+            {euro(high)}
+          </div>
+        </div>
       </div>
-      <p style={{ margin: "0 0 22px", color: C.faint, fontSize: 14 }}>
-        fourchette de <b style={{ color: C.label }}>{euro(low)}</b> à{" "}
-        <b style={{ color: C.label }}>{euro(high)}</b> · environ{" "}
+
+      <p style={{ margin: "0 0 22px", color: C.faint, fontSize: 13.5 }}>
+        soit environ{" "}
         <b style={{ color: C.label }}>{perM2.toLocaleString("fr-FR")} €</b>
         {vente ? "/m²" : "/m²/mois"}
       </p>

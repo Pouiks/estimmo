@@ -8,7 +8,7 @@
  *  2. prix/m² de référence = médiane pondérée
  *     poids = 1/(1+distance_km) × 1/(1+ancienneté_mois/12)
  *  3. ajustements qualitatifs (somme plafonnée ±25 %)
- *  4. fourchette = médiane ± pct fonction de la dispersion (IQR), 6–15 %
+ *  4. fourchette = médiane ± pct fonction de la dispersion (IQR), 5–10 %
  *  5. confiance : haute (≥15 comp., rayon ≤800 m), moyenne (≥8, ≤3 km), faible sinon
  */
 import { calculerAjustement } from "./ajustements";
@@ -98,10 +98,11 @@ export function estimerVente(
   const mediane = prixM2Ajuste * bien.surface;
 
   // Dispersion → demi-largeur de fourchette : IQR relatif rapporté à la
-  // médiane, borné entre 6 % et 15 % (0,12 de dispersion relative → ±6 %,
-  // 0,30 et plus → ±15 %).
+  // médiane, borné entre 5 % et 10 %. Le brief prévoyait 6-15 % mais un écart
+  // de ±15 % (60 k€ sur 200 k€) a été jugé peu crédible par le client :
+  // resserré, l'affinage se fait lors de l'avis de valeur sur place.
   const dispersion = iqr(retenus.map((c) => c.prix_m2)) / prixM2Zone;
-  const fourchettePct = clamp(dispersion * 50, 6, 15);
+  const fourchettePct = clamp(dispersion * 40, 5, 10);
 
   return {
     projet: "vente",
