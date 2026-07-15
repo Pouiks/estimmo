@@ -95,16 +95,17 @@ export function EstimationForm() {
         pieces: toNumber(s.pieces),
         chambres: toNumber(s.chambres),
         etage: toNumber(s.etage) ?? null,
+        etagesImmeuble: toNumber(s.etagesImmeuble) ?? null,
         ascenseur: s.ascenseur,
         surfaceTerrain: null,
         anneeConstruction: s.anneeConstruction ?? undefined,
-        exterieur: s.exterieur,
-        stationnement: s.stationnement ?? undefined,
       });
     }
     if (n === 3) {
       return etape3Schema.safeParse({
         etatGeneral: s.etatGeneral ?? undefined,
+        exterieur: s.exterieur,
+        stationnement: s.stationnement ?? undefined,
         ageCuisine: s.ageCuisine ?? undefined,
         ageSdb: s.ageSdb ?? undefined,
         dpe: s.dpe ?? undefined,
@@ -161,6 +162,10 @@ export function EstimationForm() {
       pieces: toNumber(state.pieces),
       chambres: toNumber(state.chambres),
       etage: state.typeBien === "appartement" ? toNumber(state.etage) ?? null : null,
+      etagesImmeuble:
+        state.typeBien === "appartement"
+          ? toNumber(state.etagesImmeuble) ?? null
+          : null,
       ascenseur: state.typeBien === "appartement" ? state.ascenseur : null,
       surfaceTerrain: null,
       anneeConstruction: state.anneeConstruction,

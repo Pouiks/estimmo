@@ -222,8 +222,11 @@ export default async function LeadDetailPage({
             </Row>
             {lead.type_bien === "appartement" ? (
               <Row label="Étage / ascenseur">
-                {lead.etage === 0 ? "RDC" : `Étage ${lead.etage}`} ·{" "}
-                {lead.ascenseur ? "ascenseur" : "sans ascenseur"}
+                {lead.etage === 0 ? "RDC" : `Étage ${lead.etage}`}
+                {lead.etages_immeuble
+                  ? ` sur ${lead.etages_immeuble}`
+                  : ""}{" "}
+                · {lead.ascenseur ? "ascenseur" : "sans ascenseur"}
               </Row>
             ) : (
               <Row label="Terrain">{Number(lead.surface_terrain ?? 0)} m²</Row>

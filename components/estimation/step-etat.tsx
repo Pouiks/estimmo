@@ -6,6 +6,7 @@ import {
   FieldMsg,
   Pill,
   SectionLabel,
+  Segmented,
   StepHeader,
 } from "./design";
 import type { StepProps } from "./form-state";
@@ -23,11 +24,11 @@ const ETATS = [
   { value: "refait_neuf", title: "Refait à neuf", sub: "Prestations récentes" },
 ] as const;
 
-const AGES: { value: AgeTranche; label: string }[] = [
+const AGES: readonly { value: AgeTranche; label: string }[] = [
   { value: "moins_5", label: "< 5 ans" },
   { value: "5_10", label: "5-10 ans" },
   { value: "10_20", label: "10-20 ans" },
-  { value: "plus_20", label: "20 ans +" },
+  { value: "plus_20", label: "+ 20 ans" },
 ];
 
 const EXTERIEURS: { value: Exterieur; label: string }[] = [
@@ -38,21 +39,42 @@ const EXTERIEURS: { value: Exterieur; label: string }[] = [
 
 const STATIONNEMENTS: { value: Stationnement; label: string }[] = [
   { value: "aucun", label: "Aucun" },
-  { value: "place", label: "Place" },
+  { value: "place", label: "Place de parking" },
   { value: "garage_box", label: "Garage / box" },
 ];
 
+// "Dernier étage" n'est plus demandé : il est déduit automatiquement de
+// l'étage et du nombre d'étages de l'immeuble saisis à l'étape 2.
 const ATOUTS: { value: Atout; label: string }[] = [
   { value: "vue_degagee", label: "Vue dégagée" },
   { value: "lumineux", label: "Lumineux" },
   { value: "calme", label: "Calme" },
-  { value: "dernier_etage", label: "Dernier étage" },
   { value: "traversant", label: "Traversant" },
 ];
 
 const DPE_LETTERS = ["A", "B", "C", "D", "E", "F", "G"] as const;
 
 const chipRow = { display: "flex", flexWrap: "wrap", gap: 8 } as const;
+
+function Section({
+  label,
+  hint,
+  error,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  error?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div style={{ marginTop: 22 }}>
+      <SectionLabel hint={hint}>{label}</SectionLabel>
+      {children}
+      <FieldMsg message={error} />
+    </div>
+  );
+}
 
 export function StepEtat({ state, setField, errors }: StepProps) {
   return (
@@ -68,7 +90,6 @@ export function StepEtat({ state, setField, errors }: StepProps) {
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
           gap: 10,
-          marginBottom: 22,
         }}
       >
         {ETATS.map((e) => (
@@ -83,8 +104,23 @@ export function StepEtat({ state, setField, errors }: StepProps) {
       </div>
       <FieldMsg message={errors["etatGeneral"]} />
 
-      <div style={{ marginTop: 22 }}>
-        <SectionLabel>Classe énergie (DPE)</SectionLabel>
+      <Section label="Âge de la cuisine" error={errors["ageCuisine"]}>
+        <Segmented
+          options={AGES}
+          value={state.ageCuisine}
+          onChange={(v) => setField("ageCuisine", v)}
+        />
+      </Section>
+
+      <Section label="Âge de la salle de bain" error={errors["ageSdb"]}>
+        <Segmented
+          options={AGES}
+          value={state.ageSdb}
+          onChange={(v) => setField("ageSdb", v)}
+        />
+      </Section>
+
+      <Section label="Classe énergie (DPE)" error={errors["dpe"]}>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {DPE_LETTERS.map((l) => (
             <DpeChip
@@ -102,44 +138,9 @@ export function StepEtat({ state, setField, errors }: StepProps) {
             onClick={() => setField("dpe", "ne_sait_pas")}
           />
         </div>
-        <FieldMsg message={errors["dpe"]} />
-      </div>
+      </Section>
 
-      <div style={{ marginTop: 22, display: "grid", gap: 22, gridTemplateColumns: "1fr 1fr" }}>
-        <div>
-          <SectionLabel>Âge cuisine</SectionLabel>
-          <div style={chipRow}>
-            {AGES.map((a) => (
-              <Pill
-                key={a.value}
-                label={a.label}
-                showMark={false}
-                selected={state.ageCuisine === a.value}
-                onClick={() => setField("ageCuisine", a.value)}
-              />
-            ))}
-          </div>
-          <FieldMsg message={errors["ageCuisine"]} />
-        </div>
-        <div>
-          <SectionLabel>Âge salle de bain</SectionLabel>
-          <div style={chipRow}>
-            {AGES.map((a) => (
-              <Pill
-                key={a.value}
-                label={a.label}
-                showMark={false}
-                selected={state.ageSdb === a.value}
-                onClick={() => setField("ageSdb", a.value)}
-              />
-            ))}
-          </div>
-          <FieldMsg message={errors["ageSdb"]} />
-        </div>
-      </div>
-
-      <div style={{ marginTop: 22 }}>
-        <SectionLabel>Extérieur</SectionLabel>
+      <Section label="Extérieur" hint="plusieurs choix possibles">
         <div style={chipRow}>
           {EXTERIEURS.map((e) => (
             <Pill
@@ -157,10 +158,9 @@ export function StepEtat({ state, setField, errors }: StepProps) {
             />
           ))}
         </div>
-      </div>
+      </Section>
 
-      <div style={{ marginTop: 22 }}>
-        <SectionLabel>Stationnement</SectionLabel>
+      <Section label="Stationnement" error={errors["stationnement"]}>
         <div style={chipRow}>
           {STATIONNEMENTS.map((s) => (
             <Pill
@@ -172,11 +172,9 @@ export function StepEtat({ state, setField, errors }: StepProps) {
             />
           ))}
         </div>
-        <FieldMsg message={errors["stationnement"]} />
-      </div>
+      </Section>
 
-      <div style={{ marginTop: 22 }}>
-        <SectionLabel hint="optionnel">Atouts</SectionLabel>
+      <Section label="Atouts" hint="optionnel">
         <div style={chipRow}>
           {ATOUTS.map((a) => (
             <Pill
@@ -194,7 +192,7 @@ export function StepEtat({ state, setField, errors }: StepProps) {
             />
           ))}
         </div>
-      </div>
+      </Section>
     </div>
   );
 }

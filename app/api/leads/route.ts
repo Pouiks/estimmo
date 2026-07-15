@@ -42,6 +42,20 @@ export async function POST(request: NextRequest) {
   const lead = parsed.data;
   const dateConsentement = new Date().toISOString();
 
+  // Dernier étage déduit de étage + étages de l'immeuble : bonus moteur
+  // (+5 % avec ascenseur) sans le demander explicitement en atout.
+  const atoutsPourMoteur = [...lead.atouts];
+  if (
+    lead.typeBien === "appartement" &&
+    lead.etage != null &&
+    lead.etagesImmeuble != null &&
+    lead.etage > 0 &&
+    lead.etage >= lead.etagesImmeuble &&
+    !atoutsPourMoteur.includes("dernier_etage")
+  ) {
+    atoutsPourMoteur.push("dernier_etage");
+  }
+
   // --- Estimation (une erreur moteur bascule en estimation manuelle,
   //     elle ne doit jamais faire perdre le lead) ---
   let estimation: EstimationResultat = null;
@@ -68,7 +82,7 @@ export async function POST(request: NextRequest) {
             dpe: lead.dpe,
             exterieur: lead.exterieur,
             stationnement: lead.stationnement,
-            atouts: lead.atouts,
+            atouts: atoutsPourMoteur,
           },
           comparables
         );
@@ -123,6 +137,7 @@ export async function POST(request: NextRequest) {
       pieces: lead.pieces,
       chambres: lead.chambres,
       etage: lead.etage ?? null,
+      etages_immeuble: lead.etagesImmeuble ?? null,
       ascenseur: lead.ascenseur ?? null,
       surface_terrain: lead.surfaceTerrain ?? null,
       annee_construction: lead.anneeConstruction,

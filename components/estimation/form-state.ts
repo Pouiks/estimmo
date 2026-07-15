@@ -11,6 +11,7 @@ import type {
   TypeBien,
 } from "@/lib/estimation/types";
 import type { Adresse } from "@/lib/leads/schema";
+import type { QuartierStats } from "./quartier-block";
 
 /**
  * État du formulaire 4 étapes. Les champs numériques sont saisis en texte
@@ -27,6 +28,7 @@ export interface EstimationFormState {
   pieces: string;
   chambres: string;
   etage: string;
+  etagesImmeuble: string;
   ascenseur: boolean | null;
   surfaceTerrain: string;
   anneeConstruction: AnneeConstruction | null;
@@ -44,6 +46,8 @@ export interface EstimationFormState {
   email: string;
   telephone: string;
   consentement: boolean;
+  /** Stats de quartier chargées à l'étape 1, réutilisées à l'écran résultat. */
+  quartierStats: QuartierStats | null;
 }
 
 export const initialFormState: EstimationFormState = {
@@ -55,6 +59,7 @@ export const initialFormState: EstimationFormState = {
   pieces: "3",
   chambres: "2",
   etage: "",
+  etagesImmeuble: "",
   // Un interrupteur affiché "off" est une réponse : non. Jamais null,
   // sinon la validation bloque sans que l'utilisateur comprenne pourquoi.
   ascenseur: false,
@@ -72,6 +77,7 @@ export const initialFormState: EstimationFormState = {
   email: "",
   telephone: "",
   consentement: false,
+  quartierStats: null,
 };
 
 export type FieldErrors = Record<string, string>;

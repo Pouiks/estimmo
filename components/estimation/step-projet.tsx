@@ -36,7 +36,11 @@ export function StepProjet({ state, setField, errors }: StepProps) {
         onChange={(adresse) => setField("adresse", adresse)}
       />
       {state.adresse ? (
-        <QuartierStrip key={state.adresse.libelle} adresse={state.adresse} />
+        <QuartierStrip
+          key={state.adresse.libelle}
+          adresse={state.adresse}
+          onLoaded={(stats) => setField("quartierStats", stats)}
+        />
       ) : (
         <p
           style={{

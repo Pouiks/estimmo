@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bus, GraduationCap, ShoppingBag, Sparkles, Trees } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { Adresse } from "@/lib/leads/schema";
 import { C } from "./design";
 
-interface QuartierStats {
+export interface QuartierStats {
   ecoles: number;
   transports: number;
   commerces: number;
@@ -15,30 +15,57 @@ interface QuartierStats {
 
 /**
  * Stats de quartier autour d'une adresse (OpenStreetMap via /api/quartier).
- * Jamais bloquant : en cas d'échec, stats reste null et l'UI n'affiche rien.
- * Monter le composant avec key={adresse.libelle} pour réinitialiser l'état
+ * Jamais bloquant : en cas d'échec après 2 tentatives, stats reste null et
+ * l'UI n'affiche rien. Monter avec key={adresse.libelle} pour réinitialiser
  * quand l'adresse change.
  */
-function useQuartierStats(adresse: Adresse | null) {
+function useQuartierStats(
+  adresse: Adresse | null,
+  onLoaded?: (stats: QuartierStats) => void
+) {
   const [stats, setStats] = useState<QuartierStats | null>(null);
   const [done, setDone] = useState(false);
+  const onLoadedRef = useRef(onLoaded);
+  useEffect(() => {
+    onLoadedRef.current = onLoaded;
+  });
 
   useEffect(() => {
     if (!adresse) return;
     let alive = true;
     const controller = new AbortController();
-    fetch(`/api/quartier?lat=${adresse.lat}&lon=${adresse.lon}`, {
-      signal: controller.signal,
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data: { stats?: QuartierStats | null } | null) => {
+
+    async function charger(tentative: number) {
+      try {
+        const res = await fetch(
+          `/api/quartier?lat=${adresse!.lat}&lon=${adresse!.lon}`,
+          { signal: controller.signal }
+        );
+        const data = res.ok
+          ? ((await res.json()) as { stats?: QuartierStats | null })
+          : null;
         if (!alive) return;
-        if (data?.stats) setStats(data.stats);
+        if (data?.stats) {
+          setStats(data.stats);
+          setDone(true);
+          onLoadedRef.current?.(data.stats);
+          return;
+        }
+      } catch {
+        // annulé ou réseau : on retente ou on abandonne ci-dessous
+      }
+      if (!alive) return;
+      if (tentative < 1) {
+        // Overpass répond souvent au second essai une fois sa zone chargée
+        setTimeout(() => {
+          if (alive) void charger(tentative + 1);
+        }, 1_500);
+      } else {
         setDone(true);
-      })
-      .catch(() => {
-        if (alive) setDone(true);
-      });
+      }
+    }
+
+    void charger(0);
     return () => {
       alive = false;
       controller.abort();
@@ -65,8 +92,15 @@ function libelles(stats: QuartierStats): string[] {
  * Bandelette compacte affichée à l'étape 1 dès la sélection de l'adresse :
  * l'analyse du quartier démarre immédiatement, l'utilisateur le voit.
  */
-export function QuartierStrip({ adresse }: { adresse: Adresse | null }) {
-  const { stats, loading } = useQuartierStats(adresse);
+export function QuartierStrip({
+  adresse,
+  onLoaded,
+}: {
+  adresse: Adresse | null;
+  /** Persiste les stats dans l'état du formulaire pour l'écran résultat. */
+  onLoaded?: (stats: QuartierStats) => void;
+}) {
+  const { stats, loading } = useQuartierStats(adresse, onLoaded);
 
   if (!adresse) return null;
 
@@ -110,8 +144,16 @@ export function QuartierStrip({ adresse }: { adresse: Adresse | null }) {
 /**
  * Bloc "Votre quartier" de l'écran résultat : tuiles détaillées.
  */
-export function QuartierBlock({ adresse }: { adresse: Adresse | null }) {
-  const { stats } = useQuartierStats(adresse);
+export function QuartierBlock({
+  adresse,
+  statsInitiales,
+}: {
+  adresse: Adresse | null;
+  /** Stats déjà chargées à l'étape 1 : pas de refetch, affichage garanti. */
+  statsInitiales?: QuartierStats | null;
+}) {
+  const fetched = useQuartierStats(statsInitiales ? null : adresse);
+  const stats = statsInitiales ?? fetched.stats;
 
   if (!stats) return null;
 

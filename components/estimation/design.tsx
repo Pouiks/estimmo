@@ -51,7 +51,7 @@ export function SectionLabel({
           }}
         >
           {" "}
-          — {hint}
+          · {hint}
         </span>
       )}
     </div>
@@ -308,6 +308,58 @@ export function Pill({
       {showMark && <span style={{ fontSize: 13 }}>{selected ? "✓" : "+"}</span>}
       {label}
     </button>
+  );
+}
+
+/** Contrôle segmenté pleine largeur (tranches d'âge, choix exclusifs courts). */
+export function Segmented<T extends string>({
+  options,
+  value,
+  onChange,
+}: {
+  options: readonly { value: T; label: string }[];
+  value: T | null;
+  onChange: (v: T) => void;
+}) {
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: `repeat(${options.length}, 1fr)`,
+        gap: 6,
+        padding: 6,
+        borderRadius: 14,
+        border: `1.5px solid ${C.border}`,
+        background: C.inputBg,
+      }}
+    >
+      {options.map((o) => {
+        const on = value === o.value;
+        return (
+          <button
+            key={o.value}
+            type="button"
+            aria-pressed={on}
+            onClick={() => onChange(o.value)}
+            style={{
+              padding: "10px 6px",
+              borderRadius: 10,
+              border: "none",
+              background: on ? C.accent : "transparent",
+              color: on ? "#fff" : C.muted,
+              fontWeight: on ? 700 : 600,
+              fontSize: 13.5,
+              cursor: "pointer",
+              font: "inherit",
+              transition: "all .15s",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 

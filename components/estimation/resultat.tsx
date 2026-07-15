@@ -218,7 +218,10 @@ export function ResultatEstimation({
           votre estimation et vous rappelle au numéro indiqué. Un email de
           confirmation vient de vous être envoyé.
         </p>
-        <QuartierBlock adresse={state.adresse} />
+        <QuartierBlock
+          adresse={state.adresse}
+          statsInitiales={state.quartierStats}
+        />
         <CarenzaCard vente />
         <br />
         <RestartLink onRestart={onRestart} />
@@ -227,9 +230,11 @@ export function ResultatEstimation({
   }
 
   const vente = est.projet === "vente";
+  const mediane = vente ? est.mediane : est.loyerMedian;
   const low = vente ? est.fourchetteBasse : est.loyerBas;
   const high = vente ? est.fourchetteHaute : est.loyerHaut;
-  const perM2 = vente ? est.prixM2Zone : est.loyerM2Zone;
+  const perM2 = vente ? est.prixM2Ajuste : est.loyerM2Zone;
+  const fourchetteLarge = vente && est.fourchettePct >= 12;
   const confidence = vente
     ? est.confiance === "haute"
       ? "Élevée"
@@ -242,30 +247,29 @@ export function ResultatEstimation({
     <div className="dcx-step" style={{ textAlign: "center", paddingTop: 6 }}>
       <Badge label="Estimation prête" />
       <p style={{ margin: "0 0 6px", color: C.muted, fontSize: 15 }}>
-        {vente
-          ? "Votre bien est estimé entre"
-          : "Votre bien pourrait se louer entre"}
+        {vente ? "Notre estimation de votre bien" : "Loyer mensuel estimé"}
       </p>
       <div
         className="dcx-serif"
         style={{
           fontWeight: 400,
-          fontSize: 46,
+          fontSize: 52,
           lineHeight: 1.05,
           letterSpacing: "-.02em",
-          margin: "0 0 4px",
+          margin: "0 0 6px",
           color: C.ink,
         }}
       >
-        {euro(low)} <span style={{ color: "#B7C2BE", fontSize: 30 }}>–</span>{" "}
-        {euro(high)}
+        {euro(mediane)}
+        {!vente && (
+          <span style={{ fontSize: 24, color: C.faint }}> / mois</span>
+        )}
       </div>
       <p style={{ margin: "0 0 22px", color: C.faint, fontSize: 14 }}>
-        soit environ{" "}
-        <b style={{ color: C.label }}>
-          {perM2.toLocaleString("fr-FR")} €
-        </b>{" "}
-        {vente ? "/ m²" : "/ m² / mois"}
+        fourchette de <b style={{ color: C.label }}>{euro(low)}</b> à{" "}
+        <b style={{ color: C.label }}>{euro(high)}</b> · environ{" "}
+        <b style={{ color: C.label }}>{perM2.toLocaleString("fr-FR")} €</b>
+        {vente ? "/m²" : "/m²/mois"}
       </p>
 
       <div
@@ -282,7 +286,34 @@ export function ResultatEstimation({
         <StatCard label="Source" value={vente ? "DVF" : "ANIL"} />
       </div>
 
-      <QuartierBlock adresse={state.adresse} />
+      {fourchetteLarge && (
+        <div
+          style={{
+            margin: "0 0 22px",
+            padding: "12px 16px",
+            borderRadius: 12,
+            background: C.cardBg,
+            border: `1px solid ${C.borderSoft}`,
+            fontSize: 13,
+            color: C.muted,
+            lineHeight: 1.6,
+            textAlign: "left",
+          }}
+        >
+          <b style={{ color: C.label }}>
+            Pourquoi cette fourchette de ±{est.fourchettePct} % ?
+          </b>{" "}
+          Les {est.nbComparables} ventes comparables de votre secteur sont
+          hétérogènes (état, étage, prestations). C&apos;est exactement ce
+          qu&apos;un avis de valeur sur place permet de trancher :{" "}
+          {SITE.agent.name} vous l&apos;offre, sans engagement.
+        </div>
+      )}
+
+      <QuartierBlock
+        adresse={state.adresse}
+        statsInitiales={state.quartierStats}
+      />
 
       <CarenzaCard vente={vente} />
 

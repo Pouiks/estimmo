@@ -68,40 +68,53 @@ export function StepBien({ state, setField, errors }: StepProps) {
       <FieldMsg message={errors["pieces"] ?? errors["chambres"]} />
 
       {isAppartement && (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 14,
-            alignItems: "end",
-            marginTop: 22,
-          }}
-        >
-          <div>
-            <SectionLabel>Étage</SectionLabel>
-            <TextField
-              type="number"
-              inputMode="numeric"
-              min={0}
-              max={50}
-              placeholder="3"
-              value={state.etage}
-              onChange={(e) => setField("etage", e.target.value)}
-              style={{ fontSize: 16, fontWeight: 600 }}
-            />
+        <>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 14,
+              marginTop: 22,
+            }}
+          >
+            <div>
+              <SectionLabel>Votre étage</SectionLabel>
+              <TextField
+                type="number"
+                inputMode="numeric"
+                min={0}
+                max={50}
+                placeholder="3"
+                value={state.etage}
+                onChange={(e) => setField("etage", e.target.value)}
+                style={{ fontSize: 16, fontWeight: 600 }}
+              />
+              <FieldMsg message={errors["etage"]} />
+            </div>
+            <div>
+              <SectionLabel>Étages de l&apos;immeuble</SectionLabel>
+              <TextField
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={60}
+                placeholder="6"
+                value={state.etagesImmeuble}
+                onChange={(e) => setField("etagesImmeuble", e.target.value)}
+                style={{ fontSize: 16, fontWeight: 600 }}
+              />
+              <FieldMsg message={errors["etagesImmeuble"]} />
+            </div>
           </div>
-          <div>
-            <SectionLabel>&nbsp;</SectionLabel>
+          <div style={{ marginTop: 14 }}>
             <Toggle
               label="Ascenseur"
               on={state.ascenseur === true}
               onClick={() => setField("ascenseur", state.ascenseur !== true)}
             />
+            <FieldMsg message={errors["ascenseur"]} />
           </div>
-        </div>
-      )}
-      {isAppartement && (
-        <FieldMsg message={errors["etage"] ?? errors["ascenseur"]} />
+        </>
       )}
 
       <p style={{ margin: "18px 2px 0", fontSize: 12.5, color: C.faint }}>

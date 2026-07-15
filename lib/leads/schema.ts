@@ -68,21 +68,22 @@ export const etape2Base = z.object({
     .min(0)
     .max(15, "15 chambres maximum"),
   etage: z.number().int().min(0, "L'étage ne peut être négatif").max(50).nullish(),
+  etagesImmeuble: z
+    .number()
+    .int()
+    .min(1, "Au moins 1 étage")
+    .max(60, "60 étages maximum")
+    .nullish(),
   ascenseur: z.boolean().nullish(),
   surfaceTerrain: z
     .number()
     .min(0)
     .max(1_000_000, "Surface de terrain invalide")
     .nullish(),
-  // Retirés du formulaire (design concis) mais conservés en base : optionnels.
+  // Retiré du formulaire (design concis) mais conservé en base : optionnel.
   anneeConstruction: z
     .enum(["avant_1950", "1950_1975", "1975_2000", "2000_2012", "apres_2012"])
     .nullish(),
-  exterieur: z.array(z.enum(["balcon", "terrasse", "jardin"])).default([]),
-  stationnement: z.enum(
-    ["aucun", "place", "garage_box"],
-    "Indiquez le stationnement"
-  ),
 });
 
 export function etape2Schema(typeBien: "appartement" | "maison") {
@@ -90,6 +91,23 @@ export function etape2Schema(typeBien: "appartement" | "maison") {
     if (typeBien === "appartement") {
       if (data.etage === null || data.etage === undefined) {
         ctx.addIssue({ code: "custom", path: ["etage"], message: "Indiquez l'étage" });
+      }
+      if (data.etagesImmeuble === null || data.etagesImmeuble === undefined) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["etagesImmeuble"],
+          message: "Indiquez le nombre d'étages de l'immeuble",
+        });
+      } else if (
+        data.etage !== null &&
+        data.etage !== undefined &&
+        data.etagesImmeuble < data.etage
+      ) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["etagesImmeuble"],
+          message: "L'immeuble compte moins d'étages que le vôtre ?",
+        });
       }
       if (data.ascenseur === null || data.ascenseur === undefined) {
         ctx.addIssue({
@@ -103,12 +121,18 @@ export function etape2Schema(typeBien: "appartement" | "maison") {
 }
 
 // ---------------------------------------------------------------------------
-// Étape 3 — État du bien
+// Étape 3 — État & atouts
+// (extérieur et stationnement sont posés à cette étape depuis le reskin)
 // ---------------------------------------------------------------------------
 export const etape3Schema = z.object({
   etatGeneral: z.enum(
     ["a_renover", "a_rafraichir", "bon", "refait_neuf"],
     "Indiquez l'état général"
+  ),
+  exterieur: z.array(z.enum(["balcon", "terrasse", "jardin"])).default([]),
+  stationnement: z.enum(
+    ["aucun", "place", "garage_box"],
+    "Indiquez le stationnement"
   ),
   ageCuisine: z.enum(
     ["moins_5", "5_10", "10_20", "plus_20"],
