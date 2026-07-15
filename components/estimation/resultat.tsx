@@ -38,7 +38,7 @@ function Badge({ label }: { label: string }) {
         gap: 7,
         padding: "7px 14px",
         borderRadius: 99,
-        background: "#ECF7F2",
+        background: "#E8F1FB",
         color: C.accent,
         fontSize: 12.5,
         fontWeight: 700,

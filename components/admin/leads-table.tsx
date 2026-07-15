@@ -73,7 +73,7 @@ export function LeadsTable({ leads }: { leads: LeadRow[] }) {
                   <span className="absolute inset-0" aria-hidden />
                 </Link>
                 {lead.demande_rappel && (
-                  <Badge className="relative z-10 ml-2 bg-teal-100 text-teal-800">
+                  <Badge className="relative z-10 ml-2 bg-blue-100 text-blue-800">
                     <PhoneIncoming className="size-3" /> Rappel demandé
                   </Badge>
                 )}

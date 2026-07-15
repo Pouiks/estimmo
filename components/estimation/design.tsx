@@ -6,9 +6,9 @@ import type { LucideIcon } from "lucide-react";
 
 /** Palette du design Estimation.dc (teal ESTIMMO). */
 export const C = {
-  accent: "#0E7A63",
-  accentDark: "#0A5847",
-  accentLight: "#4FA98F",
+  accent: "#2E90E5",
+  accentDark: "#2168A5",
+  accentLight: "#A1CDF3",
   ink: "#0C1F1C",
   muted: "#5E706C",
   label: "#3A4C48",
@@ -18,7 +18,7 @@ export const C = {
   borderSoft: "#ECF0EE",
   inputBg: "#FBFCFB",
   cardBg: "#F5F8F6",
-  sel: "#E7F3EE",
+  sel: "#EAF4FC",
   iconBg: "#F1F5F3",
 } as const;
 

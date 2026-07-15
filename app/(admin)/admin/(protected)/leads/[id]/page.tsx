@@ -118,7 +118,7 @@ export default async function LeadDetailPage({
               </Badge>
             )}
             {lead.demande_rappel && (
-              <Badge className="ml-2 bg-teal-100 text-teal-800">
+              <Badge className="ml-2 bg-blue-100 text-blue-800">
                 <PhoneIncoming className="size-3" /> Rappel demandé
               </Badge>
             )}
@@ -153,7 +153,7 @@ export default async function LeadDetailPage({
             </Row>
             {lead.demande_rappel && (
               <Row label="Demande de rappel">
-                <span className="text-teal-700">
+                <span className="text-blue-700">
                   Oui
                   {lead.demande_rappel_at
                     ? ` — ${dateFmt.format(new Date(lead.demande_rappel_at))}`

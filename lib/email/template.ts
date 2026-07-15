@@ -9,10 +9,10 @@ import type { LeadPayload } from "@/lib/leads/schema";
 import { MENTIONS, SITE } from "@/lib/config";
 
 const COL = {
-  brand: "#0f766e",
-  brandDark: "#115e56",
-  brandLight: "#ecfdf5",
-  brandBorder: "#99f6e4",
+  brand: "#2e90e5",
+  brandDark: "#1e5c93",
+  brandLight: "#eaf4fc",
+  brandBorder: "#bbd9f5",
   ink: "#111827",
   muted: "#6b7280",
   faint: "#9ca3af",
@@ -81,7 +81,7 @@ function colChiffre(
     return `
     <td align="center" width="40%" style="padding:6px">
       <div style="background:${COL.brand};border-radius:12px;padding:14px 6px">
-        <div style="font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#a7f3d0">${label}</div>
+        <div style="font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#bbdcfb">${label}</div>
         <div style="font-family:Arial,Helvetica,sans-serif;font-size:26px;font-weight:bold;color:#ffffff;line-height:1.2;margin-top:2px">${valeur}</div>
       </div>
     </td>`;
@@ -229,8 +229,8 @@ function layout(preheader: string, contenu: string): string {
           <!-- Header -->
           <tr>
             <td align="center" bgcolor="${COL.brand}" style="padding:26px 24px;border-radius:16px 16px 0 0">
-              <div style="font-family:Arial,Helvetica,sans-serif;font-size:24px;font-weight:bold;letter-spacing:.03em;color:#ffffff">ESTI<span style="color:#a7f3d0">MMO</span></div>
-              <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#d1fae5;margin-top:4px">${SITE.baseline}</div>
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:24px;font-weight:bold;letter-spacing:.03em;color:#ffffff">ESTI<span style="color:#bbdcfb">MMO</span></div>
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#dbeafb;margin-top:4px">${SITE.baseline}</div>
             </td>
           </tr>
 
