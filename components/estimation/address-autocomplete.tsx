@@ -221,6 +221,13 @@ export function AddressAutocomplete({
                     lon: s.lon,
                   });
                   setOpen(false);
+                  // Préchauffe le cache quartier pendant que l'utilisateur
+                  // remplit le formulaire : l'écran résultat l'aura tout prêt.
+                  try {
+                    void fetch(`/api/quartier?lat=${s.lat}&lon=${s.lon}`);
+                  } catch {
+                    // best-effort uniquement
+                  }
                 }}
               >
                 <MapPin size={16} style={{ flexShrink: 0, color: C.faint }} />

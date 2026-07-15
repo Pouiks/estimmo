@@ -24,37 +24,67 @@ export function StepProjet({ state, setField, errors }: StepProps) {
     <div>
       <StepHeader
         title="Votre projet immobilier"
-        subtitle="Dites-nous ce que vous souhaitez estimer."
+        subtitle="Commencez par l'adresse : elle déclenche l'analyse de votre quartier."
       />
 
-      <SectionLabel>Je souhaite</SectionLabel>
-      <div
+      {/* L'adresse en premier : c'est la donnée qui pèse le plus dans
+          l'estimation, et le champ le plus engageant du tunnel. */}
+      <SectionLabel>Adresse du bien</SectionLabel>
+      <AddressAutocomplete
+        value={state.adresse}
+        onChange={(adresse) => setField("adresse", adresse)}
+      />
+      <p
         style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 12,
-          marginBottom: 6,
+          margin: "9px 2px 0",
+          fontSize: 12.5,
+          color: C.faint,
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
         }}
       >
-        <ChoiceCard
-          icon={Tag}
-          title="Vendre"
-          sub="Prix de vente estimé"
-          selected={state.projet === "vente"}
-          onClick={() => setField("projet", "vente")}
-        />
-        <ChoiceCard
-          icon={KeyRound}
-          title="Louer"
-          sub="Loyer mensuel estimé"
-          selected={state.projet === "location"}
-          onClick={() => {
-            setField("projet", "location");
-            setField("horizon", null);
+        <Lock size={13} />
+        L&apos;adresse affine la comparaison. Elle reste strictement
+        confidentielle.
+      </p>
+      <FieldMsg
+        message={
+          errors["adresse"] ??
+          errors["adresse.libelle"] ??
+          errors["adresse.codeInsee"]
+        }
+      />
+
+      <div style={{ marginTop: 24 }}>
+        <SectionLabel>Je souhaite</SectionLabel>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 12,
           }}
-        />
+        >
+          <ChoiceCard
+            icon={Tag}
+            title="Vendre"
+            sub="Prix de vente estimé"
+            selected={state.projet === "vente"}
+            onClick={() => setField("projet", "vente")}
+          />
+          <ChoiceCard
+            icon={KeyRound}
+            title="Louer"
+            sub="Loyer mensuel estimé"
+            selected={state.projet === "location"}
+            onClick={() => {
+              setField("projet", "location");
+              setField("horizon", null);
+            }}
+          />
+        </div>
+        <FieldMsg message={errors["projet"]} />
       </div>
-      <FieldMsg message={errors["projet"]} />
 
       {state.projet === "vente" && (
         <div style={{ marginTop: 24 }}>
@@ -95,35 +125,6 @@ export function StepProjet({ state, setField, errors }: StepProps) {
           />
         </div>
         <FieldMsg message={errors["typeBien"]} />
-      </div>
-
-      <div style={{ marginTop: 24 }}>
-        <SectionLabel>Adresse du bien</SectionLabel>
-        <AddressAutocomplete
-          value={state.adresse}
-          onChange={(adresse) => setField("adresse", adresse)}
-        />
-        <p
-          style={{
-            margin: "9px 2px 0",
-            fontSize: 12.5,
-            color: C.faint,
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-          }}
-        >
-          <Lock size={13} />
-          L&apos;adresse affine la comparaison. Elle reste strictement
-          confidentielle.
-        </p>
-        <FieldMsg
-          message={
-            errors["adresse"] ??
-            errors["adresse.libelle"] ??
-            errors["adresse.codeInsee"]
-          }
-        />
       </div>
     </div>
   );

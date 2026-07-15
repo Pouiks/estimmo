@@ -7,6 +7,7 @@ import type {
 } from "@/lib/estimation/types";
 import type { EstimationFormState } from "./form-state";
 import { C } from "./design";
+import { QuartierBlock } from "./quartier-block";
 import { MENTIONS, SITE } from "@/lib/config";
 
 export type ResultatApi = {
@@ -217,6 +218,7 @@ export function ResultatEstimation({
           votre estimation et vous rappelle au numéro indiqué. Un email de
           confirmation vient de vous être envoyé.
         </p>
+        <QuartierBlock adresse={state.adresse} />
         <CarenzaCard vente />
         <br />
         <RestartLink onRestart={onRestart} />
@@ -275,10 +277,12 @@ export function ResultatEstimation({
           textAlign: "left",
         }}
       >
-        <StatCard label="Surface" value={`${state.surface || "—"} m²`} />
+        <StatCard label="Surface" value={`${state.surface || "?"} m²`} />
         <StatCard label="Confiance" value={confidence} />
         <StatCard label="Source" value={vente ? "DVF" : "ANIL"} />
       </div>
+
+      <QuartierBlock adresse={state.adresse} />
 
       <CarenzaCard vente={vente} />
 
