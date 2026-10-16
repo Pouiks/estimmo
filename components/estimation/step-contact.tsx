@@ -55,6 +55,31 @@ export function StepContact({ state, setField, errors }: StepProps) {
         <FieldMsg message={errors["email"]} />
       </div>
 
+      {/* Pot de miel : invisible et hors tabulation pour un humain, rempli
+          par les robots qui complètent tous les champs. */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          left: -10000,
+          top: "auto",
+          width: 1,
+          height: 1,
+          overflow: "hidden",
+        }}
+      >
+        <label htmlFor="site-web">Site web (laisser vide)</label>
+        <input
+          id="site-web"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={state.siteWeb}
+          onChange={(e) => setField("siteWeb", e.target.value)}
+        />
+      </div>
+
       <div style={{ marginBottom: 16 }}>
         <SectionLabel hint="pour être rappelé(e)">Téléphone</SectionLabel>
         <TextField

@@ -46,6 +46,8 @@ export interface EstimationFormState {
   email: string;
   telephone: string;
   consentement: boolean;
+  /** Pot de miel anti-robots : champ invisible, doit rester vide. */
+  siteWeb: string;
   /** Stats de quartier chargées à l'étape 1, réutilisées à l'écran résultat. */
   quartierStats: QuartierStats | null;
 }
@@ -77,6 +79,7 @@ export const initialFormState: EstimationFormState = {
   email: "",
   telephone: "",
   consentement: false,
+  siteWeb: "",
   quartierStats: null,
 };
 

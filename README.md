@@ -39,7 +39,7 @@ Import partiel pour développer plus vite :
 | `SUPABASE_DB_URL` | Chaîne Postgres « Session pooler » - scripts locaux/CI uniquement |
 | `RESEND_API_KEY` / `EMAIL_FROM` | Emails transactionnels via Resend (absents = simulation en console) ; `EMAIL_FROM` sur domaine vérifié |
 | `CRM_WEBHOOK_URL` / `CRM_API_KEY` | Webhook du CRM externe (absents = file en attente) |
-| `CRON_SECRET` | Protège `/api/cron/crm-sync` et `/api/revalidate` |
+| `CRON_SECRET` | Protège `/api/cron/crm-sync` et `/api/revalidate` ; signe les liens « être rappelé » (**obligatoire en production**) |
 | `ADMIN_NOTIFICATION_EMAIL` | Destinataire des notifications de nouveaux leads |
 | `NEXT_PUBLIC_SITE_URL` | URL canonique du site (SEO, emails) |
 | `SEO_PRERENDER_COUNT` | Pages communes pré-rendues au build (défaut 2000) |
@@ -59,7 +59,7 @@ Import partiel pour développer plus vite :
 ## Architecture
 
 ```
-app/(site)/        Public SEO : landing, estimation (4 étapes), /prix-immobilier/[commune]
+app/(site)/        Public SEO : landing (tunnel d'estimation intégré), /estimation, /prix-immobilier/[commune]
                    (~35 000 pages ISR 24 h), blog, pages légales
 app/(admin)/admin/ Back-office protégé (proxy + rôle) : leads, estimations
                    manuelles, blog TipTap, stats
@@ -68,7 +68,8 @@ app/api/           leads (création + estimation + score), geocode (proxy IGN),
 lib/estimation/    Moteur pur testé : comparables par paliers, médiane pondérée,
                    ajustements ±25 %, loyers ANIL, score lead, zones non couvertes
 lib/crm/           Payload contractuel + file de synchro (retry backoff, idempotence)
-lib/brevo/         Emails prospect + notification interne
+lib/email/         Emails prospect + notification interne (Resend)
+lib/security/      Rate limit mémoire par IP, comparaison de secrets, échappement HTML
 scripts/           Imports DVF/ANIL (hors Vercel), migrations, outillage
 supabase/          Migrations SQL (RLS verrouillé partout)
 ```

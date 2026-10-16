@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { rateLimit } from "@/lib/security/rate-limit";
 import { buildCrmPayload, type EstimationResultat } from "@/lib/crm/payload";
 import { calculerScoreLead } from "@/lib/estimation/score";
 import { estimerLocation } from "@/lib/estimation/location";
@@ -20,6 +21,14 @@ import { createAdminClient } from "@/lib/supabase/admin";
  *  5. emails Resend (prospect + notification interne, jamais bloquants)
  */
 export async function POST(request: NextRequest) {
+  // Anti-abus : 5 leads / 10 min par IP (chaque lead déclenche 2 emails).
+  const limited = rateLimit(request, {
+    scope: "leads",
+    limit: 5,
+    windowMs: 10 * 60_000,
+  });
+  if (limited) return limited;
+
   let body: unknown;
   try {
     body = await request.json();
@@ -40,6 +49,19 @@ export async function POST(request: NextRequest) {
   }
 
   const lead = parsed.data;
+
+  // Pot de miel : champ invisible pour un humain, rempli par les robots.
+  // On répond comme un succès (écran « estimation manuelle ») sans rien
+  // enregistrer ni envoyer, pour ne pas renseigner le robot.
+  if (lead.website) {
+    console.warn("[leads] honeypot déclenché, soumission ignorée");
+    return NextResponse.json({
+      leadId: crypto.randomUUID(),
+      manuelle: true,
+      estimation: null,
+    });
+  }
+
   const dateConsentement = new Date().toISOString();
 
   // Dernier étage déduit de étage + étages de l'immeuble : bonus moteur

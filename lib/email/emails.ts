@@ -4,6 +4,7 @@ import type { LeadPayload } from "@/lib/leads/schema";
 import { normaliserTelephone } from "@/lib/leads/schema";
 import { rappelToken } from "@/lib/leads/rappel-token";
 import { SITE } from "@/lib/config";
+import { escapeHtml } from "@/lib/security/html";
 import { renderEmailProspect } from "./template";
 
 /**
@@ -87,14 +88,18 @@ export async function envoyerEmailsLead(params: {
   // --- 2. Notification interne à l'agent ---
   const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL ?? SITE.agent.email;
   const tel = normaliserTelephone(lead.telephone);
-  const recapBien = `${lead.typeBien === "appartement" ? "Appartement" : "Maison"} · ${lead.surface} m² · ${lead.pieces} pièce(s) - ${lead.adresse.libelle}`;
+  // Valeurs saisies par le prospect : toujours échappées avant insertion HTML.
+  const prenom = escapeHtml(lead.prenom);
+  const nom = escapeHtml(lead.nom);
+  const email = escapeHtml(lead.email);
+  const recapBien = `${lead.typeBien === "appartement" ? "Appartement" : "Maison"} · ${lead.surface} m² · ${lead.pieces} pièce(s) - ${escapeHtml(lead.adresse.libelle)}`;
 
   const htmlInterne = `
   <div style="font-family:Arial,Helvetica,sans-serif;color:#111827;max-width:560px">
     <h2 style="font-size:18px">Nouveau lead ${SITE.name} - score ${score}/100${estimation === null ? " - ⚠️ ESTIMATION MANUELLE" : ""
     }</h2>
     <ul style="line-height:1.7">
-      <li><strong>${lead.prenom} ${lead.nom}</strong> - <a href="tel:${tel}">${tel}</a> - ${lead.email}</li>
+      <li><strong>${prenom} ${nom}</strong> - <a href="tel:${tel}">${tel}</a> - ${email}</li>
       <li>Projet : ${lead.projet}${lead.horizon ? ` (${lead.horizon})` : ""}</li>
       <li>Bien : ${recapBien}</li>
       <li>Estimation : ${estimation === null

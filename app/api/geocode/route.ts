@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { rateLimit } from "@/lib/security/rate-limit";
 
 /**
  * Proxy d'autocomplétion d'adresses - Géoplateforme IGN.
@@ -33,6 +34,14 @@ const CACHE_TTL_MS = 60 * 60 * 1000;
 const CACHE_MAX_ENTRIES = 1_000;
 
 export async function GET(request: NextRequest) {
+  // Proxy vers l'IGN : on protège leur quota et notre IP sortante.
+  const limited = rateLimit(request, {
+    scope: "geocode",
+    limit: 120,
+    windowMs: 60_000,
+  });
+  if (limited) return limited;
+
   const q = request.nextUrl.searchParams.get("q")?.trim() ?? "";
   if (q.length < 3) {
     return NextResponse.json({ suggestions: [] });

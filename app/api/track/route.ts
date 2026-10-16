@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { rateLimit } from "@/lib/security/rate-limit";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -10,6 +11,14 @@ const eventSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  // Un parcours complet émet ~8 événements : 60/min par IP est large.
+  const limited = rateLimit(request, {
+    scope: "track",
+    limit: 60,
+    windowMs: 60_000,
+  });
+  if (limited) return limited;
+
   let body: unknown;
   try {
     body = await request.json();

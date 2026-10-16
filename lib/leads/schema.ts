@@ -180,6 +180,8 @@ export const leadPayloadSchema = z
     adresse: adresseSchema,
     sessionId: z.uuid().optional(),
     utm: z.record(z.string(), z.string()).optional(),
+    /** Pot de miel anti-robots : doit rester vide (champ caché du formulaire). */
+    website: z.string().max(200).optional(),
   })
   .extend(etape2Base.shape)
   .extend(etape3Schema.shape)

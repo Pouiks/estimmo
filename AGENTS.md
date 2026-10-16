@@ -50,6 +50,14 @@ Vitest · pnpm. Déploiement Vercel.
 - [x] Phase 7 - SEO : ~35 k pages communes ISR, sitemap 34 923 URLs, JSON-LD Dataset+FAQ
 - [x] Phase 8 - Lighthouse prod : landing Perf 95/SEO 100 ; commune Perf 96/SEO 100
 
+## Sécurité (16/10/2026)
+- `lib/security/rate-limit.ts` : limite par IP en mémoire sur /api/leads (5/10 min), track, geocode, quartier. Par instance serverless, pas globale
+- Pot de miel `website` dans le payload lead : si rempli → faux succès, rien n'est enregistré
+- Emails : toute valeur saisie par le prospect passe par `escapeHtml` ; export CSV neutralise les formules
+- `CRON_SECRET` obligatoire en prod (jetons de rappel) ; comparaisons Bearer en temps constant
+- `shadcn` est une devDependency (CLI) : ne pas le remettre en dependencies (il tire 20+ CVE inutiles)
+- Le formulaire d'estimation est intégré au hero de la landing (`#estimation`) ; /estimation reste pour les liens entrants
+
 ## Contraintes déploiement
 - Plan Vercel **Pro** → cron toutes les 5 min autorisé (vercel.json = `*/5 * * * *`).
   NB : le plan Hobby (gratuit) limite les crons à 1×/jour et ferait échouer le

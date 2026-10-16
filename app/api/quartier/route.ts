@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { rateLimit } from "@/lib/security/rate-limit";
 import { fetchQuartierStats } from "@/lib/quartier";
 
 /**
@@ -7,6 +8,14 @@ import { fetchQuartierStats } from "@/lib/quartier";
  * l'UI se dégrade silencieusement si stats est null.
  */
 export async function GET(request: NextRequest) {
+  // Overpass bannit vite les IP abusives : on limite en amont.
+  const limited = rateLimit(request, {
+    scope: "quartier",
+    limit: 30,
+    windowMs: 60_000,
+  });
+  if (limited) return limited;
+
   const lat = Number.parseFloat(request.nextUrl.searchParams.get("lat") ?? "");
   const lon = Number.parseFloat(request.nextUrl.searchParams.get("lon") ?? "");
 

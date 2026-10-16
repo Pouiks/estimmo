@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { isAuthorizedBearer } from "@/lib/security/secret";
 import { processCrmQueue } from "@/lib/crm/sync";
 
 /**
@@ -8,10 +9,12 @@ import { processCrmQueue } from "@/lib/crm/sync";
 export const maxDuration = 60;
 
 export async function GET(request: NextRequest) {
-  const secret = process.env.CRON_SECRET;
-  const authorization = request.headers.get("authorization");
-
-  if (!secret || authorization !== `Bearer ${secret}`) {
+  if (
+    !isAuthorizedBearer(
+      request.headers.get("authorization"),
+      process.env.CRON_SECRET
+    )
+  ) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
 

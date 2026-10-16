@@ -1,5 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
+import { isAuthorizedBearer } from "@/lib/security/secret";
 import { z } from "zod";
 
 /**
@@ -14,9 +15,12 @@ const bodySchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
-  const secret = process.env.CRON_SECRET;
-  const authorization = request.headers.get("authorization");
-  if (!secret || authorization !== `Bearer ${secret}`) {
+  if (
+    !isAuthorizedBearer(
+      request.headers.get("authorization"),
+      process.env.CRON_SECRET
+    )
+  ) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
 

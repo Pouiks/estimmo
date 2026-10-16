@@ -7,6 +7,7 @@
 import type { EstimationResultat } from "@/lib/crm/payload";
 import type { LeadPayload } from "@/lib/leads/schema";
 import { MENTIONS, SITE } from "@/lib/config";
+import { escapeHtml } from "@/lib/security/html";
 
 const COL = {
   brand: "#2e90e5",
@@ -65,7 +66,7 @@ function recapBien(lead: LeadPayload): string {
       <td style="padding:16px 18px;font-family:Arial,Helvetica,sans-serif">
         <p style="margin:0 0 4px;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:${COL.faint}">Votre bien</p>
         <p style="margin:0;font-size:15px;font-weight:bold;color:${COL.ink}">${details}</p>
-        <p style="margin:4px 0 0;font-size:13px;color:${COL.muted}">${lead.adresse.libelle}</p>
+        <p style="margin:4px 0 0;font-size:13px;color:${COL.muted}">${escapeHtml(lead.adresse.libelle)}</p>
       </td>
     </tr>
   </table>`;
@@ -149,10 +150,10 @@ function blocCarenza(
 ): string {
   const message =
     estimation === null
-      ? `Bonjour ${lead.prenom}, je prépare personnellement votre estimation et je vous rappelle très vite. Ensemble, nous verrons comment valoriser au mieux votre bien.`
+      ? `Bonjour ${escapeHtml(lead.prenom)}, je prépare personnellement votre estimation et je vous rappelle très vite. Ensemble, nous verrons comment valoriser au mieux votre bien.`
       : lead.projet === "vente"
-        ? `Bonjour ${lead.prenom}, je vous rappelle personnellement pour affiner cette estimation sur place et, si vous le souhaitez, vendre votre bien au meilleur prix. Photos professionnelles, diffusion prioritaire, négociation : je m'occupe de tout.`
-        : `Bonjour ${lead.prenom}, je vous rappelle personnellement pour affiner cette estimation de loyer et vous accompagner dans la mise en location de votre bien, de la recherche du locataire au bail.`;
+        ? `Bonjour ${escapeHtml(lead.prenom)}, je vous rappelle personnellement pour affiner cette estimation sur place et, si vous le souhaitez, vendre votre bien au meilleur prix. Photos professionnelles, diffusion prioritaire, négociation : je m'occupe de tout.`
+        : `Bonjour ${escapeHtml(lead.prenom)}, je vous rappelle personnellement pour affiner cette estimation de loyer et vous accompagner dans la mise en location de votre bien, de la recherche du locataire au bail.`;
 
   return `
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${COL.brandLight};border:1px solid ${COL.brandBorder};border-radius:14px;margin:8px 0 24px">
@@ -294,7 +295,7 @@ export function renderEmailProspect(params: {
       : `Découvrez votre estimation et échangez avec ${SITE.agent.name}, votre conseillère.`;
 
   const contenu = `
-    <p style="margin:0 0 4px;font-family:Arial,Helvetica,sans-serif;font-size:16px;color:${COL.ink}">Bonjour ${lead.prenom},</p>
+    <p style="margin:0 0 4px;font-family:Arial,Helvetica,sans-serif;font-size:16px;color:${COL.ink}">Bonjour ${escapeHtml(lead.prenom)},</p>
     <p style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:${COL.muted}">
       Merci d'avoir estimé votre bien avec ${SITE.name}. Voici votre résultat,
       fondé sur les ventes réelles de votre quartier.

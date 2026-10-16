@@ -55,9 +55,12 @@ export async function GET(request: NextRequest) {
     "notes",
   ];
 
+  // Injection de formule : une cellule commençant par = + - @ ou une
+  // tabulation serait exécutée par Excel/LibreOffice à l'ouverture.
   const escapeCsv = (value: unknown): string => {
     if (value === null || value === undefined) return "";
-    const s = String(value);
+    let s = String(value);
+    if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
     return /[";\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
 
