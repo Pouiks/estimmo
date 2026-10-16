@@ -18,6 +18,7 @@ import {
   formatEvo,
   introCommune,
 } from "@/lib/seo/templates";
+import { hrefDepartement, nomDepartement } from "@/lib/seo/departements";
 
 /** ISR : revalidation quotidienne, pages hors top 2000 générées à la demande. */
 export const revalidate = 86400;
@@ -127,9 +128,19 @@ export default async function CommunePage({
         name: "Prix immobilier",
         item: `${SITE.url}/prix-immobilier`,
       },
+      ...(nomDepartement(stats.departement)
+        ? [
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: nomDepartement(stats.departement),
+              item: `${SITE.url}${hrefDepartement(stats.departement)}`,
+            },
+          ]
+        : []),
       {
         "@type": "ListItem",
-        position: 3,
+        position: nomDepartement(stats.departement) ? 4 : 3,
         name: stats.nom_commune,
         item: `${SITE.url}/prix-immobilier/${slug}`,
       },
@@ -160,6 +171,17 @@ export default async function CommunePage({
           <Link href="/prix-immobilier" className="hover:text-foreground">
             Prix immobilier
           </Link>{" "}
+          {nomDepartement(stats.departement) && (
+            <>
+              ›{" "}
+              <Link
+                href={hrefDepartement(stats.departement)}
+                className="hover:text-foreground"
+              >
+                {nomDepartement(stats.departement)}
+              </Link>{" "}
+            </>
+          )}
           › <span className="text-foreground">{stats.nom_commune}</span>
         </nav>
 
@@ -325,6 +347,17 @@ export default async function CommunePage({
             <h2 className="text-lg font-semibold">
               Prix immobilier dans le département ({stats.departement})
             </h2>
+            {nomDepartement(stats.departement) && (
+              <p className="mt-1 text-sm text-muted-foreground">
+                <Link
+                  href={hrefDepartement(stats.departement)}
+                  className="text-primary underline underline-offset-4"
+                >
+                  Toutes les communes {nomDepartement(stats.departement) === "Paris" ? "de" : "du"}{" "}
+                  {nomDepartement(stats.departement)} ({stats.departement})
+                </Link>
+              </p>
+            )}
             <ul className="mt-3 flex flex-wrap gap-2">
               {voisines.map((v) => (
                 <li key={v.slug}>

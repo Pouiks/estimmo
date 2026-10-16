@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
   BadgeEuro,
   CheckCircle2,
@@ -12,6 +13,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { EstimationForm } from "@/components/estimation/estimation-form";
 import { MENTIONS, SITE } from "@/lib/config";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: `${SITE.name} - ${SITE.baseline}`,
+    description: SITE.description,
+    url: "/",
+  },
+};
 
 const argumentsHero = [
   "Résultat immédiat, gratuit et sans engagement",

@@ -23,6 +23,15 @@ export const metadata: Metadata = {
     template: `%s | ${SITE.name}`,
   },
   description: SITE.description,
+  openGraph: {
+    siteName: SITE.name,
+    locale: "fr_FR",
+    type: "website",
+  },
+  // Balise de vérification Google Search Console (optionnelle, via env).
+  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+    : undefined,
 };
 
 export default function RootLayout({

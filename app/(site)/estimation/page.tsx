@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Estimation gratuite de votre bien",
   description:
     "Estimez le prix de vente ou le loyer de votre appartement ou maison en 4 étapes, sur la base des données officielles DVF et ANIL.",
+  alternates: { canonical: "/estimation" },
 };
 
 export default function EstimationPage() {

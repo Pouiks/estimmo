@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { MENTIONS } from "@/lib/config";
-import { getTopCommunes } from "@/lib/seo/communes";
+import { getDepartementsResume, getTopCommunes } from "@/lib/seo/communes";
+import { hrefDepartement, nomDepartement } from "@/lib/seo/departements";
 import { euro } from "@/lib/seo/templates";
 
 export const revalidate = 86400;
@@ -15,7 +16,10 @@ export const metadata: Metadata = {
 };
 
 export default async function PrixImmobilierIndexPage() {
-  const communes = await getTopCommunes(100);
+  const [communes, departements] = await Promise.all([
+    getTopCommunes(100),
+    getDepartementsResume().catch(() => []),
+  ]);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:py-14">
@@ -62,6 +66,36 @@ export default async function PrixImmobilierIndexPage() {
           </li>
         ))}
       </ul>
+
+      {departements.length > 0 && (
+        <>
+          <h2 className="mt-12 text-xl font-bold">Par département</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Chaque département liste l&apos;ensemble de ses communes avec leur
+            prix médian au m².
+          </p>
+          <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {departements
+              .filter((d) => nomDepartement(d.departement))
+              .map((d) => (
+                <li key={d.departement}>
+                  <Link
+                    href={hrefDepartement(d.departement)}
+                    className="flex items-baseline justify-between gap-2 rounded-lg border px-3 py-2 text-sm transition-colors hover:border-primary"
+                  >
+                    <span className="font-medium">
+                      {nomDepartement(d.departement)}{" "}
+                      <span className="text-muted-foreground">({d.departement})</span>
+                    </span>
+                    <span className="whitespace-nowrap text-muted-foreground">
+                      {d.nb_communes.toLocaleString("fr-FR")} communes
+                    </span>
+                  </Link>
+                </li>
+              ))}
+          </ul>
+        </>
+      )}
 
       <p className="mt-8 text-xs text-muted-foreground">
         {MENTIONS.dvf}. {MENTIONS.anil}.

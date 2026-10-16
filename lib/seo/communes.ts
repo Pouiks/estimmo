@@ -77,6 +77,53 @@ export async function getTopCommunes(
   return data ?? [];
 }
 
+export type CommuneListe = Pick<
+  CommuneStats,
+  "slug" | "nom_commune" | "code_postal" | "prix_m2_median_appartement" | "prix_m2_median_maison" | "nb_ventes_12m"
+>;
+
+/** Toutes les communes d'un département (paginé : jusqu'à ~900 communes). */
+export async function getCommunesByDepartement(
+  departement: string
+): Promise<CommuneListe[]> {
+  const supabase = createAdminClient();
+  const pageSize = 1000;
+  const all: CommuneListe[] = [];
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await supabase
+      .from("communes_stats")
+      .select(
+        "slug, nom_commune, code_postal, prix_m2_median_appartement, prix_m2_median_maison, nb_ventes_12m"
+      )
+      .eq("departement", departement)
+      .order("nb_ventes_12m", { ascending: false })
+      .order("nom_commune")
+      .range(from, from + pageSize - 1);
+    if (error || !data || data.length === 0) break;
+    all.push(...(data as CommuneListe[]));
+    if (data.length < pageSize) break;
+  }
+  return all;
+}
+
+export interface DepartementResume {
+  departement: string;
+  nb_communes: number;
+  nb_ventes_12m: number;
+}
+
+/** Nombre de communes et de ventes par département (RPC agrégée). */
+export async function getDepartementsResume(): Promise<DepartementResume[]> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase.rpc("departements_resume");
+  if (error) throw new Error(`departements_resume : ${error.message}`);
+  return ((data ?? []) as DepartementResume[]).map((d) => ({
+    departement: d.departement,
+    nb_communes: Number(d.nb_communes),
+    nb_ventes_12m: Number(d.nb_ventes_12m),
+  }));
+}
+
 /** Tous les slugs (pour le sitemap). */
 export async function getAllCommuneSlugs(): Promise<
   { slug: string; updated_at: string }[]

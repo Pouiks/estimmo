@@ -2,6 +2,21 @@
  * Configuration marque / agent - source unique pour le site, les emails
  * et l'écran résultat.
  */
+/**
+ * Une faute dans NEXT_PUBLIC_SITE_URL (ex. « htps:// ») casse canoniques,
+ * sitemap et liens des emails pour tout le site : on répare le schéma et on
+ * retire le slash final (sinon URLs à double slash).
+ */
+export function normaliserUrlSite(brut: string): string {
+  // Ne retire que ce qui ressemble à un schéma (lettres + « : ») et les
+  // slashs qui suivent ; « www.site.fr » reste intact.
+  const sansSchema = brut.trim().replace(/^(?:[a-z]+:)?\/*/i, "");
+  const schema = /^http:\/\/(localhost|127\.0\.0\.1)/i.test(brut.trim())
+    ? "http://"
+    : "https://";
+  return (schema + sansSchema).replace(/\/+$/, "");
+}
+
 export const SITE = {
   name: "ESTIMMO",
   baseline: "Estimation immobilière gratuite, partout en France",
@@ -9,9 +24,11 @@ export const SITE = {
     "Estimez gratuitement le prix de vente ou le loyer de votre bien immobilier en 2 minutes, sur la base des données officielles DVF et ANIL.",
   // Slash final retiré : SITE.url est concaténé (sitemap, canoniques JSON-LD,
   // robots, emails) - un "/" final produirait des URLs à double slash.
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(
-    /\/+$/,
-    ""
+  url: normaliserUrlSite(
+    process.env.NEXT_PUBLIC_SITE_URL ||
+      (process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+        : "http://localhost:3000")
   ),
   agent: {
     name: "Carenza Brown",

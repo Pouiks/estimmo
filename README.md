@@ -41,8 +41,9 @@ Import partiel pour développer plus vite :
 | `CRM_WEBHOOK_URL` / `CRM_API_KEY` | Webhook du CRM externe (absents = file en attente) |
 | `CRON_SECRET` | Protège `/api/cron/crm-sync` et `/api/revalidate` ; signe les liens « être rappelé » (**obligatoire en production**) |
 | `ADMIN_NOTIFICATION_EMAIL` | Destinataire des notifications de nouveaux leads |
-| `NEXT_PUBLIC_SITE_URL` | URL canonique du site (SEO, emails) |
+| `NEXT_PUBLIC_SITE_URL` | URL canonique du site (SEO, emails), ex. `https://www.estimmo-direct.com` ; figée au build → redéployer après modification |
 | `SEO_PRERENDER_COUNT` | Pages communes pré-rendues au build (défaut 2000) |
+| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Jeton de la balise meta Google Search Console (optionnel) |
 
 ## Commandes
 

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE } from "@/lib/config";
-import { getAllCommuneSlugs } from "@/lib/seo/communes";
+import { getAllCommuneSlugs, getDepartementsResume } from "@/lib/seo/communes";
+import { hrefDepartement, nomDepartement } from "@/lib/seo/departements";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const revalidate = 86400;
@@ -26,14 +27,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const [communes, articles] = await Promise.all([
+  const [communes, departements, articles] = await Promise.all([
     getAllCommuneSlugs(),
+    getDepartementsResume().catch(() => []),
     createAdminClient()
       .from("articles")
       .select("slug, updated_at")
       .eq("statut", "publie")
       .limit(1000),
   ]);
+
+  // Seuls les départements présents en base (976 Mayotte n'a ni DVF ni ANIL).
+  const pagesDepartements: MetadataRoute.Sitemap = departements
+    .filter((d) => nomDepartement(d.departement))
+    .map((d) => ({
+      url: `${base}${hrefDepartement(d.departement)}`,
+      changeFrequency: "weekly",
+      priority: 0.75,
+    }));
 
   const pagesCommunes: MetadataRoute.Sitemap = communes.map((c) => ({
     url: `${base}/prix-immobilier/${c.slug}`,
@@ -51,5 +62,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   );
 
-  return [...statiques, ...pagesCommunes, ...pagesArticles];
+  return [...statiques, ...pagesDepartements, ...pagesCommunes, ...pagesArticles];
 }
