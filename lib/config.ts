@@ -15,9 +15,9 @@ export const SITE = {
   ),
   agent: {
     name: "Carenza Brown",
-    phone: "06 12 34 56 78",
-    phoneHref: "tel:+33612345678",
-    email: "browncarenza@gmail.com",
+    phone: "06 11 11 84 69",
+    phoneHref: "tel:+33611118469",
+    email: "carenza.brown@iadfrance.fr",
   },
   honoraires: {
     exclusif: "à partir de 3 %",

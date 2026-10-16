@@ -11,7 +11,7 @@ Objectif business : capter les coordonnées AVANT d'afficher le résultat, score
 
 **Marque / nom du site** : `ESTIMMO`
 **Honoraires affichés** : `entre 3 et 7% en mandat exclusif` vs `Entre 3 et 6% en mandat simple`
-**Coordonnées de l'agent (email résultat + footer)** : `Carenza Brown - 06 12 34 56 78 - browncarenza@gmail.com`
+**Coordonnées de l'agent (email résultat + footer)** : `Carenza Brown - 06 11 11 84 69 - carenza.brown@iadfrance.fr`
 
 ---
 
@@ -256,7 +256,7 @@ Composant multi-étapes avec barre de progression, state persisté (localStorage
 
 ## Email de confirmation (Brevo)
 
-Template transactionnel envoyé immédiatement : récapitulatif du bien, fourchette d'estimation (ou « analyse manuelle sous 24 h »), coordonnées complètes de l'agent `Carenza Brown - 06 12 34 56 78 - browncarenza@gmail.com`, CTA « Prendre rendez-vous », rappel honoraires exclusif vs simple, lien politique de confidentialité et désinscription. Envoyer aussi une **notification interne** à l'agent pour chaque lead avec le score et le téléphone.
+Template transactionnel envoyé immédiatement : récapitulatif du bien, fourchette d'estimation (ou « analyse manuelle sous 24 h »), coordonnées complètes de l'agent `Carenza Brown - 06 11 11 84 69 - carenza.brown@iadfrance.fr`, CTA « Prendre rendez-vous », rappel honoraires exclusif vs simple, lien politique de confidentialité et désinscription. Envoyer aussi une **notification interne** à l'agent pour chaque lead avec le score et le téléphone.
 
 ---
 
@@ -314,7 +314,7 @@ Payload :
 ## RGPD & légal
 
 - Consentement explicite stocké avec horodatage ; finalité claire.
-- Page politique de confidentialité : responsable de traitement `CARENZA BROWN`, finalités (estimation + recontact commercial), durée de conservation des leads **3 ans après dernier contact**, droits d'accès/rectification/suppression via `browncarenza@gmail.com`.
+- Page politique de confidentialité : responsable de traitement `CARENZA BROWN`, finalités (estimation + recontact commercial), durée de conservation des leads **3 ans après dernier contact**, droits d'accès/rectification/suppression via `carenza.brown@iadfrance.fr`.
 - Mentions légales complètes ; bannière cookies uniquement si un outil analytics dépose des cookies (préférer un analytics sans cookie type Vercel Analytics).
 - Mention source ANIL sur tout affichage de loyer ; mention « source : DVF - data.gouv.fr » sur les stats de vente.
 

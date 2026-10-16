@@ -134,7 +134,7 @@ describe("leadPayloadSchema", () => {
       prenom: "Sophie",
       nom: "Martin",
       email: "sophie@example.com",
-      telephone: "06 12 34 56 78",
+      telephone: "06 11 11 84 69",
       consentement: true,
     });
     expect(parsed.success).toBe(true);
