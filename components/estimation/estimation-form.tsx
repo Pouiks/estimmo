@@ -181,6 +181,7 @@ export function EstimationForm() {
       email: state.email,
       telephone: state.telephone,
       consentement: state.consentement,
+      website: state.siteWeb,
       sessionId: sessionIdRef.current ?? undefined,
       utm: utmRef.current,
     };
@@ -238,7 +239,7 @@ export function EstimationForm() {
         }}
       >
         {/* Progression */}
-        <div style={{ padding: "22px 30px 0" }}>
+        <div className="px-4 pt-4 sm:px-[30px] sm:pt-[22px]">
           <div
             style={{
               display: "flex",
@@ -283,7 +284,10 @@ export function EstimationForm() {
         </div>
 
         {/* Contenu */}
-        <div style={{ padding: "26px 30px 30px", minHeight: 360 }}>
+        <div
+          className="px-4 pb-5 pt-5 sm:px-[30px] sm:pb-[30px] sm:pt-[26px]"
+          style={{ minHeight: 360 }}
+        >
           {isResult ? (
             <ResultatEstimation
               resultat={resultat}
@@ -326,11 +330,11 @@ export function EstimationForm() {
         {/* Navigation */}
         {!isResult && (
           <div
+            className="px-4 py-3.5 sm:px-[30px] sm:py-[18px]"
             style={{
               display: "flex",
               alignItems: "center",
               gap: 12,
-              padding: "18px 30px",
               borderTop: "1px solid #F0F3F1",
               background: "#FCFDFC",
             }}

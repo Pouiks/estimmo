@@ -1,6 +1,6 @@
-import Link from "next/link";
 import {
   BadgeEuro,
+  CheckCircle2,
   ClipboardList,
   Database,
   Lock,
@@ -10,7 +10,14 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { SITE } from "@/lib/config";
+import { EstimationForm } from "@/components/estimation/estimation-form";
+import { MENTIONS, SITE } from "@/lib/config";
+
+const argumentsHero = [
+  "Résultat immédiat, gratuit et sans engagement",
+  "Fondé sur les ventes réelles (DVF) et les loyers ANIL",
+  "Vente ou location, partout en France",
+];
 
 const steps = [
   {
@@ -95,7 +102,7 @@ export default function HomePage() {
     "@type": "RealEstateAgent",
     name: SITE.name,
     url: SITE.url,
-    telephone: "+33612345678",
+    telephone: SITE.agent.phoneHref.replace(/^tel:/, ""),
     email: SITE.agent.email,
     priceRange: `Honoraires ${SITE.honoraires.exclusif} en mandat exclusif`,
     areaServed: { "@type": "Country", name: "France" },
@@ -136,32 +143,45 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }}
       />
 
-      {/* Hero */}
-      <section className="border-b bg-gradient-to-b from-primary/5 to-background">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-20 text-center sm:py-28">
-          <p className="rounded-full border bg-background px-4 py-1 text-xs font-medium text-muted-foreground">
-            Basé sur les ventes officielles enregistrées par l'État
-          </p>
-          <h1 className="max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl">
-            Combien vaut votre bien immobilier&nbsp;?
-          </h1>
-          <p className="max-w-2xl text-lg text-muted-foreground">
-            Estimation gratuite en 2 minutes - vente ou location. Fourchette de
-            prix immédiate, fondée sur les transactions réelles de votre
-            quartier.
-          </p>
-          <div className="flex flex-col items-center gap-3 sm:flex-row">
-            <Button
-              size="lg"
-              className="text-base"
-              render={<Link href="/estimation" />}
-            >
-              Estimer mon bien gratuitement
-            </Button>
+      {/* Hero : le tunnel d'estimation est le premier élément du DOM.
+          Mobile : formulaire seul en haut, texte SEO/GEO compact dessous.
+          Desktop : texte à gauche (order-first), formulaire à droite. */}
+      <section
+        id="estimation"
+        className="scroll-mt-16 border-b bg-gradient-to-b from-primary/5 to-background"
+      >
+        <div className="mx-auto grid max-w-6xl items-start gap-8 px-3 pb-10 pt-3 sm:px-4 sm:pt-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,600px)] lg:gap-12 lg:py-20">
+          <div className="dcx w-full" style={{ color: "#0C1F1C" }}>
+            <EstimationForm />
+            <p className="mx-auto mt-3 max-w-lg text-center text-[11px] leading-relaxed text-muted-foreground sm:text-xs">
+              {MENTIONS.disclaimer}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-4 border-t pt-8 lg:order-first lg:gap-6 lg:border-0 lg:pt-6">
+            <p className="w-fit rounded-full border bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
+              Basé sur les ventes officielles enregistrées par l'État
+            </p>
+            <h1 className="max-w-3xl text-2xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
+              Combien vaut votre bien immobilier&nbsp;?
+            </h1>
+            <p className="max-w-2xl text-sm text-muted-foreground sm:text-lg">
+              Estimation gratuite en 2 minutes - vente ou location. Fourchette
+              de prix immédiate, fondée sur les transactions réelles de votre
+              quartier.
+            </p>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              {argumentsHero.map((item) => (
+                <li key={item} className="flex items-start gap-2">
+                  <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
             <Button
               size="lg"
               variant="outline"
-              className="text-base"
+              className="w-fit text-base"
               render={<a href={SITE.agent.phoneHref} />}
             >
               Appeler {SITE.agent.phone}
@@ -252,7 +272,7 @@ export default function HomePage() {
               <Button
                 size="lg"
                 variant="secondary"
-                render={<Link href="/estimation" />}
+                render={<a href="#estimation" />}
               >
                 Démarrer mon estimation
               </Button>

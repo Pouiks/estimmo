@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { MENTIONS, SITE } from "@/lib/config";
 
 export default function SiteLayout({
@@ -19,9 +18,6 @@ export default function SiteLayout({
             >
               Blog
             </Link>
-            <Button size="sm" render={<Link href="/estimation" />}>
-              Estimation gratuite
-            </Button>
           </nav>
         </div>
       </header>
