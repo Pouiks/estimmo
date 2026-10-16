@@ -95,28 +95,28 @@ async function detectYears(count: number): Promise<number[]> {
   return found.sort();
 }
 
+/**
+ * Format compact (migration 20261016120000_dvf_compact) : prix/m² en real,
+ * surface en smallint, type sur 1 caractère, position en micro-degrés.
+ */
 async function insertBatch(client: Client, rows: CleanMutation[]) {
   await client.query(
     `insert into dvf_mutations
-       (date_mutation, valeur_fonciere, type_local, surface_reelle_bati,
-        nb_pieces, code_insee, code_departement, code_postal, geom)
-     select d, v, t, s, p, ci, cd, cp,
-            st_setsrid(st_makepoint(lon, lat), 4326)
+       (date_mutation, prix_m2, surface_reelle_bati, type_local,
+        code_insee, lat_e6, lon_e6)
+     select d, p, s, t::"char", ci, lat, lon
      from unnest(
-       $1::date[], $2::numeric[], $3::text[], $4::numeric[], $5::int[],
-       $6::text[], $7::text[], $8::text[], $9::float8[], $10::float8[]
-     ) as u(d, v, t, s, p, ci, cd, cp, lon, lat)`,
+       $1::date[], $2::real[], $3::smallint[], $4::text[],
+       $5::text[], $6::int[], $7::int[]
+     ) as u(d, p, s, t, ci, lat, lon)`,
     [
       rows.map((r) => r.date_mutation),
-      rows.map((r) => r.valeur_fonciere),
-      rows.map((r) => r.type_local),
-      rows.map((r) => r.surface_reelle_bati),
-      rows.map((r) => r.nb_pieces),
+      rows.map((r) => Math.round((r.valeur_fonciere / r.surface_reelle_bati) * 100) / 100),
+      rows.map((r) => Math.round(r.surface_reelle_bati)),
+      rows.map((r) => (r.type_local === "appartement" ? "A" : "M")),
       rows.map((r) => r.code_insee),
-      rows.map((r) => r.code_departement),
-      rows.map((r) => r.code_postal),
-      rows.map((r) => r.lon),
-      rows.map((r) => r.lat),
+      rows.map((r) => Math.round(r.lat * 1e6)),
+      rows.map((r) => Math.round(r.lon * 1e6)),
     ]
   );
 }
@@ -269,7 +269,10 @@ async function main() {
             `delete from dvf_mutations
                where date_mutation >= make_date($1, 1, 1)
                  and date_mutation < make_date($1 + 1, 1, 1)
-                 and code_departement = any($2)`,
+                 and exists (
+                   select 1 from unnest($2::text[]) as d(code)
+                   where dvf_mutations.code_insee like d.code || '%'
+                 )`,
             [year, depts]
           );
         console.log(

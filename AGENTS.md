@@ -1,7 +1,11 @@
 <!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
 
-This version has breaking changes - APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
 <!-- END:nextjs-agent-rules -->
 
 # ESTIMMO - notes projet
@@ -32,7 +36,10 @@ Vitest · pnpm. Déploiement Vercel.
 - Fourchette d'estimation vente resserrée à ±5-10 % selon dispersion (le ±6-15 %
   du brief donnait des écarts de 60 k€ jugés peu crédibles). Marque en bleu
   #2E90E5, tunnel d'estimation en Arial (15/07/2026)
-- Import DVF : France entière, 3 dernières années (Supabase plan Pro requis)
+- Import DVF : France entière, 3 dernières années. Depuis le 16/10/2026 la table
+  `dvf_mutations` est au format compact (lat/lon en micro-degrés, prix_m2 real,
+  type 'A'/'M', pas de PostGIS stocké) : ~92 octets/ligne, ~210 Mo France entière
+  → tient dans le plan Supabase **gratuit** (500 Mo). Moteur et signatures SQL inchangés
 - Email : Resend (pas Brevo - Brevo bloquait l'envoi des comptes gratuits). `lib/email`, `EMAIL_FROM` sur domaine vérifié earlypanel.fr. Sans clé en dev → simulation console
 - CRM sans clé en dev → file en pending
 - Départements sans DVF : 57, 67, 68, 976 (le brief inversait 67/68) → fallback estimation manuelle
@@ -42,6 +49,7 @@ Vitest · pnpm. Déploiement Vercel.
 ## État d'avancement - PROJET LIVRÉ (14/07/2026)
 - [x] Phase 1 - Socle (Next 16, migrations, auth admin)
 - [x] Phase 1bis - Supabase cloud (eu-west-1, pooler aws-0) : migrations + admin + imports
+- [x] 16/10/2026 - Nouveau projet Supabase gratuit (mppdrdqykslyflmejzbt) : 6 migrations, ANIL 2025, DVF compact
 - [x] Phase 2 - Imports : DVF France 2023-2025 (2 290 975 ventes, ~650 Mo), ANIL 2025 (34 900 communes)
 - [x] Phase 3 - Moteur estimation (64 tests Vitest)
 - [x] Phase 4 - Formulaire 4 étapes + API leads + résultat (E2E : Nice vente/location, Strasbourg→manuelle)
@@ -70,5 +78,4 @@ Vitest · pnpm. Déploiement Vercel.
 - Clé Resend (RESEND_API_KEY) + EMAIL_FROM sur domaine vérifié (sinon simulation console)
 - URL + clé du webhook CRM du propriétaire
 - Repo GitHub (secrets SUPABASE_DB_URL, CRON_SECRET, var SITE_URL) + déploiement Vercel
-- Vérifier le plan Supabase Pro (base 647 Mo > free tier)
 - Purger les leads de test : delete from leads (cascade crm_sync_queue)

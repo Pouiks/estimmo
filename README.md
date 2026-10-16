@@ -23,7 +23,7 @@ cp .env.example .env.local        # puis remplir les clés (voir ci-dessous)
 pnpm db:migrate                   # applique supabase/migrations/*.sql
 pnpm admin:create admin@exemple.fr motdepasse
 pnpm import:loyers                # loyers ANIL (~2 min)
-pnpm import:dvf                   # DVF France entière 3 ans (~10 min, ~650 Mo en base)
+pnpm import:dvf                   # DVF France entière 3 ans (~5 min, ~210 Mo en base)
 pnpm dev                          # http://localhost:3000
 ```
 
@@ -94,4 +94,6 @@ supabase/          Migrations SQL (RLS verrouillé partout)
 2. `vercel.json` programme le cron CRM (`*/5 * * * *`) - définir `CRON_SECRET`.
 3. Secrets GitHub Actions : `SUPABASE_DB_URL`, `CRON_SECRET` + variable
    `SITE_URL` pour la revalidation post-import.
-4. Supabase : plan **Pro** requis (la base DVF France ≈ 650 Mo).
+4. Supabase : le plan **gratuit** suffit (base complète ≈ 250 Mo sur 500 Mo
+   grâce au format compact de `dvf_mutations`, migration `20261016120000`).
+   Attention : un projet gratuit est mis en pause après 7 jours sans requête.
