@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { connection } from "next/server";
 import {
   ArrowDownRight,
   ArrowRight,
@@ -43,31 +44,53 @@ const euro = (n: number) =>
 const evo = (n: number | null) =>
   n === null ? "n.d." : `${n > 0 ? "+" : ""}${Number(n).toLocaleString("fr-FR")} %`;
 
+const formatMaj = (d: Date) =>
+  d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+
 async function chargerBarometre() {
-  const [kpis, hausses, baisses, cheres, abordables, grandsMarches] =
-    await Promise.all([
-      getKpisBarometre(),
-      getPlusFortesHausses(),
-      getPlusFortesBaisses(),
-      getPlusCheres(),
-      getPlusAbordables(),
-      getGrandsMarches(),
-    ]);
-  const majDate = kpis.updated_at ? new Date(kpis.updated_at) : new Date();
-  return {
-    kpis,
-    hausses,
-    baisses,
-    cheres,
-    abordables,
-    grandsMarches,
-    annee: majDate.getFullYear(),
-    majLabel: majDate.toLocaleDateString("fr-FR", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }),
-  };
+  try {
+    const [kpis, hausses, baisses, cheres, abordables, grandsMarches] =
+      await Promise.all([
+        getKpisBarometre(),
+        getPlusFortesHausses(),
+        getPlusFortesBaisses(),
+        getPlusCheres(),
+        getPlusAbordables(),
+        getGrandsMarches(),
+      ]);
+    const majDate = kpis.updated_at ? new Date(kpis.updated_at) : new Date();
+    return {
+      disponible: true,
+      kpis,
+      hausses,
+      baisses,
+      cheres,
+      abordables,
+      grandsMarches,
+      annee: majDate.getFullYear(),
+      majLabel: formatMaj(majDate),
+    };
+  } catch (err) {
+    // Base injoignable (ex. build sans projet Supabase) : on ne fait pas
+    // échouer le build. connection() sort la page du pré-rendu : elle est
+    // alors rendue à la demande et réessaie à chaque requête, jusqu'au
+    // prochain déploiement réussi qui la repasse en ISR.
+    console.error("[barometre] données indisponibles :", err);
+    await connection();
+    const now = new Date();
+    const vide: LigneBarometre[] = [];
+    return {
+      disponible: false,
+      kpis: { nb_communes: 0, nb_ventes_12m: 0, updated_at: null },
+      hausses: vide,
+      baisses: vide,
+      cheres: vide,
+      abordables: vide,
+      grandsMarches: vide,
+      annee: now.getFullYear(),
+      majLabel: formatMaj(now),
+    };
+  }
 }
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -144,8 +167,17 @@ function TableTop({
 }
 
 export default async function BarometrePage() {
-  const { kpis, hausses, baisses, cheres, abordables, grandsMarches, annee, majLabel } =
-    await chargerBarometre();
+  const {
+    disponible,
+    kpis,
+    hausses,
+    baisses,
+    cheres,
+    abordables,
+    grandsMarches,
+    annee,
+    majLabel,
+  } = await chargerBarometre();
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -215,6 +247,17 @@ export default async function BarometrePage() {
           (base DVF) sur les 12 derniers mois de données publiées, et non à
           partir d&apos;annonces. Mise à jour du {majLabel}.
         </p>
+
+        {!disponible && (
+          <p className="mt-6 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            Les classements sont en cours de mise à jour et seront de retour
+            dans quelques instants. Vous pouvez dès maintenant{" "}
+            <Link href="/#estimation" className="font-medium underline">
+              estimer votre bien
+            </Link>
+            .
+          </p>
+        )}
 
         {/* KPIs */}
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
