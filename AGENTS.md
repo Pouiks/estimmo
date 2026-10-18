@@ -26,8 +26,8 @@ Vitest · pnpm. Déploiement Vercel.
 - Les scripts lisent `.env.local` via `node --env-file-if-exists`
 
 ## Architecture
-- `app/(site)` public SEO · `app/(admin)/admin` protégé (proxy.ts + rôle `profiles`) · `app/api`
-- `lib/estimation` moteur pur testé · `lib/supabase` clients (server/client/admin) · `lib/config.ts` marque/agent/honoraires
+- `app/[locale]/(site)` public SEO (fr à la racine, en sous `/en`) · `app/admin` protégé (proxy.ts + rôle `profiles`, FR uniquement) · `app/api` · `app/sitemap.xml` + `app/sitemaps/[fichier]`
+- `lib/estimation` moteur pur testé · `lib/supabase` clients (server/client/admin) · `lib/config.ts` marque/agent/taux (données seulement) · `lib/i18n` routage, proxy, formats, SEO multilingue · `messages/` traductions fr/en
 - RLS activé partout, aucune policy publique : tout accès data passe par le service_role côté serveur
 - Jamais exposer de mutation DVF individuelle publiquement (licence DGFiP) - uniquement des agrégats (`communes_stats`)
 
@@ -57,6 +57,43 @@ Vitest · pnpm. Déploiement Vercel.
 - [x] Phase 6 - Admin complet (E2E session réelle)
 - [x] Phase 7 - SEO : ~35 k pages communes ISR, sitemap 34 923 URLs, JSON-LD Dataset+FAQ
 - [x] Phase 8 - Lighthouse prod : landing Perf 95/SEO 100 ; commune Perf 96/SEO 100
+- [x] 18/10/2026 - i18n fr/en complet (next-intl) : site, tunnel, SEO, emails, blog ; 170+ tests Vitest
+
+## i18n (18/10/2026) - next-intl 4, fr par défaut / en
+- **URLs** : français sans préfixe (URLs historiques inchangées), anglais sous `/en/...`,
+  mêmes slugs. `lib/i18n/routing.ts` (`localePrefix: as-needed`, cookie `NEXT_LOCALE` 1 an).
+- **Détection** (`proxy.ts` → `lib/i18n/proxy.ts`) : langue principale du navigateur
+  `fr*` → fr, toute autre langue → en (`lib/i18n/negociation.ts`), 307 à la 1re visite ;
+  robots/outils d'audit jamais redirigés (`lib/i18n/robots.ts`) ; `/fr/x` → 307 `/x`.
+  Le `matcher` du proxy doit rester un littéral ; `lib/i18n/matcher.test.ts` le vérifie
+  (un mauvais échappement rend le proxy inactif hors racine → site en 404).
+- **Messages** : `messages/<locale>/<namespace>.json`, assemblés par `messages/<locale>/index.ts`.
+  Typage strict (`global.d.ts`) : `pnpm typecheck` refuse une clé inconnue ;
+  `lib/i18n/messages.test.ts` impose parité fr/en, syntaxe ICU valide, mêmes arguments.
+  Textes imposés par le client (`starter.md`) recopiés verbatim côté fr.
+- **Règles de code** : aucun texte en dur dans `app/[locale]` et `components/estimation` ;
+  `Link`/`redirect`/`permanentRedirect`/`usePathname` viennent de `@/lib/i18n/navigation`
+  (jamais `next/link` côté site) ; nombres/dates via `useFormatter`/`getFormatter` et
+  `lib/i18n/formats.ts` (plus de `toLocaleString("fr-FR")`) ; `lib/config.ts` ne contient
+  que des données (noms, taux), `MENTIONS` a disparu au profit de `common.mentions.*`.
+- **Server Components** : `localeDeParams(params)` puis `getTranslations({ locale, namespace })`.
+  Route handlers / sitemap / emails : locale explicite (`next/root-params` y est indisponible),
+  `/api/leads` lit `lead.locale` (champ du payload).
+- **Client** : provider racine sans messages (les ~35 k pages SEO n'embarquent rien) ;
+  seul le tunnel reçoit ses namespaces via `components/estimation/tunnel-provider.tsx`.
+- **Zod** : les messages de `lib/leads/schema.ts` sont des clés `validation.*` ;
+  `safeParse(x, AVEC_CLES)` + `traduireIssues` (`lib/leads/erreurs.ts`) côté client et serveur.
+- **Rendu statique** : `generateStaticParams` des communes ne prérend que fr (en à la demande,
+  ISR) ; revalidation via `revaliderSite()` (chemins internes `/fr/...` et `/en/...`).
+- **SEO** : `alternatesPour()` (canonical + hreflang fr/en/x-default), `openGraphPour()`,
+  JSON-LD `inLanguage` ; textes SEO générés dans `lib/seo/textes.ts` (namespace `commune`,
+  variantes anti-duplicate conservées). Sitemaps : `/sitemap.xml` = index →
+  `/sitemaps/pages.xml` + `/sitemaps/communes-N.xml` (une entrée par langue, 20 000
+  communes par fichier) ; pages noindex exclues. Admin (`app/admin`) hors `[locale]`, FR.
+- **Données** : `leads.locale` (email prospect dans sa langue, notification agent en FR),
+  `articles.lang` (un article n'existe que dans sa langue ; `/en/blog/<slug-fr>` → 404 ;
+  choix dans l'éditeur admin). Migration `20261018120000_i18n_locale.sql`.
+- **Outils** : `pnpm email:preview` (6 aperçus fr/en), `pnpm test:coverage` (v8).
 
 ## Sécurité (16/10/2026)
 - `lib/security/rate-limit.ts` : limite par IP en mémoire sur /api/leads (5/10 min), track, geocode, quartier. Par instance serverless, pas globale
@@ -79,3 +116,4 @@ Vitest · pnpm. Déploiement Vercel.
 - URL + clé du webhook CRM du propriétaire
 - Repo GitHub (secrets SUPABASE_DB_URL, CRON_SECRET, var SITE_URL) + déploiement Vercel
 - Purger les leads de test : delete from leads (cascade crm_sync_queue)
+- Search Console : `/sitemap.xml` est désormais un index de sitemaps (pages.xml, communes-N.xml) - vérifier qu'il est bien relu après déploiement

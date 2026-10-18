@@ -60,10 +60,12 @@ Import partiel pour développer plus vite :
 ## Architecture
 
 ```
-app/(site)/        Public SEO : landing (tunnel d'estimation intégré), /estimation, /prix-immobilier/[commune]
-                   (~35 000 pages ISR 24 h), blog, pages légales
-app/(admin)/admin/ Back-office protégé (proxy + rôle) : leads, estimations
-                   manuelles, blog TipTap, stats
+app/[locale]/(site)/ Public SEO, fr à la racine et en sous /en : landing (tunnel d'estimation
+                   intégré), /estimation, /prix-immobilier/[commune] (~35 000 pages ISR 24 h,
+                   en généré à la demande), blog, pages légales
+app/admin/         Back-office protégé (proxy + rôle), français uniquement : leads,
+                   estimations manuelles, blog TipTap (langue par article), stats
+app/sitemap.xml    Index des sitemaps → app/sitemaps/[fichier] (pages.xml, communes-N.xml)
 app/api/           leads (création + estimation + score), geocode (proxy IGN),
                    track (entonnoir), cron/crm-sync, revalidate
 lib/estimation/    Moteur pur testé : comparables par paliers, médiane pondérée,
@@ -71,6 +73,9 @@ lib/estimation/    Moteur pur testé : comparables par paliers, médiane pondér
 lib/crm/           Payload contractuel + file de synchro (retry backoff, idempotence)
 lib/email/         Emails prospect + notification interne (Resend)
 lib/security/      Rate limit mémoire par IP, comparaison de secrets, échappement HTML
+lib/i18n/          next-intl : routage (fr défaut / en), proxy de détection, formats,
+                   helpers SEO (hreflang, URLs), revalidation multilingue
+messages/          Traductions fr/en, un fichier JSON par namespace (parité testée)
 scripts/           Imports DVF/ANIL (hors Vercel), migrations, outillage
 supabase/          Migrations SQL (RLS verrouillé partout)
 ```
