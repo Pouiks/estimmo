@@ -5,6 +5,7 @@ import {
   ExternalLink,
   FileText,
   Inbox,
+  Languages,
   PhoneCall,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ const navItems = [
     icon: PhoneCall,
   },
   { href: "/admin/blog", label: "Blog", icon: FileText },
+  { href: "/admin/traductions", label: "Traductions", icon: Languages },
   { href: "/admin/stats", label: "Stats", icon: BarChart3 },
 ];
 

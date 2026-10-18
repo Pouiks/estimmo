@@ -93,6 +93,14 @@ Vitest · pnpm. Déploiement Vercel.
 - **Données** : `leads.locale` (email prospect dans sa langue, notification agent en FR),
   `articles.lang` (un article n'existe que dans sa langue ; `/en/blog/<slug-fr>` → 404 ;
   choix dans l'éditeur admin). Migration `20261018120000_i18n_locale.sql`.
+- **Surcharges admin** (`/admin/traductions`, table `traductions`) : la conseillère peut
+  reformuler n'importe quelle clé par langue (ton, SEO). Les JSON restent la source
+  embarquée ; `lib/i18n/request.ts` fusionne les surcharges (`appliquerSurcharges`,
+  cache `unstable_cache` taggé `traductions`, repli JSON si base injoignable). Une
+  surcharge doit garder les mêmes arguments/balises ICU que l'original
+  (`validerSurcharge`, `lib/i18n/icu.ts`) ; on ne peut pas créer de clé depuis l'admin.
+  Après enregistrement : `revalidateTag("traductions")` + `revalidatePath("/[locale]", "layout")`.
+  Migration `20261018150000_traductions.sql`.
 - **Outils** : `pnpm email:preview` (6 aperçus fr/en), `pnpm test:coverage` (v8).
 
 ## Sécurité (16/10/2026)

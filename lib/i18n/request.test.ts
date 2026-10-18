@@ -6,6 +6,11 @@ vi.mock("next/root-params", () => ({ locale: () => segment() }));
 vi.mock("next-intl/server", () => ({
   getRequestConfig: (fabrique: unknown) => fabrique,
 }));
+/** Surcharges admin (base) : simulées, une seule clé anglaise reformulée. */
+vi.mock("./surcharges-source", () => ({
+  chargerSurcharges: async (locale: string) =>
+    locale === "en" ? { "nav.blog": "News" } : {},
+}));
 
 type Fabrique = (params: { locale?: string; requestLocale: Promise<string | undefined> }) => Promise<{
   locale: string;
@@ -45,7 +50,9 @@ describe("configuration next-intl par requête", () => {
   it("charge les messages de la langue demandée", async () => {
     const en = await appel("en");
     const fr = await appel("fr");
-    expect((en.messages.nav as { blog: string }).blog).toBe("Blog");
+    // La surcharge admin prime sur le JSON embarqué.
+    expect((en.messages.nav as { blog: string }).blog).toBe("News");
+    expect((fr.messages.nav as { blog: string }).blog).toBe("Blog");
     expect((en.messages.nav as { accueil: string }).accueil).toBe("Home");
     expect((fr.messages.nav as { accueil: string }).accueil).toBe("Accueil");
   });

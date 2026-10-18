@@ -64,7 +64,8 @@ app/[locale]/(site)/ Public SEO, fr à la racine et en sous /en : landing (tunne
                    intégré), /estimation, /prix-immobilier/[commune] (~35 000 pages ISR 24 h,
                    en généré à la demande), blog, pages légales
 app/admin/         Back-office protégé (proxy + rôle), français uniquement : leads,
-                   estimations manuelles, blog TipTap (langue par article), stats
+                   estimations manuelles, blog TipTap (langue par article), stats,
+                   traductions (reformulation fr/en des textes du site, surcharges en base)
 app/sitemap.xml    Index des sitemaps → app/sitemaps/[fichier] (pages.xml, communes-N.xml)
 app/api/           leads (création + estimation + score), geocode (proxy IGN),
                    track (entonnoir), cron/crm-sync, revalidate

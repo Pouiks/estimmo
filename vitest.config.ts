@@ -25,6 +25,7 @@ export default defineConfig({
         "lib/seo/communes.ts",
         "lib/seo/barometre.ts",
     "lib/seo/sitemap-source.ts",
+    "lib/i18n/surcharges-source.ts",
         "lib/quartier.ts",
         "lib/crm/sync.ts",
       ],

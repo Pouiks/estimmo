@@ -1,13 +1,9 @@
-import {
-  parse,
-  TYPE,
-  type MessageFormatElement,
-} from "@formatjs/icu-messageformat-parser";
 import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 import en from "@/messages/en";
 import fr from "@/messages/fr";
 import { formats } from "./formats";
+import { signatureIcu as analyser, type TypeArgument as TypeArg } from "./icu";
 import { LOCALES, type Locale } from "./routing";
 
 type Arbre = { [cle: string]: string | Arbre };
@@ -25,52 +21,6 @@ function aplatir(arbre: Arbre, prefixe = ""): Record<string, string> {
 
 const MESSAGES: Record<Locale, Arbre> = { fr, en };
 const PLATS = { fr: aplatir(fr), en: aplatir(en) };
-
-type TypeArg = "texte" | "nombre" | "select" | "date";
-
-/**
- * Analyse ICU réelle du message : arguments (avec leur type) et balises.
- * Lève une erreur si la syntaxe est invalide.
- */
-function analyser(message: string): {
-  args: Record<string, TypeArg>;
-  tags: string[];
-} {
-  const args: Record<string, TypeArg> = {};
-  const tags = new Set<string>();
-  const visiter = (elements: MessageFormatElement[]) => {
-    for (const el of elements) {
-      switch (el.type) {
-        case TYPE.argument:
-          args[el.value] ??= "texte";
-          break;
-        case TYPE.number:
-          args[el.value] = "nombre";
-          break;
-        case TYPE.date:
-        case TYPE.time:
-          args[el.value] = "date";
-          break;
-        case TYPE.plural:
-          args[el.value] = "nombre";
-          for (const option of Object.values(el.options)) visiter(option.value);
-          break;
-        case TYPE.select:
-          args[el.value] = "select";
-          for (const option of Object.values(el.options)) visiter(option.value);
-          break;
-        case TYPE.tag:
-          tags.add(el.value);
-          visiter(el.children);
-          break;
-        default:
-          break; // literal, pound
-      }
-    }
-  };
-  visiter(parse(message));
-  return { args, tags: [...tags].sort() };
-}
 
 /** Valeurs factices compatibles avec le type de chaque argument. */
 function valeursFactices(args: Record<string, TypeArg>): Record<string, unknown> {
