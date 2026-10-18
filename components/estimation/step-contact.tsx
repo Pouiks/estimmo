@@ -1,17 +1,17 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Check } from "lucide-react";
+import { Link } from "@/lib/i18n/navigation";
 import { C, FieldMsg, SectionLabel, StepHeader, TextField } from "./design";
 import type { StepProps } from "./form-state";
 
 export function StepContact({ state, setField, errors }: StepProps) {
+  const t = useTranslations("estimation.contact");
+
   return (
     <div>
-      <StepHeader
-        title="Recevez votre estimation"
-        subtitle="Résultat immédiat à l'écran et récapitulatif par email."
-      />
+      <StepHeader title={t("titre")} subtitle={t("sousTitre")} />
 
       <div
         style={{
@@ -22,20 +22,20 @@ export function StepContact({ state, setField, errors }: StepProps) {
         }}
       >
         <div>
-          <SectionLabel>Prénom</SectionLabel>
+          <SectionLabel>{t("prenom")}</SectionLabel>
           <TextField
             autoComplete="given-name"
-            placeholder="Camille"
+            placeholder={t("placeholders.prenom")}
             value={state.prenom}
             onChange={(e) => setField("prenom", e.target.value)}
           />
           <FieldMsg message={errors["prenom"]} />
         </div>
         <div>
-          <SectionLabel>Nom</SectionLabel>
+          <SectionLabel>{t("nom")}</SectionLabel>
           <TextField
             autoComplete="family-name"
-            placeholder="Durand"
+            placeholder={t("placeholders.nom")}
             value={state.nom}
             onChange={(e) => setField("nom", e.target.value)}
           />
@@ -44,11 +44,11 @@ export function StepContact({ state, setField, errors }: StepProps) {
       </div>
 
       <div style={{ marginBottom: 14 }}>
-        <SectionLabel>Email</SectionLabel>
+        <SectionLabel>{t("email")}</SectionLabel>
         <TextField
           type="email"
           autoComplete="email"
-          placeholder="camille.durand@email.fr"
+          placeholder={t("placeholders.email")}
           value={state.email}
           onChange={(e) => setField("email", e.target.value)}
         />
@@ -68,7 +68,7 @@ export function StepContact({ state, setField, errors }: StepProps) {
           overflow: "hidden",
         }}
       >
-        <label htmlFor="site-web">Site web (laisser vide)</label>
+        <label htmlFor="site-web">{t("siteWeb")}</label>
         <input
           id="site-web"
           name="website"
@@ -81,11 +81,11 @@ export function StepContact({ state, setField, errors }: StepProps) {
       </div>
 
       <div style={{ marginBottom: 16 }}>
-        <SectionLabel hint="pour être rappelé(e)">Téléphone</SectionLabel>
+        <SectionLabel hint={t("telephoneHint")}>{t("telephone")}</SectionLabel>
         <TextField
           type="tel"
           autoComplete="tel"
-          placeholder="06 12 34 56 78"
+          placeholder={t("placeholders.telephone")}
           value={state.telephone}
           onChange={(e) => setField("telephone", e.target.value)}
         />
@@ -124,17 +124,18 @@ export function StepContact({ state, setField, errors }: StepProps) {
           {state.consentement && <Check size={13} strokeWidth={3} />}
         </span>
         <span style={{ fontSize: 13, color: "#4A5C58", lineHeight: 1.4 }}>
-          J&apos;accepte que mes données soient utilisées pour me recontacter au
-          sujet de mon projet immobilier - voir la{" "}
-          <Link
-            href="/politique-confidentialite"
-            target="_blank"
-            onClick={(e) => e.stopPropagation()}
-            style={{ color: C.accent, textDecoration: "underline" }}
-          >
-            politique de confidentialité
-          </Link>
-          .
+          {t.rich("consentement", {
+            lien: (chunks) => (
+              <Link
+                href="/politique-confidentialite"
+                target="_blank"
+                onClick={(e) => e.stopPropagation()}
+                style={{ color: C.accent, textDecoration: "underline" }}
+              >
+                {chunks}
+              </Link>
+            ),
+          })}
         </span>
       </div>
       <FieldMsg message={errors["consentement"]} />

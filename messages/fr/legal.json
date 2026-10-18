@@ -1,0 +1,57 @@
+{
+  "mentions": {
+    "titre": "Mentions légales",
+    "editeur": {
+      "titre": "Éditeur du site",
+      "texte": "Le site {marque} est édité par {agent}, agent immobilier.",
+      "contact": "Contact : {email} - {telephone}."
+    },
+    "hebergement": {
+      "titre": "Hébergement",
+      "texte": "Ce site est hébergé par Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis (vercel.com). Les données sont stockées par Supabase Inc. (supabase.com)."
+    },
+    "honoraires": {
+      "titre": "Honoraires",
+      "texte": "Honoraires d'agence : {exclusif} TTC du prix de vente en mandat exclusif, {simple} TTC en mandat simple. Barème complet communiqué sur demande et affiché en agence."
+    },
+    "sources": {
+      "titre": "Sources de données",
+      "texte": "Les statistiques de prix de vente sont issues de la base « Demandes de valeurs foncières » (DVF) publiée par la DGFiP sur data.gouv.fr (Licence Ouverte 2.0). Seules des statistiques agrégées sont affichées. Les indicateurs de loyers sont des estimations ANIL, à partir des données du Groupe SeLoger et de leboncoin. Le géocodage des adresses utilise la Géoplateforme IGN."
+    },
+    "propriete": {
+      "titre": "Propriété intellectuelle",
+      "texte": "L'ensemble des contenus de ce site (textes, marques, logos, structure) est protégé. Toute reproduction non autorisée est interdite."
+    }
+  },
+  "confidentialite": {
+    "titre": "Politique de confidentialité",
+    "responsable": {
+      "titre": "Responsable de traitement",
+      "texte": "Le responsable de traitement des données collectées sur {marque} est {agent} - {email} - {telephone}."
+    },
+    "donnees": {
+      "titre": "Données collectées",
+      "texte": "Lors d'une demande d'estimation, nous collectons : vos coordonnées (prénom, nom, email, téléphone), les caractéristiques du bien décrit (adresse, surface, état…) ainsi que la date et la preuve de votre consentement."
+    },
+    "finalites": {
+      "titre": "Finalités et base légale",
+      "texte": "Ces données sont utilisées, sur la base de votre consentement explicite, pour : (1) calculer et vous transmettre l'estimation de votre bien ; (2) vous recontacter au sujet de votre projet immobilier. Elles ne sont jamais revendues à des tiers."
+    },
+    "destinataires": {
+      "titre": "Destinataires et sous-traitants",
+      "texte": "Les données sont hébergées par Supabase (base de données) et Vercel (hébergement du site). L'envoi des emails transactionnels est assuré par Resend. Les données sont également transmises à l'outil de gestion de la relation client (CRM) du responsable de traitement."
+    },
+    "conservation": {
+      "titre": "Durée de conservation",
+      "texte": "Les données des prospects sont conservées <strong>3 ans après le dernier contact</strong>, puis supprimées ou anonymisées."
+    },
+    "droits": {
+      "titre": "Vos droits",
+      "texte": "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation et d'opposition sur vos données. Pour l'exercer, écrivez à <lien>{email}</lien>. Vous pouvez également introduire une réclamation auprès de la CNIL (cnil.fr)."
+    },
+    "cookies": {
+      "titre": "Cookies",
+      "texte": "Ce site n'utilise pas de cookies publicitaires. Seuls des cookies techniques strictement nécessaires (session d'administration, langue choisie) et une mesure d'audience sans cookie sont utilisés."
+    }
+  }
+}

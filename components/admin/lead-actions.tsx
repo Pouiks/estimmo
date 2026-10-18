@@ -18,7 +18,7 @@ import {
   saveLeadNotes,
   updateLeadStatut,
   type ActionResult,
-} from "@/app/(admin)/admin/(protected)/leads/actions";
+} from "@/app/admin/(protected)/leads/actions";
 
 function handleResult(result: ActionResult) {
   if (result.ok) toast.success(result.message);

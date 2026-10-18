@@ -1,8 +1,14 @@
 /**
  * Schémas Zod du parcours d'estimation - partagés entre le formulaire
  * (validation par étape) et l'API /api/leads (revalidation serveur complète).
+ *
+ * Les messages sont des CLÉS de traduction (namespace `validation`,
+ * fichiers messages/<locale>/validation.json), traduites à l'affichage par
+ * `traduireIssues` (lib/leads/erreurs.ts). Les règles sans message passent
+ * par l'error map `cleGenerique`.
  */
 import { z } from "zod";
+import { LOCALES } from "@/lib/i18n/routing";
 
 export const TELEPHONE_FR_REGEX =
   /^(?:(?:\+|00)33[\s.-]?|0)[1-9](?:[\s.-]?\d{2}){4}$/;
@@ -18,25 +24,26 @@ export function normaliserTelephone(brut: string): string {
 const CODE_INSEE_REGEX = /^(\d{5}|2[AB]\d{3})$/i;
 
 export const adresseSchema = z.object({
-  libelle: z.string().min(3, "Sélectionnez une adresse dans la liste"),
-  codeInsee: z
-    .string()
-    .regex(CODE_INSEE_REGEX, "Adresse invalide - sélectionnez-la dans la liste"),
+  libelle: z.string().min(3, "validation.adresse.liste"),
+  codeInsee: z.string().regex(CODE_INSEE_REGEX, "validation.adresse.invalide"),
   codePostal: z.string().optional(),
   lat: z.number().min(-90).max(90),
   lon: z.number().min(-180).max(180),
 });
+
+/** Langue de l'interface au moment de la demande (emails, suivi). */
+export const localeSchema = z.enum(LOCALES).default("fr");
 
 // ---------------------------------------------------------------------------
 // Étape 1 - Votre projet
 // ---------------------------------------------------------------------------
 export const etape1Schema = z
   .object({
-    projet: z.enum(["vente", "location"], "Choisissez votre projet"),
+    projet: z.enum(["vente", "location"], "validation.projet"),
     horizon: z
       .enum(["en_vente", "moins_3_mois", "3_6_mois", "curiosite"])
       .nullish(),
-    typeBien: z.enum(["appartement", "maison"], "Choisissez le type de bien"),
+    typeBien: z.enum(["appartement", "maison"], "validation.typeBien"),
     adresse: adresseSchema,
   })
   .superRefine((data, ctx) => {
@@ -44,7 +51,7 @@ export const etape1Schema = z
       ctx.addIssue({
         code: "custom",
         path: ["horizon"],
-        message: "Précisez votre horizon de vente",
+        message: "validation.horizon",
       });
     }
   });
@@ -54,31 +61,36 @@ export const etape1Schema = z
 // ---------------------------------------------------------------------------
 export const etape2Base = z.object({
   surface: z
-    .number("Indiquez la surface")
-    .min(8, "Surface minimale : 8 m²")
-    .max(800, "Surface maximale : 800 m²"),
+    .number("validation.surface.requis")
+    .min(8, "validation.surface.min")
+    .max(800, "validation.surface.max"),
   pieces: z
-    .number("Indiquez le nombre de pièces")
+    .number("validation.pieces.requis")
     .int()
-    .min(1, "Au moins 1 pièce")
-    .max(20, "20 pièces maximum"),
+    .min(1, "validation.pieces.min")
+    .max(20, "validation.pieces.max"),
   chambres: z
-    .number("Indiquez le nombre de chambres")
+    .number("validation.chambres.requis")
     .int()
     .min(0)
-    .max(15, "15 chambres maximum"),
-  etage: z.number().int().min(0, "L'étage ne peut être négatif").max(50).nullish(),
+    .max(15, "validation.chambres.max"),
+  etage: z
+    .number()
+    .int()
+    .min(0, "validation.etage.min")
+    .max(50, "validation.etage.max")
+    .nullish(),
   etagesImmeuble: z
     .number()
     .int()
-    .min(1, "Au moins 1 étage")
-    .max(60, "60 étages maximum")
+    .min(1, "validation.etagesImmeuble.min")
+    .max(60, "validation.etagesImmeuble.max")
     .nullish(),
   ascenseur: z.boolean().nullish(),
   surfaceTerrain: z
     .number()
     .min(0)
-    .max(1_000_000, "Surface de terrain invalide")
+    .max(1_000_000, "validation.surfaceTerrain")
     .nullish(),
   // Retiré du formulaire (design concis) mais conservé en base : optionnel.
   anneeConstruction: z
@@ -90,13 +102,17 @@ export function etape2Schema(typeBien: "appartement" | "maison") {
   return etape2Base.superRefine((data, ctx) => {
     if (typeBien === "appartement") {
       if (data.etage === null || data.etage === undefined) {
-        ctx.addIssue({ code: "custom", path: ["etage"], message: "Indiquez l'étage" });
+        ctx.addIssue({
+          code: "custom",
+          path: ["etage"],
+          message: "validation.etage.requis",
+        });
       }
       if (data.etagesImmeuble === null || data.etagesImmeuble === undefined) {
         ctx.addIssue({
           code: "custom",
           path: ["etagesImmeuble"],
-          message: "Indiquez le nombre d'étages de l'immeuble",
+          message: "validation.etagesImmeuble.requis",
         });
       } else if (
         data.etage !== null &&
@@ -106,14 +122,14 @@ export function etape2Schema(typeBien: "appartement" | "maison") {
         ctx.addIssue({
           code: "custom",
           path: ["etagesImmeuble"],
-          message: "L'immeuble compte moins d'étages que le vôtre ?",
+          message: "validation.etagesImmeuble.incoherent",
         });
       }
       if (data.ascenseur === null || data.ascenseur === undefined) {
         ctx.addIssue({
           code: "custom",
           path: ["ascenseur"],
-          message: "Ascenseur : oui ou non ?",
+          message: "validation.ascenseur",
         });
       }
     }
@@ -127,24 +143,21 @@ export function etape2Schema(typeBien: "appartement" | "maison") {
 export const etape3Schema = z.object({
   etatGeneral: z.enum(
     ["a_renover", "a_rafraichir", "bon", "refait_neuf"],
-    "Indiquez l'état général"
+    "validation.etatGeneral"
   ),
   exterieur: z.array(z.enum(["balcon", "terrasse", "jardin"])).default([]),
   stationnement: z.enum(
     ["aucun", "place", "garage_box"],
-    "Indiquez le stationnement"
+    "validation.stationnement"
   ),
   ageCuisine: z.enum(
     ["moins_5", "5_10", "10_20", "plus_20"],
-    "Indiquez l'âge de la cuisine"
+    "validation.ageCuisine"
   ),
-  ageSdb: z.enum(
-    ["moins_5", "5_10", "10_20", "plus_20"],
-    "Indiquez l'âge de la salle de bain"
-  ),
+  ageSdb: z.enum(["moins_5", "5_10", "10_20", "plus_20"], "validation.ageSdb"),
   dpe: z.enum(
     ["A", "B", "C", "D", "E", "F", "G", "ne_sait_pas"],
-    "Indiquez le DPE (ou « Je ne sais pas »)"
+    "validation.dpe"
   ),
   atouts: z
     .array(
@@ -157,16 +170,12 @@ export const etape3Schema = z.object({
 // Étape 4 - Vos coordonnées
 // ---------------------------------------------------------------------------
 export const etape4Schema = z.object({
-  prenom: z.string().trim().min(1, "Votre prénom"),
-  nom: z.string().trim().min(1, "Votre nom"),
-  email: z.email("Email invalide"),
-  telephone: z
-    .string()
-    .trim()
-    .regex(TELEPHONE_FR_REGEX, "Numéro de téléphone français invalide"),
-  consentement: z.literal(true, {
-    error: "Votre consentement est nécessaire pour recevoir l'estimation",
-  }),
+  prenom: z.string().trim().min(1, "validation.prenom"),
+  nom: z.string().trim().min(1, "validation.nom"),
+  email: z.email("validation.email"),
+  // Conseillère en France : seuls les numéros français sont rappelés.
+  telephone: z.string().trim().regex(TELEPHONE_FR_REGEX, "validation.telephone"),
+  consentement: z.literal(true, { error: "validation.consentement" }),
 });
 
 // ---------------------------------------------------------------------------
@@ -178,6 +187,7 @@ export const leadPayloadSchema = z
     horizon: z.enum(["en_vente", "moins_3_mois", "3_6_mois", "curiosite"]).nullish(),
     typeBien: z.enum(["appartement", "maison"]),
     adresse: adresseSchema,
+    locale: localeSchema,
     sessionId: z.uuid().optional(),
     utm: z.record(z.string(), z.string()).optional(),
     /** Pot de miel anti-robots : doit rester vide (champ caché du formulaire). */
@@ -188,14 +198,14 @@ export const leadPayloadSchema = z
   .extend(etape4Schema.shape)
   .superRefine((data, ctx) => {
     if (data.projet === "vente" && !data.horizon) {
-      ctx.addIssue({ code: "custom", path: ["horizon"], message: "Horizon requis" });
+      ctx.addIssue({ code: "custom", path: ["horizon"], message: "validation.horizon" });
     }
     if (data.typeBien === "appartement") {
       if (data.etage === null || data.etage === undefined) {
-        ctx.addIssue({ code: "custom", path: ["etage"], message: "Étage requis" });
+        ctx.addIssue({ code: "custom", path: ["etage"], message: "validation.etage.requis" });
       }
       if (data.ascenseur === null || data.ascenseur === undefined) {
-        ctx.addIssue({ code: "custom", path: ["ascenseur"], message: "Ascenseur requis" });
+        ctx.addIssue({ code: "custom", path: ["ascenseur"], message: "validation.ascenseur" });
       }
     }
   });

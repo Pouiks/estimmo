@@ -1,0 +1,90 @@
+{
+  "meta": {
+    "titre": "Free valuation of your property",
+    "description": "Estimate the sale price or rent of your flat or house in 4 steps, based on official French DVF and ANIL data."
+  },
+  "etapes": {
+    "projet": "Your project",
+    "bien": "The property",
+    "etat": "Condition & assets",
+    "contact": "Your details"
+  },
+  "progression": "Step {numero} of {total} · {nom}",
+  "resultat": "Valuation",
+  "boutons": {
+    "retour": "Back",
+    "continuer": "Continue",
+    "voir": "See my valuation",
+    "calcul": "Calculating…"
+  },
+  "toasts": {
+    "invalide": "Some information is invalid.",
+    "erreur": "Something went wrong, please try again.",
+    "reseau": "Connection failed, check your network and try again."
+  },
+  "projet": {
+    "titre": "Your property project",
+    "sousTitre": "Start with the address: it triggers the analysis of your neighbourhood.",
+    "adresse": "Property address",
+    "confidentialite": "The address refines the comparison. It remains strictly confidential.",
+    "souhait": "I would like to",
+    "vendre": "Sell",
+    "vendreSous": "Estimated sale price",
+    "louer": "Rent out",
+    "louerSous": "Estimated monthly rent",
+    "horizon": "Your selling timeframe",
+    "typeBien": "Property type"
+  },
+  "adresse": {
+    "placeholder": "12 rue des Lilas, 75011 Paris",
+    "modifier": "Change the address",
+    "aucune": "No address found - add the street number and the town.",
+    "libelle": "Property address"
+  },
+  "bien": {
+    "titre": "Key features",
+    "sousTitre": "A few key figures about your {typeBien}.",
+    "surfaceCarrez": "Carrez surface area",
+    "surfaceHabitable": "Living area",
+    "hintCarrez": "Carrez law",
+    "pieces": "Rooms",
+    "chambres": "Bedrooms",
+    "etage": "Your floor",
+    "etagesImmeuble": "Floors in the building",
+    "ascenseur": "Lift",
+    "noteCarrez": "Carrez surface area: private floor space excluding cellars, parking, balconies and areas under 1.80 m.",
+    "noteBoutin": "Living area as defined by the French Boutin law.",
+    "diminuer": "Decrease",
+    "augmenter": "Increase"
+  },
+  "etat": {
+    "titre": "Condition & assets",
+    "sousTitre": "These details adjust the price range.",
+    "etatGeneral": "Overall condition",
+    "ageCuisine": "Age of the kitchen",
+    "ageSdb": "Age of the bathroom",
+    "dpe": "Energy rating (DPE)",
+    "exterieur": "Outdoor space",
+    "plusieursChoix": "several choices possible",
+    "stationnement": "Parking",
+    "atouts": "Assets",
+    "optionnel": "optional"
+  },
+  "contact": {
+    "titre": "Receive your valuation",
+    "sousTitre": "Instant result on screen and a summary by email.",
+    "prenom": "First name",
+    "nom": "Last name",
+    "email": "Email",
+    "telephone": "Phone",
+    "telephoneHint": "French number, to call you back",
+    "placeholders": {
+      "prenom": "Jane",
+      "nom": "Smith",
+      "email": "jane.smith@email.com",
+      "telephone": "06 12 34 56 78"
+    },
+    "siteWeb": "Website (leave empty)",
+    "consentement": "I agree that my data may be used to contact me about my property project - see the <lien>privacy policy</lien>."
+  }
+}

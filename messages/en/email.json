@@ -1,0 +1,58 @@
+{
+  "sujet": {
+    "manuelle": "{prenom}, your personalised valuation is on its way within 24 h",
+    "vente": "{prenom}, your {bien} is worth between {basse} and {haute}",
+    "location": "{prenom}, your {bien} rents for around {loyer}/month"
+  },
+  "preheader": {
+    "manuelle": "{agent} is preparing a tailored valuation and will call you back within 24 h.",
+    "vente": "The details of your valuation, and {agent} to turn it into a successful sale.",
+    "location": "The details of your rent estimate, and {agent} to support you in letting your property."
+  },
+  "bonjour": "Hello {prenom},",
+  "merci": "Thank you for valuing your property with {marque}. Here is your result, based on actual sales in your neighbourhood.",
+  "recap": {
+    "titre": "Your property",
+    "surface": "{surface} m²",
+    "pieces": "{n, plural, one {# room} other {# rooms}}"
+  },
+  "manuelle": {
+    "titre": "Your personalised valuation is on its way within 24 h",
+    "texte": "Your area deserves a tailored analysis. <strong>{agent}</strong> will prepare your free valuation and call you back on the number provided within 24 hours."
+  },
+  "vente": {
+    "titre": "Estimated value of your property",
+    "basse": "Low",
+    "estimation": "Estimate",
+    "haute": "High",
+    "details": "Price in your area: <strong>{prixM2}/m²</strong> · {n, plural, one {# comparable sale} other {# comparable sales}}{rayon, select, none {} other { within {rayon} m}} · confidence: {confiance}.",
+    "source": "{dvf}."
+  },
+  "location": {
+    "titre": "Estimated monthly rent (including charges)",
+    "basse": "Low",
+    "estimation": "Estimated rent",
+    "haute": "High",
+    "source": "{anil}."
+  },
+  "conseillere": {
+    "role": "Your real estate advisor",
+    "manuelle": "Hello {prenom}, I am personally preparing your valuation and will call you back very soon. Together, we will see how best to make the most of your property.",
+    "vente": "Hello {prenom}, I will personally call you back to refine this valuation on site and, if you wish, sell your property at the best price. Professional photos, priority listing, negotiation: I take care of everything.",
+    "location": "Hello {prenom}, I will personally call you back to refine this rent estimate and support you in letting your property, from finding the tenant to the lease.",
+    "bouton": "📞 I would like a call back",
+    "ouAppeler": "Or call {prenomAgent} directly:"
+  },
+  "honoraires": {
+    "titre": "Sell at the best price, supported from start to finish",
+    "texte": "Fees <strong>{exclusif}</strong> with an exclusive mandate (priority listing, professional photos, written commitment) versus {simple} with a simple mandate."
+  },
+  "pied": {
+    "recu": "You are receiving this email following your valuation request on {marque}.",
+    "confidentialite": "Privacy policy",
+    "stop": "To stop being contacted, reply \"STOP\" to this email."
+  },
+  "interne": {
+    "langue": "Prospect language: {langue}"
+  }
+}

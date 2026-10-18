@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { deleteArticle } from "@/app/(admin)/admin/(protected)/blog/actions";
+import { deleteArticle } from "@/app/admin/(protected)/blog/actions";
 
 export function DeleteArticleButton({
   articleId,

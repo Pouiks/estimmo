@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Loader2, MapPin, X } from "lucide-react";
 import type { Adresse } from "@/lib/leads/schema";
 import { C } from "./design";
@@ -25,6 +26,7 @@ export function AddressAutocomplete({
   value: Adresse | null;
   onChange: (adresse: Adresse | null) => void;
 }) {
+  const t = useTranslations("estimation.adresse");
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
@@ -108,7 +110,7 @@ export function AddressAutocomplete({
             onChange(null);
             setQuery("");
           }}
-          aria-label="Modifier l'adresse"
+          aria-label={t("modifier")}
           style={{
             border: "none",
             background: "none",
@@ -142,10 +144,10 @@ export function AddressAutocomplete({
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onFocus={() => suggestions.length > 0 && setOpen(true)}
-        placeholder="12 rue des Lilas, 75011 Paris"
+        placeholder={t("placeholder")}
         autoComplete="off"
         inputMode="text"
-        aria-label="Adresse du bien"
+        aria-label={t("libelle")}
         style={{
           width: "100%",
           padding: "15px 44px 15px 44px",
@@ -254,7 +256,7 @@ export function AddressAutocomplete({
             boxShadow: "0 16px 40px -18px rgba(12,31,28,.3)",
           }}
         >
-          Aucune adresse trouvée - précisez le numéro et la ville.
+          {t("aucune")}
         </p>
       )}
     </div>

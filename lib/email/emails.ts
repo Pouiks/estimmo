@@ -1,9 +1,11 @@
 import "server-only";
+import { getFormatter, getTranslations } from "next-intl/server";
 import type { EstimationResultat } from "@/lib/crm/payload";
 import type { LeadPayload } from "@/lib/leads/schema";
 import { normaliserTelephone } from "@/lib/leads/schema";
 import { rappelToken } from "@/lib/leads/rappel-token";
 import { SITE } from "@/lib/config";
+import { urlAbsolue } from "@/lib/i18n/seo";
 import { escapeHtml } from "@/lib/security/html";
 import { renderEmailProspect } from "./template";
 
@@ -71,13 +73,6 @@ async function envoyerEmail(params: EmailParams): Promise<void> {
   }
 }
 
-const euro = (n: number) =>
-  n.toLocaleString("fr-FR", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  });
-
 export async function envoyerEmailsLead(params: {
   lead: LeadPayload;
   leadId: string;
@@ -85,11 +80,23 @@ export async function envoyerEmailsLead(params: {
   estimation: EstimationResultat;
 }): Promise<void> {
   const { lead, leadId, score, estimation } = params;
+  const locale = lead.locale;
 
-  // --- 1. Email prospect (template designé) ---
+  // --- 1. Email prospect (template designé, dans la langue du prospect) ---
   // Lien signé « être rappelé » → pose le flag demande_rappel (RGPD).
-  const rappelUrl = `${SITE.url}/rappel?lead=${leadId}&t=${rappelToken(leadId)}`;
-  const { subject, html } = renderEmailProspect({ lead, estimation, rappelUrl });
+  const rappelUrl = `${urlAbsolue("/rappel", locale)}?lead=${leadId}&t=${rappelToken(leadId)}`;
+  const [t, format] = await Promise.all([
+    getTranslations({ locale }),
+    getFormatter({ locale }),
+  ]);
+  const { subject, html } = renderEmailProspect({
+    lead,
+    estimation,
+    locale,
+    t,
+    format,
+    rappelUrl,
+  });
   await envoyerEmail({
     to: [lead.email],
     subject,
@@ -98,14 +105,22 @@ export async function envoyerEmailsLead(params: {
     replyTo: SITE.agent.email,
   });
 
-  // --- 2. Notification interne à l'agent ---
+  // --- 2. Notification interne à l'agent (toujours en français) ---
+  const [tfr, formatFr] = await Promise.all([
+    getTranslations({ locale: "fr" }),
+    getFormatter({ locale: "fr" }),
+  ]);
+  const euro = (n: number) => formatFr.number(n, "currency");
   const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL ?? SITE.agent.email;
   const tel = normaliserTelephone(lead.telephone);
   // Valeurs saisies par le prospect : toujours échappées avant insertion HTML.
   const prenom = escapeHtml(lead.prenom);
   const nom = escapeHtml(lead.nom);
   const email = escapeHtml(lead.email);
-  const recapBien = `${lead.typeBien === "appartement" ? "Appartement" : "Maison"} · ${lead.surface} m² · ${lead.pieces} pièce(s) - ${escapeHtml(lead.adresse.libelle)}`;
+  const typeBien = tfr(`labels.typeBien.${lead.typeBien}`);
+  const projet = tfr(`labels.projet.${lead.projet}`);
+  const horizon = lead.horizon ? ` (${tfr(`labels.horizon.${lead.horizon}`)})` : "";
+  const recapBien = `${typeBien} · ${lead.surface} m² · ${tfr("email.recap.pieces", { n: lead.pieces })} - ${escapeHtml(lead.adresse.libelle)}`;
 
   const htmlInterne = `
   <div style="font-family:Arial,Helvetica,sans-serif;color:#111827;max-width:560px">
@@ -113,7 +128,7 @@ export async function envoyerEmailsLead(params: {
     }</h2>
     <ul style="line-height:1.7">
       <li><strong>${prenom} ${nom}</strong> - <a href="tel:${tel}">${tel}</a> - ${email}</li>
-      <li>Projet : ${lead.projet}${lead.horizon ? ` (${lead.horizon})` : ""}</li>
+      <li>Projet : ${projet}${horizon}</li>
       <li>Bien : ${recapBien}</li>
       <li>Estimation : ${estimation === null
       ? "manuelle à réaliser sous 24 h"
@@ -121,13 +136,14 @@ export async function envoyerEmailsLead(params: {
         ? `${euro(estimation.mediane)} (${euro(estimation.fourchetteBasse)} – ${euro(estimation.fourchetteHaute)})`
         : `${euro(estimation.loyerMedian)}/mois`
     }</li>
+      <li>${tfr("email.interne.langue", { langue: tfr(`common.langues.${locale}`) })}</li>
     </ul>
     <p><a href="${SITE.url}/admin/leads">Ouvrir la fiche dans l'admin</a> (lead ${leadId})</p>
   </div>`;
 
   await envoyerEmail({
     to: [adminEmail],
-    subject: `[Lead ${score}/100] ${lead.prenom} ${lead.nom} - ${lead.projet} ${lead.typeBien}${estimation === null ? " - MANUELLE" : ""
+    subject: `[Lead ${score}/100] ${lead.prenom} ${lead.nom} - ${projet.toLowerCase()} ${typeBien.toLowerCase()}${estimation === null ? " - MANUELLE" : ""
       }`,
     html: htmlInterne,
     replyTo: lead.email,

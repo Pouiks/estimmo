@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Bus, GraduationCap, ShoppingBag, Sparkles, Trees } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { Adresse } from "@/lib/leads/schema";
@@ -12,6 +13,15 @@ export interface QuartierStats {
   commerces: number;
   parcs: number;
 }
+
+type CleQuartier = keyof QuartierStats;
+
+const EQUIPEMENTS: readonly { cle: CleQuartier; icon: LucideIcon }[] = [
+  { cle: "ecoles", icon: GraduationCap },
+  { cle: "transports", icon: Bus },
+  { cle: "commerces", icon: ShoppingBag },
+  { cle: "parcs", icon: Trees },
+];
 
 /**
  * Stats de quartier autour d'une adresse (OpenStreetMap via /api/quartier).
@@ -75,19 +85,6 @@ function useQuartierStats(
   return { stats, loading: adresse !== null && !done };
 }
 
-function libelles(stats: QuartierStats): string[] {
-  const parts: string[] = [];
-  if (stats.ecoles > 0)
-    parts.push(`${stats.ecoles} école${stats.ecoles > 1 ? "s" : ""}`);
-  if (stats.transports > 0)
-    parts.push(`${stats.transports} transport${stats.transports > 1 ? "s" : ""}`);
-  if (stats.commerces > 0)
-    parts.push(`${stats.commerces} commerce${stats.commerces > 1 ? "s" : ""}`);
-  if (stats.parcs > 0)
-    parts.push(`${stats.parcs} espace${stats.parcs > 1 ? "s" : ""} vert${stats.parcs > 1 ? "s" : ""}`);
-  return parts;
-}
-
 /**
  * Bandelette compacte affichée à l'étape 1 dès la sélection de l'adresse :
  * l'analyse du quartier démarre immédiatement, l'utilisateur le voit.
@@ -100,11 +97,17 @@ export function QuartierStrip({
   /** Persiste les stats dans l'état du formulaire pour l'écran résultat. */
   onLoaded?: (stats: QuartierStats) => void;
 }) {
+  const t = useTranslations("quartier");
   const { stats, loading } = useQuartierStats(adresse, onLoaded);
 
   if (!adresse) return null;
 
-  const parts = stats ? libelles(stats) : [];
+  // "3 écoles · 2 transports" : pluriels gérés par les messages ICU.
+  const parts = stats
+    ? EQUIPEMENTS.filter((e) => stats[e.cle] > 0).map((e) =>
+        t(e.cle, { n: stats[e.cle] })
+      )
+    : [];
   if (!loading && parts.length === 0) return null;
 
   return (
@@ -130,11 +133,13 @@ export function QuartierStrip({
         style={{ color: C.accent, flexShrink: 0, marginTop: 2 }}
       />
       {loading ? (
-        <span className="animate-pulse">Analyse de votre quartier en cours…</span>
+        <span className="animate-pulse">{t("analyse")}</span>
       ) : (
         <span>
-          <strong>Quartier analysé :</strong> {parts.join(" · ")} à proximité.
-          Détail complet avec votre estimation.
+          {t.rich("analyseFait", {
+            liste: parts.join(t("separateur")),
+            strong: (chunks) => <strong>{chunks}</strong>,
+          })}
         </span>
       )}
     </div>
@@ -152,38 +157,13 @@ export function QuartierBlock({
   /** Stats déjà chargées à l'étape 1 : pas de refetch, affichage garanti. */
   statsInitiales?: QuartierStats | null;
 }) {
+  const t = useTranslations("quartier");
   const fetched = useQuartierStats(statsInitiales ? null : adresse);
   const stats = statsInitiales ?? fetched.stats;
 
   if (!stats) return null;
 
-  const tiles: { icon: LucideIcon; value: number; label: string; sub: string }[] = [
-    {
-      icon: GraduationCap,
-      value: stats.ecoles,
-      label: stats.ecoles > 1 ? "écoles" : "école",
-      sub: "à moins de 500 m",
-    },
-    {
-      icon: Bus,
-      value: stats.transports,
-      label: stats.transports > 1 ? "transports" : "transport",
-      sub: "bus, gare ou tram",
-    },
-    {
-      icon: ShoppingBag,
-      value: stats.commerces,
-      label: stats.commerces > 1 ? "commerces" : "commerce",
-      sub: "à moins de 500 m",
-    },
-    {
-      icon: Trees,
-      value: stats.parcs,
-      label: stats.parcs > 1 ? "espaces verts" : "espace vert",
-      sub: "parcs et jardins",
-    },
-  ].filter((t) => t.value > 0);
-
+  const tiles = EQUIPEMENTS.filter((e) => stats[e.cle] > 0);
   if (tiles.length === 0) return null;
 
   return (
@@ -198,7 +178,7 @@ export function QuartierBlock({
           letterSpacing: ".05em",
         }}
       >
-        Votre quartier
+        {t("titre")}
       </div>
       <div
         style={{
@@ -207,9 +187,9 @@ export function QuartierBlock({
           gap: 10,
         }}
       >
-        {tiles.map((t) => (
+        {tiles.map((tile) => (
           <div
-            key={t.label}
+            key={tile.cle}
             style={{
               padding: 14,
               borderRadius: 14,
@@ -217,7 +197,7 @@ export function QuartierBlock({
               border: `1px solid ${C.borderSoft}`,
             }}
           >
-            <t.icon size={16} style={{ color: C.accent }} />
+            <tile.icon size={16} style={{ color: C.accent }} />
             <div
               style={{
                 fontWeight: 800,
@@ -226,16 +206,16 @@ export function QuartierBlock({
                 marginTop: 6,
               }}
             >
-              {t.value.toLocaleString("fr-FR")} {t.label}
+              {t(tile.cle, { n: stats[tile.cle] })}
             </div>
             <div style={{ fontSize: 11.5, color: C.faint, marginTop: 2 }}>
-              {t.sub}
+              {t(`sous.${tile.cle}`)}
             </div>
           </div>
         ))}
       </div>
       <p style={{ margin: "8px 2px 0", fontSize: 11, color: C.faint2 }}>
-        Équipements recensés autour de votre adresse · source OpenStreetMap.
+        {t("source")}
       </p>
     </div>
   );

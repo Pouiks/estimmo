@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "ogTitle": "{marque} - {baseline}"
+  },
+  "hero": {
+    "badge": "Basé sur les ventes officielles enregistrées par l'État",
+    "titre": "Combien vaut votre bien immobilier ?",
+    "texte": "Estimation gratuite en 2 minutes - vente ou location. Fourchette de prix immédiate, fondée sur les transactions réelles de votre quartier.",
+    "arguments": {
+      "immediat": "Résultat immédiat, gratuit et sans engagement",
+      "donnees": "Fondé sur les ventes réelles (DVF) et les loyers ANIL",
+      "partout": "Vente ou location, partout en France"
+    },
+    "appeler": "Appeler {telephone}"
+  },
+  "etapes": {
+    "titre": "Comment ça marche ?",
+    "numero": "Étape {numero}",
+    "decrire": {
+      "titre": "Décrivez votre bien",
+      "texte": "4 étapes simples : votre projet, les caractéristiques du bien, son état, vos coordonnées."
+    },
+    "analyse": {
+      "titre": "Analyse des ventes réelles",
+      "texte": "Notre moteur compare votre bien aux transactions officielles (DVF) et aux loyers de référence (ANIL) de votre quartier."
+    },
+    "recevoir": {
+      "titre": "Recevez votre estimation",
+      "texte": "Une fourchette de prix immédiate à l'écran et par email, puis un échange avec votre conseillère pour l'affiner."
+    }
+  },
+  "reassurances": {
+    "rapide": {
+      "titre": "2 minutes chrono",
+      "texte": "Un parcours court, pensé pour le mobile."
+    },
+    "donnees": {
+      "titre": "Données officielles",
+      "texte": "Ventes DVF (data.gouv.fr) et loyers ANIL : les mêmes données que les notaires."
+    },
+    "france": {
+      "titre": "Toute la France",
+      "texte": "Estimation vente et location, de Paris aux communes rurales."
+    },
+    "gratuit": {
+      "titre": "Gratuit et sans engagement",
+      "texte": "Vos données restent confidentielles et ne sont jamais revendues."
+    }
+  },
+  "accompagnement": {
+    "titre": "Vendez au meilleur prix, accompagné de bout en bout",
+    "texte": "L'estimation en ligne est une première étape. Pour vendre vite et bien, {agent} affine votre prix sur place et pilote votre vente : photos professionnelles, diffusion prioritaire, qualification des acheteurs, négociation.",
+    "honoraires": "Honoraires <strong>{exclusif}</strong> en mandat exclusif (contre {simple} en mandat simple)",
+    "engagement": "Engagement de moyens écrit et reporting régulier",
+    "ctaTitre": "Prêt à connaître la valeur de votre bien ?",
+    "ctaTexte": "Réponse immédiate à l'écran, récapitulatif complet par email, et un rappel de votre conseillère si vous le souhaitez.",
+    "ctaBouton": "Démarrer mon estimation"
+  },
+  "faq": {
+    "titre": "Questions fréquentes",
+    "calcul": {
+      "question": "Comment est calculée mon estimation immobilière ?",
+      "reponse": "Nous comparons votre bien aux ventes réellement enregistrées par l'État (base DVF) dans votre quartier : même type de bien, surface proche, ventes de moins de 30 mois. Le prix au m² obtenu est ensuite ajusté selon l'état, le DPE, l'étage, l'extérieur et le stationnement. Pour une location, nous utilisons les loyers de référence ANIL de votre commune."
+    },
+    "fiable": {
+      "question": "L'estimation en ligne est-elle fiable ?",
+      "reponse": "Elle repose sur des transactions réelles, pas sur des annonces. La fourchette affichée reflète l'hétérogénéité des ventes de votre secteur. Pour transformer cette fourchette en prix de mise en vente précis, un avis de valeur sur place reste indispensable : {agent} vous l'offre, sans engagement."
+    },
+    "gratuit": {
+      "question": "Est-ce vraiment gratuit et sans engagement ?",
+      "reponse": "Oui. L'estimation est gratuite, immédiate et sans aucune obligation. Vous n'êtes recontacté qu'avec votre consentement explicite, et vos données ne sont jamais revendues."
+    },
+    "avisValeur": {
+      "question": "Quelle différence entre estimation en ligne et avis de valeur ?",
+      "reponse": "L'estimation en ligne donne une fourchette statistique immédiate fondée sur les ventes comparables. L'avis de valeur est réalisé sur place par un professionnel : il intègre les spécificités invisibles dans les données (vue, agencement, travaux, copropriété) et débouche sur un prix de commercialisation."
+    },
+    "loyer": {
+      "question": "Puis-je estimer un loyer ?",
+      "reponse": "Oui. Le même formulaire estime le loyer mensuel de votre appartement ou maison à partir des indicateurs officiels ANIL de votre commune, avec les alertes réglementaires DPE (interdiction progressive de louer les passoires thermiques)."
+    }
+  },
+  "jsonLd": {
+    "priceRange": "Honoraires {exclusif} en mandat exclusif",
+    "service": "Estimation immobilière gratuite en ligne"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "baseline": "Free property valuation, anywhere in France",
+  "description": "Get a free estimate of your property's sale price or rental value in 2 minutes, based on official French DVF and ANIL data.",
+  "mentions": {
+    "anil": "ANIL estimates, based on data from Groupe SeLoger and leboncoin",
+    "dvf": "Source: DVF - data.gouv.fr",
+    "disclaimer": "Indicative estimate based on public DVF/ANIL data; it is not a formal appraisal. A visit is required for an accurate price."
+  },
+  "honoraires": {
+    "exclusif": "from {taux}%",
+    "simple": "minimum {taux}%"
+  },
+  "agent": {
+    "role": "Your advisor",
+    "jobTitle": "Real estate advisor"
+  },
+  "na": "n/a",
+  "unites": {
+    "parM2": "{valeur}/m²",
+    "parMois": "{valeur}/month",
+    "parM2ParMois": "{valeur}/m²/month",
+    "pourcent": "{valeur}%"
+  },
+  "langues": {
+    "fr": "Français",
+    "en": "English"
+  }
+}

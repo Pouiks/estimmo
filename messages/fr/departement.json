@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "titre": "Prix immobilier {nom} ({code}) - Prix au m² par commune {annee}",
+    "description": "Prix médians au m² de toutes les communes {paris, select, true {de} other {du département}} {nom} ({code}), calculés à partir des ventes réelles DVF, et loyers de référence ANIL. Estimation gratuite en ligne.",
+    "introuvable": "Département introuvable"
+  },
+  "filAriane": {
+    "accueil": "Accueil",
+    "prix": "Prix immobilier"
+  },
+  "h1": "Prix immobilier {paris, select, true {à} other {dans le}} {nom} ({code}) en {annee}",
+  "intro": "{communes, plural, one {# commune suivie} other {# communes suivies}}{ventes, plural, =0 {} other {, # ventes analysées sur les 12 derniers mois de données publiées}}. Prix médians au m² issus des ventes réellement enregistrées par l'État (base DVF) et loyers de référence ANIL.",
+  "cta": "Estimer mon bien gratuitement",
+  "parCommune": "Prix au m² par commune",
+  "prixAppart": "{prix}/m²",
+  "prixMaison": "{prix}/m² maison",
+  "autresCommunes": "Autres communes (loyers de référence)",
+  "communesLoyers": "Communes (loyers de référence)",
+  "tropPeu": "Trop peu de ventes récentes pour un prix médian fiable : ces pages présentent les loyers ANIL et proposent une estimation personnalisée.",
+  "mentions": "{dvf}. {anil}. {disclaimer}"
+}

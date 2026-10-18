@@ -1,0 +1,36 @@
+{
+  "manuelle": {
+    "badge": "Personalised analysis",
+    "titre": "Free valuation within 24 h",
+    "texte": "Your area deserves a tailored analysis. {agent} will prepare your valuation and call you back on the number provided. A confirmation email has just been sent to you."
+  },
+  "badge": "Valuation ready",
+  "intro": {
+    "vente": "Our valuation of your property",
+    "location": "Estimated monthly rent (including charges)"
+  },
+  "basse": "Low",
+  "estimation": "Estimate",
+  "haute": "High",
+  "parMois": " /month",
+  "soitEnviron": "about <b>{prix}</b>{projet, select, vente {/m²} other {/m²/month}}",
+  "stats": {
+    "surface": "Surface",
+    "surfaceValeur": "{surface} m²",
+    "confiance": "Confidence",
+    "source": "Source"
+  },
+  "fourchette": {
+    "titre": "Why a ±{pct}% range?",
+    "texte": "The {n} comparable sales in your area are heterogeneous (condition, floor, fittings). This is exactly what an on-site appraisal settles: {agent} offers it to you, with no obligation."
+  },
+  "sourceVente": "Based on {n, plural, one {# comparable sale} other {# comparable sales}}. {dvf}.",
+  "sourceLocation": "{anil}.",
+  "carte": {
+    "titre": "Refine your price with {agent}",
+    "texte": "A call back for a precise appraisal, with no obligation.",
+    "honoraires": "Fees {exclusif} with an exclusive mandate versus {simple} with a simple mandate.",
+    "rappel": "Request a call back - {telephone}"
+  },
+  "refaire": "Start a new valuation"
+}

@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "titre": "Property prices {nom} ({code}) - Price per m² by town {annee}",
+    "description": "Median prices per m² for every town in {paris, select, true {} other {the}} {nom} ({code}) department, calculated from actual DVF sales, plus ANIL reference rents. Free online valuation.",
+    "introuvable": "Department not found"
+  },
+  "filAriane": {
+    "accueil": "Home",
+    "prix": "Property prices"
+  },
+  "h1": "Property prices in {paris, select, true {} other {the}} {nom} ({code}) in {annee}",
+  "intro": "{communes, plural, one {# town tracked} other {# towns tracked}}{ventes, plural, =0 {} other {, # sales analysed over the last 12 months of published data}}. Median prices per m² from sales actually recorded by the French State (DVF database) and ANIL reference rents.",
+  "cta": "Value my property for free",
+  "parCommune": "Price per m² by town",
+  "prixAppart": "{prix}/m²",
+  "prixMaison": "{prix}/m² house",
+  "autresCommunes": "Other towns (reference rents)",
+  "communesLoyers": "Towns (reference rents)",
+  "tropPeu": "Too few recent sales for a reliable median price: these pages show ANIL rents and offer a personalised valuation.",
+  "mentions": "{dvf}. {anil}. {disclaimer}"
+}

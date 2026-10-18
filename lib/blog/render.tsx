@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { Link } from "@/lib/i18n/navigation";
 
 /**
  * Rendu serveur du JSON TipTap → React (sans dépendance).

@@ -1,0 +1,17 @@
+{
+  "analyse": "Analysing your neighbourhood…",
+  "analyseFait": "<strong>Neighbourhood analysed:</strong> {liste} nearby. Full details with your valuation.",
+  "separateur": " · ",
+  "ecoles": "{n, plural, one {# school} other {# schools}}",
+  "transports": "{n, plural, one {# transport stop} other {# transport stops}}",
+  "commerces": "{n, plural, one {# shop} other {# shops}}",
+  "parcs": "{n, plural, one {# green space} other {# green spaces}}",
+  "titre": "Your neighbourhood",
+  "sous": {
+    "ecoles": "within 500 m",
+    "transports": "bus, train or tram",
+    "commerces": "within 500 m",
+    "parcs": "parks and gardens"
+  },
+  "source": "Amenities recorded around your address · source OpenStreetMap."
+}

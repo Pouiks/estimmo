@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "ogTitle": "{marque} - {baseline}"
+  },
+  "hero": {
+    "badge": "Based on official sales recorded by the French State",
+    "titre": "How much is your property worth?",
+    "texte": "Free valuation in 2 minutes - for sale or rent. An instant price range, based on actual transactions in your neighbourhood.",
+    "arguments": {
+      "immediat": "Instant result, free and with no obligation",
+      "donnees": "Based on actual sales (DVF) and ANIL rent references",
+      "partout": "Sale or rental, anywhere in France"
+    },
+    "appeler": "Call {telephone}"
+  },
+  "etapes": {
+    "titre": "How does it work?",
+    "numero": "Step {numero}",
+    "decrire": {
+      "titre": "Describe your property",
+      "texte": "4 simple steps: your project, the property's features, its condition, your contact details."
+    },
+    "analyse": {
+      "titre": "Analysis of actual sales",
+      "texte": "Our engine compares your property with official transactions (DVF) and reference rents (ANIL) in your neighbourhood."
+    },
+    "recevoir": {
+      "titre": "Receive your valuation",
+      "texte": "An instant price range on screen and by email, then a conversation with your advisor to refine it."
+    }
+  },
+  "reassurances": {
+    "rapide": {
+      "titre": "2 minutes flat",
+      "texte": "A short journey, designed for mobile."
+    },
+    "donnees": {
+      "titre": "Official data",
+      "texte": "DVF sales (data.gouv.fr) and ANIL rents: the same data notaries use."
+    },
+    "france": {
+      "titre": "All of France",
+      "texte": "Sale and rental valuations, from Paris to rural villages."
+    },
+    "gratuit": {
+      "titre": "Free and no obligation",
+      "texte": "Your data stays confidential and is never sold."
+    }
+  },
+  "accompagnement": {
+    "titre": "Sell at the best price, supported from start to finish",
+    "texte": "The online valuation is a first step. To sell quickly and well, {agent} refines your price on site and manages your sale: professional photos, priority listing, buyer qualification, negotiation.",
+    "honoraires": "Fees <strong>{exclusif}</strong> with an exclusive mandate (versus {simple} with a simple mandate)",
+    "engagement": "Written commitment and regular reporting",
+    "ctaTitre": "Ready to find out what your property is worth?",
+    "ctaTexte": "Instant answer on screen, full summary by email, and a call back from your advisor if you wish.",
+    "ctaBouton": "Start my valuation"
+  },
+  "faq": {
+    "titre": "Frequently asked questions",
+    "calcul": {
+      "question": "How is my property valuation calculated?",
+      "reponse": "We compare your property with sales actually recorded by the French State (DVF database) in your neighbourhood: same property type, similar surface area, sales less than 30 months old. The resulting price per m² is then adjusted for condition, energy rating (DPE), floor, outdoor space and parking. For rentals, we use the ANIL reference rents for your town."
+    },
+    "fiable": {
+      "question": "Is the online valuation reliable?",
+      "reponse": "It is based on actual transactions, not listings. The displayed range reflects the diversity of sales in your area. To turn this range into a precise asking price, an on-site appraisal remains essential: {agent} offers it to you, with no obligation."
+    },
+    "gratuit": {
+      "question": "Is it really free and with no obligation?",
+      "reponse": "Yes. The valuation is free, instant and carries no obligation whatsoever. You are only contacted with your explicit consent, and your data is never sold."
+    },
+    "avisValeur": {
+      "question": "What is the difference between an online valuation and an appraisal?",
+      "reponse": "The online valuation gives an instant statistical range based on comparable sales. The appraisal is carried out on site by a professional: it takes into account what the data cannot show (view, layout, renovation work, co-ownership) and leads to a marketing price."
+    },
+    "loyer": {
+      "question": "Can I estimate a rent?",
+      "reponse": "Yes. The same form estimates the monthly rent of your flat or house from the official ANIL indicators for your town, including DPE regulatory alerts (the progressive ban on renting energy-inefficient homes)."
+    }
+  },
+  "jsonLd": {
+    "priceRange": "Fees {exclusif} with an exclusive mandate",
+    "service": "Free online property valuation"
+  }
+}

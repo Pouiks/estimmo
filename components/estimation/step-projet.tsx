@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Building2, Home, KeyRound, Lock, Tag } from "lucide-react";
 import { AddressAutocomplete } from "./address-autocomplete";
 import { QuartierStrip } from "./quartier-block";
@@ -13,24 +14,19 @@ import {
 } from "./design";
 import type { StepProps } from "./form-state";
 
-const HORIZONS = [
-  { value: "en_vente", label: "Déjà en vente" },
-  { value: "moins_3_mois", label: "Moins de 3 mois" },
-  { value: "3_6_mois", label: "3 à 6 mois" },
-  { value: "curiosite", label: "Simple curiosité" },
-] as const;
+const HORIZONS = ["en_vente", "moins_3_mois", "3_6_mois", "curiosite"] as const;
 
 export function StepProjet({ state, setField, errors }: StepProps) {
+  const t = useTranslations("estimation.projet");
+  const tl = useTranslations("labels");
+
   return (
     <div>
-      <StepHeader
-        title="Votre projet immobilier"
-        subtitle="Commencez par l'adresse : elle déclenche l'analyse de votre quartier."
-      />
+      <StepHeader title={t("titre")} subtitle={t("sousTitre")} />
 
       {/* L'adresse en premier : c'est la donnée qui pèse le plus dans
           l'estimation, et le champ le plus engageant du tunnel. */}
-      <SectionLabel>Adresse du bien</SectionLabel>
+      <SectionLabel>{t("adresse")}</SectionLabel>
       <AddressAutocomplete
         value={state.adresse}
         onChange={(adresse) => setField("adresse", adresse)}
@@ -53,8 +49,7 @@ export function StepProjet({ state, setField, errors }: StepProps) {
           }}
         >
           <Lock size={13} />
-          L&apos;adresse affine la comparaison. Elle reste strictement
-          confidentielle.
+          {t("confidentialite")}
         </p>
       )}
       <FieldMsg
@@ -66,7 +61,7 @@ export function StepProjet({ state, setField, errors }: StepProps) {
       />
 
       <div style={{ marginTop: 24 }}>
-        <SectionLabel>Je souhaite</SectionLabel>
+        <SectionLabel>{t("souhait")}</SectionLabel>
         <div
           style={{
             display: "grid",
@@ -76,15 +71,15 @@ export function StepProjet({ state, setField, errors }: StepProps) {
         >
           <ChoiceCard
             icon={Tag}
-            title="Vendre"
-            sub="Prix de vente estimé"
+            title={t("vendre")}
+            sub={t("vendreSous")}
             selected={state.projet === "vente"}
             onClick={() => setField("projet", "vente")}
           />
           <ChoiceCard
             icon={KeyRound}
-            title="Louer"
-            sub="Loyer mensuel estimé"
+            title={t("louer")}
+            sub={t("louerSous")}
             selected={state.projet === "location"}
             onClick={() => {
               setField("projet", "location");
@@ -97,15 +92,15 @@ export function StepProjet({ state, setField, errors }: StepProps) {
 
       {state.projet === "vente" && (
         <div style={{ marginTop: 24 }}>
-          <SectionLabel>Votre horizon de vente</SectionLabel>
+          <SectionLabel>{t("horizon")}</SectionLabel>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {HORIZONS.map((h) => (
               <Pill
-                key={h.value}
-                label={h.label}
+                key={h}
+                label={tl(`horizon.${h}`)}
                 showMark={false}
-                selected={state.horizon === h.value}
-                onClick={() => setField("horizon", h.value)}
+                selected={state.horizon === h}
+                onClick={() => setField("horizon", h)}
               />
             ))}
           </div>
@@ -114,21 +109,21 @@ export function StepProjet({ state, setField, errors }: StepProps) {
       )}
 
       <div style={{ marginTop: 24 }}>
-        <SectionLabel>Type de bien</SectionLabel>
+        <SectionLabel>{t("typeBien")}</SectionLabel>
         <div
           style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
         >
           <ChoiceCard
             orientation="row"
             icon={Building2}
-            title="Appartement"
+            title={tl("typeBien.appartement")}
             selected={state.typeBien === "appartement"}
             onClick={() => setField("typeBien", "appartement")}
           />
           <ChoiceCard
             orientation="row"
             icon={Home}
-            title="Maison"
+            title={tl("typeBien.maison")}
             selected={state.typeBien === "maison"}
             onClick={() => setField("typeBien", "maison")}
           />

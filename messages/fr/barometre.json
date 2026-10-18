@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "titre": "Baromètre des prix immobiliers {annee} : hausses, baisses et villes les plus chères",
+    "description": "Classements fondés sur les ventes réelles (base DVF) : plus fortes hausses et baisses de prix au m², villes les plus chères et les plus abordables de France. Mise à jour continue."
+  },
+  "jsonLd": {
+    "nom": "Baromètre {marque} des prix immobiliers {annee}",
+    "description": "Classements des prix immobiliers par commune (hausses, baisses, villes les plus chères) calculés à partir des ventes réelles de la base DVF (DGFiP), 12 mois glissants."
+  },
+  "filAriane": {
+    "accueil": "Accueil",
+    "barometre": "Baromètre"
+  },
+  "h1": "Baromètre des prix immobiliers {annee}",
+  "intro": "Les classements ci-dessous sont calculés à partir des <strong>ventes réellement enregistrées par l'État</strong> (base DVF) sur les 12 derniers mois de données publiées, et non à partir d'annonces. Mise à jour du {date, date, long}.",
+  "indisponible": "Les classements sont en cours de mise à jour et seront de retour dans quelques instants. Vous pouvez dès maintenant <lien>estimer votre bien</lien>.",
+  "kpis": {
+    "ventes": "Ventes analysées (12 mois)",
+    "communes": "Communes suivies",
+    "source": "Source"
+  },
+  "colonnes": {
+    "ville": "Ville",
+    "evolution": "Évolution 1 an",
+    "prixAppart": "Prix appart.",
+    "appartement": "Appartement",
+    "maison": "Maison",
+    "ventes": "Ventes 12 mois"
+  },
+  "sections": {
+    "hausses": "Plus fortes hausses sur 1 an",
+    "baisses": "Plus fortes baisses sur 1 an",
+    "cheres": "Villes les plus chères",
+    "abordables": "Villes les plus abordables"
+  },
+  "seuil": "Classements limités aux communes avec au moins {seuil} ventes sur 12 mois, pour rester statistiquement significatifs. Paris, Marseille et Lyon apparaissent par arrondissement.",
+  "grandsMarches": "Les 20 plus gros marchés de France",
+  "prixM2": "{prix}/m²",
+  "evolution": "{evo, number, evolution} %",
+  "cta": {
+    "titre": "Et votre bien, combien vaut-il ?",
+    "texte": "Estimation gratuite en 2 minutes, fondée sur les ventes réelles de votre quartier.",
+    "bouton": "Estimer mon bien"
+  },
+  "methodologie": {
+    "titre": "Méthodologie",
+    "texte": "Prix médians au m² calculés par commune et par type de bien à partir des mutations de la base « Demandes de valeurs foncières » (DVF, DGFiP) : ventes de gré à gré uniquement, un seul logement par mutation, bornes anti-aberrations (surface 8-500 m², prix 200-25 000 €/m²). Évolution : médiane des 12 derniers mois de données publiées comparée aux 12 mois précédents. {dvf}. {anil}.",
+    "presse": "<strong>Journalistes, blogueurs :</strong> ces données sont librement réutilisables avec mention « source : baromètre {marque} » et un lien vers cette page. Contact : {email}."
+  }
+}

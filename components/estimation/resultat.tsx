@@ -1,5 +1,6 @@
 "use client";
 
+import { useFormatter, useTranslations } from "next-intl";
 import { PhoneCall, RotateCcw } from "lucide-react";
 import type {
   EstimationLocation,
@@ -8,20 +9,13 @@ import type {
 import type { EstimationFormState } from "./form-state";
 import { C } from "./design";
 import { QuartierBlock } from "./quartier-block";
-import { MENTIONS, SITE } from "@/lib/config";
+import { SITE } from "@/lib/config";
 
 export type ResultatApi = {
   leadId: string;
   manuelle: boolean;
   estimation: EstimationVente | EstimationLocation | null;
 };
-
-const euro = (n: number) =>
-  n.toLocaleString("fr-FR", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  });
 
 const initiales = SITE.agent.name
   .split(/\s+/)
@@ -60,7 +54,9 @@ function Badge({ label }: { label: string }) {
   );
 }
 
-function CarenzaCard({ vente }: { vente: boolean }) {
+function CarteConseillere({ vente }: { vente: boolean }) {
+  const t = useTranslations("result.carte");
+  const tc = useTranslations("common");
   return (
     <div
       style={{
@@ -89,17 +85,17 @@ function CarenzaCard({ vente }: { vente: boolean }) {
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700, fontSize: 15 }}>
-            Affinez votre prix avec {SITE.agent.name}
+            {t("titre", { agent: SITE.agent.name })}
           </div>
-          <div style={{ fontSize: 13, opacity: 0.85 }}>
-            Un rappel pour un avis de valeur précis, sans engagement.
-          </div>
+          <div style={{ fontSize: 13, opacity: 0.85 }}>{t("texte")}</div>
         </div>
       </div>
       {vente && (
         <div style={{ fontSize: 12.5, opacity: 0.85, marginTop: 12 }}>
-          Honoraires {SITE.honoraires.exclusif} en mandat exclusif contre{" "}
-          {SITE.honoraires.simple} en mandat simple.
+          {t("honoraires", {
+            exclusif: tc("honoraires.exclusif", { taux: SITE.honoraires.tauxExclusif }),
+            simple: tc("honoraires.simple", { taux: SITE.honoraires.tauxSimple }),
+          })}
         </div>
       )}
       <a
@@ -119,13 +115,14 @@ function CarenzaCard({ vente }: { vente: boolean }) {
           textDecoration: "none",
         }}
       >
-        <PhoneCall size={16} /> Être rappelé(e) - {SITE.agent.phone}
+        <PhoneCall size={16} /> {t("rappel", { telephone: SITE.agent.phone })}
       </a>
     </div>
   );
 }
 
 function RestartLink({ onRestart }: { onRestart?: () => void }) {
+  const t = useTranslations("result");
   return (
     <button
       type="button"
@@ -145,7 +142,7 @@ function RestartLink({ onRestart }: { onRestart?: () => void }) {
         font: "inherit",
       }}
     >
-      <RotateCcw size={13} /> Refaire une estimation
+      <RotateCcw size={13} /> {t("refaire")}
     </button>
   );
 }
@@ -186,13 +183,18 @@ export function ResultatEstimation({
   state: EstimationFormState;
   onRestart?: () => void;
 }) {
+  const t = useTranslations("result");
+  const tl = useTranslations("labels");
+  const tc = useTranslations("common");
+  const format = useFormatter();
+  const euro = (n: number) => format.number(n, "currency");
   const est = resultat.estimation;
 
   // --- Analyse manuelle (zone non couverte / trop peu de comparables) ---
   if (resultat.manuelle || est === null) {
     return (
       <div className="dcx-step" style={{ textAlign: "center", paddingTop: 6 }}>
-        <Badge label="Analyse personnalisée" />
+        <Badge label={t("manuelle.badge")} />
         <div
           style={{
             fontWeight: 700,
@@ -202,7 +204,7 @@ export function ResultatEstimation({
             color: C.ink,
           }}
         >
-          Estimation offerte sous 24&nbsp;h
+          {t("manuelle.titre")}
         </div>
         <p
           style={{
@@ -213,15 +215,13 @@ export function ResultatEstimation({
             lineHeight: 1.6,
           }}
         >
-          Votre secteur mérite une analyse sur mesure. {SITE.agent.name} réalise
-          votre estimation et vous rappelle au numéro indiqué. Un email de
-          confirmation vient de vous être envoyé.
+          {t("manuelle.texte", { agent: SITE.agent.name })}
         </p>
         <QuartierBlock
           adresse={state.adresse}
           statsInitiales={state.quartierStats}
         />
-        <CarenzaCard vente />
+        <CarteConseillere vente />
         <br />
         <RestartLink onRestart={onRestart} />
       </div>
@@ -234,21 +234,15 @@ export function ResultatEstimation({
   const high = vente ? est.fourchetteHaute : est.loyerHaut;
   const perM2 = vente ? est.prixM2Ajuste : est.loyerM2Zone;
   const fourchetteLarge = vente && est.fourchettePct >= 9;
-  const confidence = vente
-    ? est.confiance === "haute"
-      ? "Élevée"
-      : est.confiance === "moyenne"
-        ? "Correcte"
-        : "Indicative"
-    : "Indicative";
+  const confiance = vente
+    ? tl(`confiance.${est.confiance}`)
+    : tl("confiance.indicative");
 
   return (
     <div className="dcx-step" style={{ textAlign: "center", paddingTop: 6 }}>
-      <Badge label="Estimation prête" />
+      <Badge label={t("badge")} />
       <p style={{ margin: "0 0 14px", color: C.muted, fontSize: 15 }}>
-        {vente
-          ? "Notre estimation de votre bien"
-          : "Loyer mensuel estimé (charges comprises)"}
+        {t(vente ? "intro.vente" : "intro.location")}
       </p>
 
       {/* Fourchette basse · estimation (médiane) · haute */}
@@ -272,7 +266,7 @@ export function ResultatEstimation({
               marginBottom: 4,
             }}
           >
-            Basse
+            {t("basse")}
           </div>
           <div style={{ fontSize: 19, fontWeight: 800, color: C.ink }}>
             {euro(low)}
@@ -296,11 +290,11 @@ export function ResultatEstimation({
               marginBottom: 2,
             }}
           >
-            Estimation
+            {t("estimation")}
           </div>
           <div style={{ fontSize: 28, fontWeight: 800, lineHeight: 1.15 }}>
             {euro(mediane)}
-            {!vente && <span style={{ fontSize: 14 }}> /mois</span>}
+            {!vente && <span style={{ fontSize: 14 }}>{t("parMois")}</span>}
           </div>
         </div>
         <div>
@@ -314,7 +308,7 @@ export function ResultatEstimation({
               marginBottom: 4,
             }}
           >
-            Haute
+            {t("haute")}
           </div>
           <div style={{ fontSize: 19, fontWeight: 800, color: C.ink }}>
             {euro(high)}
@@ -323,9 +317,11 @@ export function ResultatEstimation({
       </div>
 
       <p style={{ margin: "0 0 22px", color: C.faint, fontSize: 13.5 }}>
-        soit environ{" "}
-        <b style={{ color: C.label }}>{perM2.toLocaleString("fr-FR")} €</b>
-        {vente ? "/m²" : "/m²/mois"}
+        {t.rich("soitEnviron", {
+          prix: format.number(perM2, "currencyDecimal"),
+          projet: est.projet,
+          b: (chunks) => <b style={{ color: C.label }}>{chunks}</b>,
+        })}
       </p>
 
       <div
@@ -337,9 +333,12 @@ export function ResultatEstimation({
           textAlign: "left",
         }}
       >
-        <StatCard label="Surface" value={`${state.surface || "?"} m²`} />
-        <StatCard label="Confiance" value={confidence} />
-        <StatCard label="Source" value={vente ? "DVF" : "ANIL"} />
+        <StatCard
+          label={t("stats.surface")}
+          value={t("stats.surfaceValeur", { surface: state.surface || "?" })}
+        />
+        <StatCard label={t("stats.confiance")} value={confiance} />
+        <StatCard label={t("stats.source")} value={vente ? "DVF" : "ANIL"} />
       </div>
 
       {fourchetteLarge && (
@@ -357,12 +356,12 @@ export function ResultatEstimation({
           }}
         >
           <b style={{ color: C.label }}>
-            Pourquoi cette fourchette de ±{est.fourchettePct} % ?
+            {t("fourchette.titre", { pct: est.fourchettePct })}
           </b>{" "}
-          Les {est.nbComparables} ventes comparables de votre secteur sont
-          hétérogènes (état, étage, prestations). C&apos;est exactement ce
-          qu&apos;un avis de valeur sur place permet de trancher :{" "}
-          {SITE.agent.name} vous l&apos;offre, sans engagement.
+          {t("fourchette.texte", {
+            n: est.nbComparables,
+            agent: SITE.agent.name,
+          })}
         </div>
       )}
 
@@ -371,12 +370,12 @@ export function ResultatEstimation({
         statsInitiales={state.quartierStats}
       />
 
-      <CarenzaCard vente={vente} />
+      <CarteConseillere vente={vente} />
 
       <p style={{ margin: "14px 0 0", fontSize: 11.5, color: C.faint2 }}>
         {vente
-          ? `Basé sur ${est.nbComparables} ventes comparables. ${MENTIONS.dvf}.`
-          : `${MENTIONS.anil}.`}
+          ? t("sourceVente", { n: est.nbComparables, dvf: tc("mentions.dvf") })
+          : t("sourceLocation", { anil: tc("mentions.anil") })}
       </p>
 
       <RestartLink onRestart={onRestart} />

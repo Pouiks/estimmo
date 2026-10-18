@@ -1,0 +1,64 @@
+{
+  "typeBien": {
+    "appartement": "Flat",
+    "maison": "House"
+  },
+  "typeBienMinuscule": {
+    "appartement": "flat",
+    "maison": "house"
+  },
+  "projet": {
+    "vente": "Sale",
+    "location": "Rental"
+  },
+  "horizon": {
+    "en_vente": "Already on the market",
+    "moins_3_mois": "Within 3 months",
+    "3_6_mois": "3 to 6 months",
+    "curiosite": "Just curious"
+  },
+  "etatGeneral": {
+    "a_renover": "Needs renovation",
+    "a_rafraichir": "Needs refreshing",
+    "bon": "Good condition",
+    "refait_neuf": "Fully renovated"
+  },
+  "etatGeneralSous": {
+    "a_renover": "Major works needed",
+    "a_rafraichir": "Liveable, needs a refresh",
+    "bon": "Nothing to plan",
+    "refait_neuf": "Recent fittings"
+  },
+  "age": {
+    "moins_5": "< 5 years",
+    "5_10": "5-10 years",
+    "10_20": "10-20 years",
+    "plus_20": "20+ years"
+  },
+  "exterieur": {
+    "balcon": "Balcony",
+    "terrasse": "Terrace",
+    "jardin": "Garden"
+  },
+  "stationnement": {
+    "aucun": "None",
+    "place": "Parking space",
+    "garage_box": "Garage / lock-up"
+  },
+  "atouts": {
+    "vue_degagee": "Open view",
+    "lumineux": "Bright",
+    "calme": "Quiet",
+    "traversant": "Dual aspect",
+    "dernier_etage": "Top floor"
+  },
+  "dpe": {
+    "ne_sait_pas": "I don't know"
+  },
+  "confiance": {
+    "haute": "High",
+    "moyenne": "Fair",
+    "faible": "Indicative",
+    "indicative": "Indicative"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "analyse": "Analyse de votre quartier en cours…",
+  "analyseFait": "<strong>Quartier analysé :</strong> {liste} à proximité. Détail complet avec votre estimation.",
+  "separateur": " · ",
+  "ecoles": "{n, plural, one {# école} other {# écoles}}",
+  "transports": "{n, plural, one {# transport} other {# transports}}",
+  "commerces": "{n, plural, one {# commerce} other {# commerces}}",
+  "parcs": "{n, plural, one {# espace vert} other {# espaces verts}}",
+  "titre": "Votre quartier",
+  "sous": {
+    "ecoles": "à moins de 500 m",
+    "transports": "bus, gare ou tram",
+    "commerces": "à moins de 500 m",
+    "parcs": "parcs et jardins"
+  },
+  "source": "Équipements recensés autour de votre adresse · source OpenStreetMap."
+}

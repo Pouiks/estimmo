@@ -1,6 +1,7 @@
 /**
  * Configuration marque / agent - source unique pour le site, les emails
- * et l'écran résultat.
+ * et l'écran résultat. Uniquement des DONNÉES : tout texte affiché vit dans
+ * messages/<locale>/*.json (i18n).
  */
 /**
  * Une faute dans NEXT_PUBLIC_SITE_URL (ex. « htps:// ») casse canoniques,
@@ -19,9 +20,7 @@ export function normaliserUrlSite(brut: string): string {
 
 export const SITE = {
   name: "ESTIMMO",
-  baseline: "Estimation immobilière gratuite, partout en France",
-  description:
-    "Estimez gratuitement le prix de vente ou le loyer de votre bien immobilier en 2 minutes, sur la base des données officielles DVF et ANIL.",
+  // Baseline, description, mentions légales : voir messages/<locale>/common.json.
   // Slash final retiré : SITE.url est concaténé (sitemap, canoniques JSON-LD,
   // robots, emails) - un "/" final produirait des URLs à double slash.
   url: normaliserUrlSite(
@@ -42,14 +41,8 @@ export const SITE = {
    */
   emailSender: "Carenza Brown · ESTIMMO",
   honoraires: {
-    exclusif: "à partir de 3 %",
-    simple: "minimum 6 %",
+    /** Taux en % ; les libellés (« à partir de 3 % ») sont dans messages/common. */
+    tauxExclusif: 3,
+    tauxSimple: 6,
   },
-} as const;
-
-export const MENTIONS = {
-  anil: "Estimations ANIL, à partir des données du Groupe SeLoger et de leboncoin",
-  dvf: "Source : DVF - data.gouv.fr",
-  disclaimer:
-    "Estimation indicative fondée sur les données publiques DVF/ANIL, ne constitue pas un avis de valeur. Une visite est nécessaire pour un prix précis.",
 } as const;

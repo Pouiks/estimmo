@@ -1,0 +1,58 @@
+{
+  "adresse": {
+    "liste": "Select an address from the list",
+    "invalide": "Invalid address - please select it from the list"
+  },
+  "projet": "Choose your project",
+  "horizon": "Specify your selling timeframe",
+  "typeBien": "Choose the property type",
+  "surface": {
+    "requis": "Enter the surface area",
+    "min": "Minimum surface area: 8 m²",
+    "max": "Maximum surface area: 800 m²"
+  },
+  "pieces": {
+    "requis": "Enter the number of rooms",
+    "min": "At least 1 room",
+    "max": "20 rooms maximum"
+  },
+  "chambres": {
+    "requis": "Enter the number of bedrooms",
+    "max": "15 bedrooms maximum"
+  },
+  "etage": {
+    "requis": "Enter the floor",
+    "min": "The floor cannot be negative",
+    "max": "50 floors maximum"
+  },
+  "etagesImmeuble": {
+    "requis": "Enter the number of floors in the building",
+    "min": "At least 1 floor",
+    "max": "60 floors maximum",
+    "incoherent": "The building has fewer floors than yours?"
+  },
+  "ascenseur": "Lift: yes or no?",
+  "surfaceTerrain": "Invalid plot size",
+  "etatGeneral": "Specify the overall condition",
+  "stationnement": "Specify the parking",
+  "ageCuisine": "Specify the age of the kitchen",
+  "ageSdb": "Specify the age of the bathroom",
+  "dpe": "Specify the energy rating (or \"I don't know\")",
+  "prenom": "Your first name",
+  "nom": "Your last name",
+  "email": "Invalid email",
+  "telephone": "Invalid French phone number (e.g. 06 12 34 56 78)",
+  "consentement": "Your consent is required to receive the valuation",
+  "generique": {
+    "requis": "Required field",
+    "type": "Invalid value",
+    "tropPetit": "Value too small",
+    "tropGrand": "Value too large",
+    "choix": "Invalid choice",
+    "format": "Invalid format",
+    "invalide": "Invalid value"
+  },
+  "formulaireInvalide": "Invalid form",
+  "jsonInvalide": "Invalid request",
+  "enregistrementImpossible": "Could not save your request, please try again."
+}

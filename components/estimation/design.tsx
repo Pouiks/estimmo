@@ -367,10 +367,15 @@ export function Stepper({
   value,
   onDec,
   onInc,
+  labelDec,
+  labelInc,
 }: {
   value: string;
   onDec: () => void;
   onInc: () => void;
+  /** Libellés accessibles des boutons (traduits par l'appelant). */
+  labelDec: string;
+  labelInc: string;
 }) {
   const btn: CSSProperties = {
     width: 38,
@@ -397,7 +402,7 @@ export function Stepper({
       <button
         type="button"
         onClick={onDec}
-        aria-label="Diminuer"
+        aria-label={labelDec}
         style={{ ...btn, background: "#EEF3F1", color: C.ink }}
       >
         −
@@ -406,7 +411,7 @@ export function Stepper({
       <button
         type="button"
         onClick={onInc}
-        aria-label="Augmenter"
+        aria-label={labelInc}
         style={{ ...btn, background: C.accent, color: "#fff" }}
       >
         +

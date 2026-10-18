@@ -1,8 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { traduireCle } from "@/lib/i18n/traduire-cle";
+import { AVEC_CLES, traduireIssues } from "@/lib/leads/erreurs";
 import {
   etape1Schema,
   etape2Schema,
@@ -22,7 +25,7 @@ import { StepContact } from "./step-contact";
 import { ResultatEstimation, type ResultatApi } from "./resultat";
 import { C } from "./design";
 
-const STEP_NAMES = ["Votre projet", "Le bien", "État & atouts", "Vos coordonnées"];
+const STEP_KEYS = ["projet", "bien", "etat", "contact"] as const;
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"];
 
 type ParseResult =
@@ -44,6 +47,9 @@ function track(sessionId: string | null, step: number, event: string) {
 }
 
 export function EstimationForm() {
+  const t = useTranslations("estimation");
+  const tRacine = useTranslations();
+  const locale = useLocale();
   const [state, setState] = useState<EstimationFormState>(initialFormState);
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -82,43 +88,55 @@ export function EstimationForm() {
 
   function parseEtape(n: number, s: EstimationFormState): ParseResult {
     if (n === 1) {
-      return etape1Schema.safeParse({
-        projet: s.projet ?? undefined,
-        horizon: s.horizon,
-        typeBien: s.typeBien ?? undefined,
-        adresse: s.adresse ?? undefined,
-      });
+      return etape1Schema.safeParse(
+        {
+          projet: s.projet ?? undefined,
+          horizon: s.horizon,
+          typeBien: s.typeBien ?? undefined,
+          adresse: s.adresse ?? undefined,
+        },
+        AVEC_CLES
+      );
     }
     if (n === 2) {
-      return etape2Schema(s.typeBien ?? "appartement").safeParse({
-        surface: toNumber(s.surface),
-        pieces: toNumber(s.pieces),
-        chambres: toNumber(s.chambres),
-        etage: toNumber(s.etage) ?? null,
-        etagesImmeuble: toNumber(s.etagesImmeuble) ?? null,
-        ascenseur: s.ascenseur,
-        surfaceTerrain: null,
-        anneeConstruction: s.anneeConstruction ?? undefined,
-      });
+      return etape2Schema(s.typeBien ?? "appartement").safeParse(
+        {
+          surface: toNumber(s.surface),
+          pieces: toNumber(s.pieces),
+          chambres: toNumber(s.chambres),
+          etage: toNumber(s.etage) ?? null,
+          etagesImmeuble: toNumber(s.etagesImmeuble) ?? null,
+          ascenseur: s.ascenseur,
+          surfaceTerrain: null,
+          anneeConstruction: s.anneeConstruction ?? undefined,
+        },
+        AVEC_CLES
+      );
     }
     if (n === 3) {
-      return etape3Schema.safeParse({
-        etatGeneral: s.etatGeneral ?? undefined,
-        exterieur: s.exterieur,
-        stationnement: s.stationnement ?? undefined,
-        ageCuisine: s.ageCuisine ?? undefined,
-        ageSdb: s.ageSdb ?? undefined,
-        dpe: s.dpe ?? undefined,
-        atouts: s.atouts,
-      });
+      return etape3Schema.safeParse(
+        {
+          etatGeneral: s.etatGeneral ?? undefined,
+          exterieur: s.exterieur,
+          stationnement: s.stationnement ?? undefined,
+          ageCuisine: s.ageCuisine ?? undefined,
+          ageSdb: s.ageSdb ?? undefined,
+          dpe: s.dpe ?? undefined,
+          atouts: s.atouts,
+        },
+        AVEC_CLES
+      );
     }
-    return etape4Schema.safeParse({
-      prenom: s.prenom,
-      nom: s.nom,
-      email: s.email,
-      telephone: s.telephone,
-      consentement: s.consentement,
-    });
+    return etape4Schema.safeParse(
+      {
+        prenom: s.prenom,
+        nom: s.nom,
+        email: s.email,
+        telephone: s.telephone,
+        consentement: s.consentement,
+      },
+      AVEC_CLES
+    );
   }
 
   function validerEtape(n: number): boolean {
@@ -127,12 +145,10 @@ export function EstimationForm() {
       setErrors({});
       return true;
     }
-    const map: FieldErrors = {};
-    for (const issue of parsed.error.issues) {
-      const key = issue.path.join(".") || "form";
-      if (!(key in map)) map[key] = issue.message;
-    }
-    setErrors(map);
+    // Les schémas portent des clés (validation.*) : traduction à l'affichage.
+    setErrors(
+      traduireIssues(parsed.error.issues, (cle) => traduireCle(tRacine, cle))
+    );
     return false;
   }
 
@@ -181,6 +197,7 @@ export function EstimationForm() {
       email: state.email,
       telephone: state.telephone,
       consentement: state.consentement,
+      locale,
       website: state.siteWeb,
       sessionId: sessionIdRef.current ?? undefined,
       utm: utmRef.current,
@@ -198,12 +215,13 @@ export function EstimationForm() {
           details?: { champ: string; message: string }[];
         } | null;
         if (res.status === 400 && data?.details) {
+          // Messages déjà traduits par l'API dans la langue du payload.
           const map: FieldErrors = {};
           for (const d of data.details) map[d.champ] = d.message;
           setErrors(map);
-          toast.error("Certaines informations sont invalides.");
+          toast.error(t("toasts.invalide"));
         } else {
-          toast.error("Une erreur est survenue, merci de réessayer.");
+          toast.error(t("toasts.erreur"));
         }
         return;
       }
@@ -213,7 +231,7 @@ export function EstimationForm() {
       setResultat(data);
       topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch {
-      toast.error("Connexion impossible, vérifiez votre réseau et réessayez.");
+      toast.error(t("toasts.reseau"));
     } finally {
       setSubmitting(false);
     }
@@ -222,8 +240,12 @@ export function EstimationForm() {
   const isResult = resultat !== null;
   const peutAvancer = isResult || parseEtape(step, state).success;
   const stepLabel = isResult
-    ? "Estimation"
-    : `Étape ${step} sur 4 · ${STEP_NAMES[step - 1]}`;
+    ? t("resultat")
+    : t("progression", {
+        numero: step,
+        total: 4,
+        nom: t(`etapes.${STEP_KEYS[step - 1]}`),
+      });
   const progressWidth = isResult ? "100%" : `${(step / 4) * 100}%`;
 
   return (
@@ -359,7 +381,7 @@ export function EstimationForm() {
                 }}
               >
                 <ArrowLeft size={16} strokeWidth={2.4} />
-                Retour
+                {t("boutons.retour")}
               </button>
             )}
             <button
@@ -390,11 +412,12 @@ export function EstimationForm() {
             >
               {submitting ? (
                 <>
-                  <Loader2 size={17} className="animate-spin" /> Calcul en cours…
+                  <Loader2 size={17} className="animate-spin" />{" "}
+                  {t("boutons.calcul")}
                 </>
               ) : (
                 <>
-                  {step === 4 ? "Voir mon estimation" : "Continuer"}
+                  {step === 4 ? t("boutons.voir") : t("boutons.continuer")}
                   <ArrowRight size={17} strokeWidth={2.4} />
                 </>
               )}

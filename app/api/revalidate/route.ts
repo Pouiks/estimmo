@@ -1,4 +1,5 @@
 import { revalidatePath } from "next/cache";
+import { revaliderSite } from "@/lib/i18n/revalidate";
 import { NextResponse, type NextRequest } from "next/server";
 import { isAuthorizedBearer } from "@/lib/security/secret";
 import { z } from "zod";
@@ -37,7 +38,14 @@ export async function POST(request: NextRequest) {
   }
 
   for (const path of parsed.data.paths) {
-    revalidatePath(path);
+    // Les chemins publics (/blog, /prix-immobilier/nice-06000) vivent sous
+    // app/[locale] : on revalide chaque langue. Les routes hors locale
+    // (sitemap, admin, api) sont revalidées telles quelles.
+    if (path.startsWith("/admin") || path.startsWith("/api") || path.includes(".")) {
+      revalidatePath(path);
+    } else {
+      revaliderSite(path);
+    }
   }
 
   return NextResponse.json({ revalidated: parsed.data.paths });

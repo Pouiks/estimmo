@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   ConditionCard,
   DpeChip,
@@ -13,45 +14,18 @@ import type { StepProps } from "./form-state";
 import type {
   AgeTranche,
   Atout,
+  EtatGeneral,
   Exterieur,
   Stationnement,
 } from "@/lib/estimation/types";
 
-const ETATS = [
-  { value: "a_renover", title: "À rénover", sub: "Travaux importants" },
-  { value: "a_rafraichir", title: "À rafraîchir", sub: "Habitable, à rafraîchir" },
-  { value: "bon", title: "Bon état", sub: "Rien à prévoir" },
-  { value: "refait_neuf", title: "Refait à neuf", sub: "Prestations récentes" },
-] as const;
-
-const AGES: readonly { value: AgeTranche; label: string }[] = [
-  { value: "moins_5", label: "< 5 ans" },
-  { value: "5_10", label: "5-10 ans" },
-  { value: "10_20", label: "10-20 ans" },
-  { value: "plus_20", label: "+ 20 ans" },
-];
-
-const EXTERIEURS: { value: Exterieur; label: string }[] = [
-  { value: "balcon", label: "Balcon" },
-  { value: "terrasse", label: "Terrasse" },
-  { value: "jardin", label: "Jardin" },
-];
-
-const STATIONNEMENTS: { value: Stationnement; label: string }[] = [
-  { value: "aucun", label: "Aucun" },
-  { value: "place", label: "Place de parking" },
-  { value: "garage_box", label: "Garage / box" },
-];
-
+const ETATS: readonly EtatGeneral[] = ["a_renover", "a_rafraichir", "bon", "refait_neuf"];
+const AGES: readonly AgeTranche[] = ["moins_5", "5_10", "10_20", "plus_20"];
+const EXTERIEURS: readonly Exterieur[] = ["balcon", "terrasse", "jardin"];
+const STATIONNEMENTS: readonly Stationnement[] = ["aucun", "place", "garage_box"];
 // "Dernier étage" n'est plus demandé : il est déduit automatiquement de
 // l'étage et du nombre d'étages de l'immeuble saisis à l'étape 2.
-const ATOUTS: { value: Atout; label: string }[] = [
-  { value: "vue_degagee", label: "Vue dégagée" },
-  { value: "lumineux", label: "Lumineux" },
-  { value: "calme", label: "Calme" },
-  { value: "traversant", label: "Traversant" },
-];
-
+const ATOUTS: readonly Atout[] = ["vue_degagee", "lumineux", "calme", "traversant"];
 const DPE_LETTERS = ["A", "B", "C", "D", "E", "F", "G"] as const;
 
 const chipRow = { display: "flex", flexWrap: "wrap", gap: 8 } as const;
@@ -77,14 +51,15 @@ function Section({
 }
 
 export function StepEtat({ state, setField, errors }: StepProps) {
+  const t = useTranslations("estimation.etat");
+  const tl = useTranslations("labels");
+  const ages = AGES.map((value) => ({ value, label: tl(`age.${value}`) }));
+
   return (
     <div>
-      <StepHeader
-        title="État & atouts"
-        subtitle="Ces détails ajustent la fourchette de prix."
-      />
+      <StepHeader title={t("titre")} subtitle={t("sousTitre")} />
 
-      <SectionLabel>État général</SectionLabel>
+      <SectionLabel>{t("etatGeneral")}</SectionLabel>
       <div
         style={{
           display: "grid",
@@ -94,33 +69,33 @@ export function StepEtat({ state, setField, errors }: StepProps) {
       >
         {ETATS.map((e) => (
           <ConditionCard
-            key={e.value}
-            title={e.title}
-            sub={e.sub}
-            selected={state.etatGeneral === e.value}
-            onClick={() => setField("etatGeneral", e.value)}
+            key={e}
+            title={tl(`etatGeneral.${e}`)}
+            sub={tl(`etatGeneralSous.${e}`)}
+            selected={state.etatGeneral === e}
+            onClick={() => setField("etatGeneral", e)}
           />
         ))}
       </div>
       <FieldMsg message={errors["etatGeneral"]} />
 
-      <Section label="Âge de la cuisine" error={errors["ageCuisine"]}>
+      <Section label={t("ageCuisine")} error={errors["ageCuisine"]}>
         <Segmented
-          options={AGES}
+          options={ages}
           value={state.ageCuisine}
           onChange={(v) => setField("ageCuisine", v)}
         />
       </Section>
 
-      <Section label="Âge de la salle de bain" error={errors["ageSdb"]}>
+      <Section label={t("ageSdb")} error={errors["ageSdb"]}>
         <Segmented
-          options={AGES}
+          options={ages}
           value={state.ageSdb}
           onChange={(v) => setField("ageSdb", v)}
         />
       </Section>
 
-      <Section label="Classe énergie (DPE)" error={errors["dpe"]}>
+      <Section label={t("dpe")} error={errors["dpe"]}>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {DPE_LETTERS.map((l) => (
             <DpeChip
@@ -132,7 +107,7 @@ export function StepEtat({ state, setField, errors }: StepProps) {
             />
           ))}
           <DpeChip
-            label="Je ne sais pas"
+            label={tl("dpe.ne_sait_pas")}
             filled={false}
             selected={state.dpe === "ne_sait_pas"}
             onClick={() => setField("dpe", "ne_sait_pas")}
@@ -140,19 +115,19 @@ export function StepEtat({ state, setField, errors }: StepProps) {
         </div>
       </Section>
 
-      <Section label="Extérieur" hint="plusieurs choix possibles">
+      <Section label={t("exterieur")} hint={t("plusieursChoix")}>
         <div style={chipRow}>
           {EXTERIEURS.map((e) => (
             <Pill
-              key={e.value}
-              label={e.label}
-              selected={state.exterieur.includes(e.value)}
+              key={e}
+              label={tl(`exterieur.${e}`)}
+              selected={state.exterieur.includes(e)}
               onClick={() =>
                 setField(
                   "exterieur",
-                  state.exterieur.includes(e.value)
-                    ? state.exterieur.filter((x) => x !== e.value)
-                    : [...state.exterieur, e.value]
+                  state.exterieur.includes(e)
+                    ? state.exterieur.filter((x) => x !== e)
+                    : [...state.exterieur, e]
                 )
               }
             />
@@ -160,33 +135,33 @@ export function StepEtat({ state, setField, errors }: StepProps) {
         </div>
       </Section>
 
-      <Section label="Stationnement" error={errors["stationnement"]}>
+      <Section label={t("stationnement")} error={errors["stationnement"]}>
         <div style={chipRow}>
           {STATIONNEMENTS.map((s) => (
             <Pill
-              key={s.value}
-              label={s.label}
+              key={s}
+              label={tl(`stationnement.${s}`)}
               showMark={false}
-              selected={state.stationnement === s.value}
-              onClick={() => setField("stationnement", s.value)}
+              selected={state.stationnement === s}
+              onClick={() => setField("stationnement", s)}
             />
           ))}
         </div>
       </Section>
 
-      <Section label="Atouts" hint="optionnel">
+      <Section label={t("atouts")} hint={t("optionnel")}>
         <div style={chipRow}>
           {ATOUTS.map((a) => (
             <Pill
-              key={a.value}
-              label={a.label}
-              selected={state.atouts.includes(a.value)}
+              key={a}
+              label={tl(`atouts.${a}`)}
+              selected={state.atouts.includes(a)}
               onClick={() =>
                 setField(
                   "atouts",
-                  state.atouts.includes(a.value)
-                    ? state.atouts.filter((x) => x !== a.value)
-                    : [...state.atouts, a.value]
+                  state.atouts.includes(a)
+                    ? state.atouts.filter((x) => x !== a)
+                    : [...state.atouts, a]
                 )
               }
             />

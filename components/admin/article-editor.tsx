@@ -30,7 +30,7 @@ import { cn, slugify } from "@/lib/utils";
 import {
   saveArticle,
   uploadArticleImage,
-} from "@/app/(admin)/admin/(protected)/blog/actions";
+} from "@/app/admin/(protected)/blog/actions";
 
 export interface ArticleData {
   id?: string;
@@ -40,6 +40,7 @@ export interface ArticleData {
   contenu: unknown;
   image_cover: string | null;
   statut: "brouillon" | "publie";
+  lang: "fr" | "en";
 }
 
 function ToolbarButton({
@@ -193,6 +194,8 @@ export function ArticleEditor({ article }: { article: ArticleData | null }) {
     article?.meta_description ?? ""
   );
   const [imageCover, setImageCover] = useState(article?.image_cover ?? null);
+  const [lang, setLang] = useState<"fr" | "en">(article?.lang ?? "fr");
+  const prefixe = lang === "en" ? "/en" : "";
   const [pending, startTransition] = useTransition();
 
   const editor = useEditor({
@@ -228,6 +231,7 @@ export function ArticleEditor({ article }: { article: ArticleData | null }) {
         contenu: JSON.stringify(editor.getJSON()),
         imageCover,
         statut,
+        lang,
       });
       if (!result.ok) {
         toast.error(result.message);
@@ -289,7 +293,26 @@ export function ArticleEditor({ article }: { article: ArticleData | null }) {
             }}
             className="mt-2 font-mono text-sm"
           />
-          <p className="mt-1 text-xs text-muted-foreground">/blog/{slug || "…"}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {prefixe}/blog/{slug || "…"}
+          </p>
+        </div>
+        <div>
+          <Label htmlFor="lang" className="text-base font-semibold">
+            Langue
+          </Label>
+          <select
+            id="lang"
+            value={lang}
+            onChange={(e) => setLang(e.target.value as "fr" | "en")}
+            className="mt-2 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs"
+          >
+            <option value="fr">Français - visible sur /blog</option>
+            <option value="en">English - visible sur /en/blog</option>
+          </select>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Un article n&apos;apparaît que dans la version du site de sa langue.
+          </p>
         </div>
         <div>
           <Label htmlFor="meta" className="text-base font-semibold">
@@ -369,7 +392,7 @@ export function ArticleEditor({ article }: { article: ArticleData | null }) {
         </Button>
         {article?.statut === "publie" && (
           <a
-            href={`/blog/${article.slug}`}
+            href={`${article.lang === "en" ? "/en" : ""}/blog/${article.slug}`}
             target="_blank"
             className="ml-auto text-sm text-primary hover:underline"
           >

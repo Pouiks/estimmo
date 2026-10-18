@@ -1,0 +1,36 @@
+{
+  "manuelle": {
+    "badge": "Analyse personnalisée",
+    "titre": "Estimation offerte sous 24 h",
+    "texte": "Votre secteur mérite une analyse sur mesure. {agent} réalise votre estimation et vous rappelle au numéro indiqué. Un email de confirmation vient de vous être envoyé."
+  },
+  "badge": "Estimation prête",
+  "intro": {
+    "vente": "Notre estimation de votre bien",
+    "location": "Loyer mensuel estimé (charges comprises)"
+  },
+  "basse": "Basse",
+  "estimation": "Estimation",
+  "haute": "Haute",
+  "parMois": " /mois",
+  "soitEnviron": "soit environ <b>{prix}</b>{projet, select, vente {/m²} other {/m²/mois}}",
+  "stats": {
+    "surface": "Surface",
+    "surfaceValeur": "{surface} m²",
+    "confiance": "Confiance",
+    "source": "Source"
+  },
+  "fourchette": {
+    "titre": "Pourquoi cette fourchette de ±{pct} % ?",
+    "texte": "Les {n} ventes comparables de votre secteur sont hétérogènes (état, étage, prestations). C'est exactement ce qu'un avis de valeur sur place permet de trancher : {agent} vous l'offre, sans engagement."
+  },
+  "sourceVente": "Basé sur {n, plural, one {# vente comparable} other {# ventes comparables}}. {dvf}.",
+  "sourceLocation": "{anil}.",
+  "carte": {
+    "titre": "Affinez votre prix avec {agent}",
+    "texte": "Un rappel pour un avis de valeur précis, sans engagement.",
+    "honoraires": "Honoraires {exclusif} en mandat exclusif contre {simple} en mandat simple.",
+    "rappel": "Être rappelé(e) - {telephone}"
+  },
+  "refaire": "Refaire une estimation"
+}

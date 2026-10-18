@@ -1,0 +1,10 @@
+{
+  "meta": {
+    "titre": "Demande de rappel"
+  },
+  "titre": "C'est noté !",
+  "titreAvecPrenom": "C'est noté, {prenom} !",
+  "texte": "Votre demande de rappel a bien été enregistrée. <strong>{agent}</strong> vous rappelle très vite au numéro que vous avez indiqué pour affiner votre estimation et répondre à toutes vos questions.",
+  "direct": "Vous préférez appeler directement ?",
+  "appeler": "Appeler {telephone}"
+}

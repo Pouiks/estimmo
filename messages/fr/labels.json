@@ -1,0 +1,64 @@
+{
+  "typeBien": {
+    "appartement": "Appartement",
+    "maison": "Maison"
+  },
+  "typeBienMinuscule": {
+    "appartement": "appartement",
+    "maison": "maison"
+  },
+  "projet": {
+    "vente": "Vente",
+    "location": "Location"
+  },
+  "horizon": {
+    "en_vente": "Déjà en vente",
+    "moins_3_mois": "Moins de 3 mois",
+    "3_6_mois": "3 à 6 mois",
+    "curiosite": "Simple curiosité"
+  },
+  "etatGeneral": {
+    "a_renover": "À rénover",
+    "a_rafraichir": "À rafraîchir",
+    "bon": "Bon état",
+    "refait_neuf": "Refait à neuf"
+  },
+  "etatGeneralSous": {
+    "a_renover": "Travaux importants",
+    "a_rafraichir": "Habitable, à rafraîchir",
+    "bon": "Rien à prévoir",
+    "refait_neuf": "Prestations récentes"
+  },
+  "age": {
+    "moins_5": "< 5 ans",
+    "5_10": "5-10 ans",
+    "10_20": "10-20 ans",
+    "plus_20": "+ 20 ans"
+  },
+  "exterieur": {
+    "balcon": "Balcon",
+    "terrasse": "Terrasse",
+    "jardin": "Jardin"
+  },
+  "stationnement": {
+    "aucun": "Aucun",
+    "place": "Place de parking",
+    "garage_box": "Garage / box"
+  },
+  "atouts": {
+    "vue_degagee": "Vue dégagée",
+    "lumineux": "Lumineux",
+    "calme": "Calme",
+    "traversant": "Traversant",
+    "dernier_etage": "Dernier étage"
+  },
+  "dpe": {
+    "ne_sait_pas": "Je ne sais pas"
+  },
+  "confiance": {
+    "haute": "Élevée",
+    "moyenne": "Correcte",
+    "faible": "Indicative",
+    "indicative": "Indicative"
+  }
+}

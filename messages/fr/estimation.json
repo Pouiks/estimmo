@@ -1,0 +1,90 @@
+{
+  "meta": {
+    "titre": "Estimation gratuite de votre bien",
+    "description": "Estimez le prix de vente ou le loyer de votre appartement ou maison en 4 étapes, sur la base des données officielles DVF et ANIL."
+  },
+  "etapes": {
+    "projet": "Votre projet",
+    "bien": "Le bien",
+    "etat": "État & atouts",
+    "contact": "Vos coordonnées"
+  },
+  "progression": "Étape {numero} sur {total} · {nom}",
+  "resultat": "Estimation",
+  "boutons": {
+    "retour": "Retour",
+    "continuer": "Continuer",
+    "voir": "Voir mon estimation",
+    "calcul": "Calcul en cours…"
+  },
+  "toasts": {
+    "invalide": "Certaines informations sont invalides.",
+    "erreur": "Une erreur est survenue, merci de réessayer.",
+    "reseau": "Connexion impossible, vérifiez votre réseau et réessayez."
+  },
+  "projet": {
+    "titre": "Votre projet immobilier",
+    "sousTitre": "Commencez par l'adresse : elle déclenche l'analyse de votre quartier.",
+    "adresse": "Adresse du bien",
+    "confidentialite": "L'adresse affine la comparaison. Elle reste strictement confidentielle.",
+    "souhait": "Je souhaite",
+    "vendre": "Vendre",
+    "vendreSous": "Prix de vente estimé",
+    "louer": "Louer",
+    "louerSous": "Loyer mensuel estimé",
+    "horizon": "Votre horizon de vente",
+    "typeBien": "Type de bien"
+  },
+  "adresse": {
+    "placeholder": "12 rue des Lilas, 75011 Paris",
+    "modifier": "Modifier l'adresse",
+    "aucune": "Aucune adresse trouvée - précisez le numéro et la ville.",
+    "libelle": "Adresse du bien"
+  },
+  "bien": {
+    "titre": "Les caractéristiques",
+    "sousTitre": "Quelques chiffres clés sur votre {typeBien}.",
+    "surfaceCarrez": "Surface Carrez",
+    "surfaceHabitable": "Surface habitable",
+    "hintCarrez": "loi Carrez",
+    "pieces": "Pièces",
+    "chambres": "Chambres",
+    "etage": "Votre étage",
+    "etagesImmeuble": "Étages de l'immeuble",
+    "ascenseur": "Ascenseur",
+    "noteCarrez": "Surface Carrez : surface privative hors caves, parkings, balcons et parties sous 1,80 m.",
+    "noteBoutin": "Surface habitable au sens de la loi Boutin.",
+    "diminuer": "Diminuer",
+    "augmenter": "Augmenter"
+  },
+  "etat": {
+    "titre": "État & atouts",
+    "sousTitre": "Ces détails ajustent la fourchette de prix.",
+    "etatGeneral": "État général",
+    "ageCuisine": "Âge de la cuisine",
+    "ageSdb": "Âge de la salle de bain",
+    "dpe": "Classe énergie (DPE)",
+    "exterieur": "Extérieur",
+    "plusieursChoix": "plusieurs choix possibles",
+    "stationnement": "Stationnement",
+    "atouts": "Atouts",
+    "optionnel": "optionnel"
+  },
+  "contact": {
+    "titre": "Recevez votre estimation",
+    "sousTitre": "Résultat immédiat à l'écran et récapitulatif par email.",
+    "prenom": "Prénom",
+    "nom": "Nom",
+    "email": "Email",
+    "telephone": "Téléphone",
+    "telephoneHint": "pour être rappelé(e)",
+    "placeholders": {
+      "prenom": "Camille",
+      "nom": "Durand",
+      "email": "camille.durand@email.fr",
+      "telephone": "06 12 34 56 78"
+    },
+    "siteWeb": "Site web (laisser vide)",
+    "consentement": "J'accepte que mes données soient utilisées pour me recontacter au sujet de mon projet immobilier - voir la <lien>politique de confidentialité</lien>."
+  }
+}

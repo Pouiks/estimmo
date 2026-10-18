@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "titre": "Property blog - advice on selling, letting and valuing",
+    "description": "Advice on selling, letting and valuing your property in France: prices, tax, surveys, market trends."
+  },
+  "h1": "The {marque} blog",
+  "intro": "Selling, letting, valuing: our advice for a successful property project.",
+  "vide": "The first articles are coming soon.",
+  "tous": "All articles",
+  "publie": "Published on {date, date, long} by {agent}",
+  "introuvable": "Article not found",
+  "cta": {
+    "titre": "Planning to sell or let?",
+    "texte": "Value your property for free in 2 minutes.",
+    "bouton": "Value my property"
+  }
+}

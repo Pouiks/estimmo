@@ -1,12 +1,22 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { proxyI18n } from "@/lib/i18n/proxy";
 
 /**
- * Protection de /admin/* : rafraîchit la session Supabase et redirige vers
- * /admin/login si non connecté. La vérification du rôle admin (table profiles)
- * est faite dans le layout du groupe protégé.
+ * Deux rôles :
+ * 1. /admin/* : rafraîchit la session Supabase et redirige vers /admin/login
+ *    si non connecté (le rôle admin est vérifié dans le layout protégé).
+ *    L'admin reste en français, hors du segment [locale].
+ * 2. Le reste du site : routage i18n (voir lib/i18n/proxy.ts).
  */
 export async function proxy(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith("/admin")) {
+    return protegerAdmin(request);
+  }
+  return proxyI18n(request);
+}
+
+async function protegerAdmin(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -55,6 +65,13 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 
+/**
+ * Tout sauf les API, les internes Next/Vercel et les fichiers (point dans
+ * le chemin : sitemap.xml, robots.txt, icon.svg, images...).
+ * Next exige un littéral ici (analyse statique). Testé par
+ * lib/i18n/matcher.test.ts : une erreur d'échappement rend le proxy
+ * silencieusement inactif (le site tomberait en 404 hors racine).
+ */
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
 };

@@ -1,0 +1,58 @@
+{
+  "adresse": {
+    "liste": "Sélectionnez une adresse dans la liste",
+    "invalide": "Adresse invalide - sélectionnez-la dans la liste"
+  },
+  "projet": "Choisissez votre projet",
+  "horizon": "Précisez votre horizon de vente",
+  "typeBien": "Choisissez le type de bien",
+  "surface": {
+    "requis": "Indiquez la surface",
+    "min": "Surface minimale : 8 m²",
+    "max": "Surface maximale : 800 m²"
+  },
+  "pieces": {
+    "requis": "Indiquez le nombre de pièces",
+    "min": "Au moins 1 pièce",
+    "max": "20 pièces maximum"
+  },
+  "chambres": {
+    "requis": "Indiquez le nombre de chambres",
+    "max": "15 chambres maximum"
+  },
+  "etage": {
+    "requis": "Indiquez l'étage",
+    "min": "L'étage ne peut être négatif",
+    "max": "50 étages maximum"
+  },
+  "etagesImmeuble": {
+    "requis": "Indiquez le nombre d'étages de l'immeuble",
+    "min": "Au moins 1 étage",
+    "max": "60 étages maximum",
+    "incoherent": "L'immeuble compte moins d'étages que le vôtre ?"
+  },
+  "ascenseur": "Ascenseur : oui ou non ?",
+  "surfaceTerrain": "Surface de terrain invalide",
+  "etatGeneral": "Indiquez l'état général",
+  "stationnement": "Indiquez le stationnement",
+  "ageCuisine": "Indiquez l'âge de la cuisine",
+  "ageSdb": "Indiquez l'âge de la salle de bain",
+  "dpe": "Indiquez le DPE (ou « Je ne sais pas »)",
+  "prenom": "Votre prénom",
+  "nom": "Votre nom",
+  "email": "Email invalide",
+  "telephone": "Numéro de téléphone français invalide",
+  "consentement": "Votre consentement est nécessaire pour recevoir l'estimation",
+  "generique": {
+    "requis": "Champ requis",
+    "type": "Valeur invalide",
+    "tropPetit": "Valeur trop petite",
+    "tropGrand": "Valeur trop grande",
+    "choix": "Choix invalide",
+    "format": "Format invalide",
+    "invalide": "Valeur invalide"
+  },
+  "formulaireInvalide": "Formulaire invalide",
+  "jsonInvalide": "Requête invalide",
+  "enregistrementImpossible": "Enregistrement impossible, merci de réessayer."
+}

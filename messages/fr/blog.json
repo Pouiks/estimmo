@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "titre": "Blog immobilier - conseils pour vendre, louer et estimer",
+    "description": "Conseils pour vendre, louer et estimer votre bien immobilier : prix, fiscalité, diagnostics, tendances du marché."
+  },
+  "h1": "Le blog {marque}",
+  "intro": "Vendre, louer, estimer : nos conseils pour réussir votre projet immobilier.",
+  "vide": "Les premiers articles arrivent bientôt.",
+  "tous": "Tous les articles",
+  "publie": "Publié le {date, date, long} par {agent}",
+  "introuvable": "Article introuvable",
+  "cta": {
+    "titre": "Un projet de vente ou de location ?",
+    "texte": "Estimez votre bien gratuitement en 2 minutes.",
+    "bouton": "Estimer mon bien"
+  }
+}

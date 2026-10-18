@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "titre": "Prix immobilier à {nom} ({cp}) - Prix au m² {annee}",
+    "descriptionVentes": "Prix médian à {nom} : {appart}/m² en appartement{aMaison, select, true {, {maison}/m² en maison} other {}}. Données officielles DVF, loyers ANIL et estimation gratuite en ligne.",
+    "descriptionLoyers": "Marché immobilier de {nom} : loyers de référence ANIL et estimation gratuite de votre bien par une conseillère locale.",
+    "introuvable": "Commune introuvable"
+  },
+  "jsonLd": {
+    "datasetNom": "Prix immobilier à {nom} ({cp})",
+    "datasetDescription": "Prix médians au m² et volume de ventes immobilières à {nom}, agrégés depuis la base publique DVF (DGFiP).",
+    "medianAppart": "Prix médian au m² - appartement",
+    "medianMaison": "Prix médian au m² - maison"
+  },
+  "filAriane": {
+    "accueil": "Accueil",
+    "prix": "Prix immobilier"
+  },
+  "h1": "Prix immobilier à {nom}",
+  "intro": {
+    "sansVentes": "À {nom}, les transactions immobilières ne sont pas publiées dans la base DVF (régime du Livre foncier en Alsace-Moselle, ou volume de ventes insuffisant). Vous trouverez ci-dessous les loyers de référence observés, et notre équipe réalise gratuitement une estimation personnalisée de votre bien sur simple demande.",
+    "v0": "Le marché immobilier de {nom} affiche un prix médian de {prix}, calculé à partir des ventes réellement enregistrées par les services de l'État (base DVF). Sur les douze derniers mois de données publiées, {ventes, plural, =0 {aucune vente n'a été analysée} one {# vente a été analysée} other {# ventes ont été analysées}} sur la commune.",
+    "v1": "Combien vaut un bien à {nom} ? Les actes de vente enregistrés par la DGFiP (base DVF) font ressortir une valeur médiane de {prix}. Ce niveau de prix s'appuie sur {ventes, plural, one {# transaction observée} other {# transactions observées}} en douze mois sur la commune.",
+    "v2": "À {nom}, les ventes immobilières officiellement enregistrées ces douze derniers mois - {ventes, number, integer} au total - établissent le prix médian à {prix}. Ces chiffres proviennent des données publiques DVF, les mêmes que celles utilisées par les notaires et les professionnels."
+  },
+  "prix": {
+    "appart": "{appart, number, currency}/m² pour un appartement",
+    "maison": "{maison, number, currency}/m² pour une maison",
+    "deux": "{appart, number, currency}/m² pour un appartement et {maison, number, currency}/m² pour une maison"
+  },
+  "evolution": {
+    "stableV0": "Les prix sont globalement stables à {nom} sur un an ({evo}).",
+    "stableV1": "Sur douze mois, le marché de {nom} reste stable ({evo}).",
+    "tendanceV0": "Sur un an, les prix au m² {hausse, select, true {progressent} other {reculent}} de {evo} à {nom}.",
+    "tendanceV1": "La tendance annuelle est {hausse, select, true {à la hausse} other {à la baisse}} : {evo} par rapport aux douze mois précédents.",
+    "valeur": "{evo, number, evolution} %"
+  },
+  "chiffres": {
+    "appart": "Appartement - prix médian",
+    "maison": "Maison - prix médian",
+    "ventes": "Ventes analysées (12 mois)",
+    "evolution": "Évolution sur 1 an",
+    "maj": "{dvf} - statistiques agrégées sur les 12 derniers mois de données publiées, mises à jour le {date, date, short}."
+  },
+  "loyers": {
+    "titre": "Quel loyer à {nom} ?",
+    "appart": "Appartement (toutes typologies)",
+    "typologies": "Studio / T2 - T3 et plus",
+    "maison": "Maison",
+    "parM2": "{valeur, number, decimal1} €/m²",
+    "fourchette": "{bas} - {haut} €/m²",
+    "note": "{anil} (millésime {millesime}). Loyers d'annonce charges comprises."
+  },
+  "cta": {
+    "titre": "Combien vaut votre bien à {nom} ?",
+    "texte": "Estimation gratuite en 2 minutes, basée sur les ventes réelles de votre quartier - résultat immédiat.",
+    "bouton": "Estimer mon bien"
+  },
+  "faq": {
+    "titre": "Questions fréquentes - {nom}",
+    "appart": {
+      "question": "Quel est le prix au m² d'un appartement à {nom} en {annee} ?",
+      "reponse": "Le prix médian d'un appartement à {nom} est de {prix, number, currency}/m², d'après les ventes enregistrées dans la base DVF sur les douze derniers mois de données publiées. Selon l'état, l'étage et les prestations, la valeur réelle d'un bien peut s'écarter sensiblement de cette médiane."
+    },
+    "maison": {
+      "question": "Quel est le prix au m² d'une maison à {nom} ?",
+      "reponse": "Les maisons se vendent en médiane {prix, number, currency}/m² à {nom}. La surface du terrain, l'état général et la localisation précise font varier ce prix de façon importante."
+    },
+    "loyer": {
+      "question": "Quel loyer pour un appartement à {nom} ?",
+      "reponse": "Le loyer d'annonce moyen constaté est d'environ {loyerM2, number, decimal1} €/m² charges comprises (estimations ANIL {millesime}, à partir des données du Groupe SeLoger et de leboncoin). Pour un T2 de 45 m², cela représente un loyer de l'ordre de {loyerT2, number, currency} par mois."
+    },
+    "estimer": {
+      "question": "Comment obtenir une estimation précise de mon bien à {nom} ?",
+      "reponse": "Utilisez notre estimateur en ligne gratuit : il compare votre bien aux ventes réelles de votre quartier et vous donne une fourchette immédiate. Pour un avis de valeur précis, une visite reste indispensable - votre conseillère locale vous rappelle gratuitement."
+    }
+  },
+  "maillage": {
+    "titre": "Prix immobilier dans le département ({code})",
+    "toutes": "Toutes les communes {paris, select, true {de} other {du}} {nom} ({code})"
+  }
+}

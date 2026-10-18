@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   C,
   FieldMsg,
@@ -12,21 +13,20 @@ import {
 import { toNumber, type StepProps } from "./form-state";
 
 export function StepBien({ state, setField, errors }: StepProps) {
+  const t = useTranslations("estimation.bien");
+  const tl = useTranslations("labels");
   const isAppartement = state.typeBien === "appartement";
-  const typeWord = isAppartement ? "appartement" : "maison";
+  const typeBien = tl(`typeBienMinuscule.${isAppartement ? "appartement" : "maison"}`);
 
   const pieces = toNumber(state.pieces) ?? 0;
   const chambres = toNumber(state.chambres) ?? 0;
 
   return (
     <div>
-      <StepHeader
-        title="Les caractéristiques"
-        subtitle={`Quelques chiffres clés sur votre ${typeWord}.`}
-      />
+      <StepHeader title={t("titre")} subtitle={t("sousTitre", { typeBien })} />
 
-      <SectionLabel hint={isAppartement ? "loi Carrez" : undefined}>
-        {isAppartement ? "Surface Carrez" : "Surface habitable"}
+      <SectionLabel hint={isAppartement ? t("hintCarrez") : undefined}>
+        {isAppartement ? t("surfaceCarrez") : t("surfaceHabitable")}
       </SectionLabel>
       <TextField
         type="number"
@@ -49,19 +49,23 @@ export function StepBien({ state, setField, errors }: StepProps) {
         }}
       >
         <div>
-          <SectionLabel>Pièces</SectionLabel>
+          <SectionLabel>{t("pieces")}</SectionLabel>
           <Stepper
             value={String(pieces || 1)}
             onDec={() => setField("pieces", String(Math.max((pieces || 1) - 1, 1)))}
             onInc={() => setField("pieces", String(Math.min((pieces || 1) + 1, 20)))}
+            labelDec={t("diminuer")}
+            labelInc={t("augmenter")}
           />
         </div>
         <div>
-          <SectionLabel>Chambres</SectionLabel>
+          <SectionLabel>{t("chambres")}</SectionLabel>
           <Stepper
             value={String(chambres)}
             onDec={() => setField("chambres", String(Math.max(chambres - 1, 0)))}
             onInc={() => setField("chambres", String(Math.min(chambres + 1, 15)))}
+            labelDec={t("diminuer")}
+            labelInc={t("augmenter")}
           />
         </div>
       </div>
@@ -78,7 +82,7 @@ export function StepBien({ state, setField, errors }: StepProps) {
             }}
           >
             <div>
-              <SectionLabel>Votre étage</SectionLabel>
+              <SectionLabel>{t("etage")}</SectionLabel>
               <TextField
                 type="number"
                 inputMode="numeric"
@@ -92,7 +96,7 @@ export function StepBien({ state, setField, errors }: StepProps) {
               <FieldMsg message={errors["etage"]} />
             </div>
             <div>
-              <SectionLabel>Étages de l&apos;immeuble</SectionLabel>
+              <SectionLabel>{t("etagesImmeuble")}</SectionLabel>
               <TextField
                 type="number"
                 inputMode="numeric"
@@ -108,7 +112,7 @@ export function StepBien({ state, setField, errors }: StepProps) {
           </div>
           <div style={{ marginTop: 14 }}>
             <Toggle
-              label="Ascenseur"
+              label={t("ascenseur")}
               on={state.ascenseur === true}
               onClick={() => setField("ascenseur", state.ascenseur !== true)}
             />
@@ -118,9 +122,7 @@ export function StepBien({ state, setField, errors }: StepProps) {
       )}
 
       <p style={{ margin: "18px 2px 0", fontSize: 12.5, color: C.faint }}>
-        {isAppartement
-          ? "Surface Carrez : surface privative hors caves, parkings, balcons et parties sous 1,80 m."
-          : "Surface habitable au sens de la loi Boutin."}
+        {isAppartement ? t("noteCarrez") : t("noteBoutin")}
       </p>
     </div>
   );

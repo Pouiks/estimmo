@@ -1,4 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { getTranslations } from "next-intl/server";
+import { estLocale, type Locale } from "@/lib/i18n/routing";
+import { traduireCle } from "@/lib/i18n/traduire-cle";
+import { AVEC_CLES, traduireIssues } from "@/lib/leads/erreurs";
 import { rateLimit } from "@/lib/security/rate-limit";
 import { buildCrmPayload, type EstimationResultat } from "@/lib/crm/payload";
 import { calculerScoreLead } from "@/lib/estimation/score";
@@ -33,17 +37,35 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "JSON invalide" }, { status: 400 });
+    body = null;
   }
 
-  const parsed = leadPayloadSchema.safeParse(body);
+  // Langue du prospect : champ du payload (next/root-params n'existe pas
+  // dans un route handler). Sert aux messages d'erreur, à l'email et au lead.
+  const localeBrute = (body as { locale?: unknown } | null)?.locale;
+  const locale: Locale = estLocale(localeBrute) ? localeBrute : "fr";
+  const t = await getTranslations({ locale });
+
+  if (body === null) {
+    return NextResponse.json(
+      { error: t("validation.jsonInvalide") },
+      { status: 400 }
+    );
+  }
+
+  const parsed = leadPayloadSchema.safeParse(body, AVEC_CLES);
   if (!parsed.success) {
-    const details = parsed.error.issues.map((issue) => ({
-      champ: issue.path.join("."),
-      message: issue.message,
+    // Les schémas portent des clés (validation.*) : traduites ici, dans la
+    // langue du prospect, puis affichées telles quelles par le formulaire.
+    const erreurs = traduireIssues(parsed.error.issues, (cle) =>
+      traduireCle(t, cle)
+    );
+    const details = Object.entries(erreurs).map(([champ, message]) => ({
+      champ,
+      message,
     }));
     return NextResponse.json(
-      { error: "Formulaire invalide", details },
+      { error: t("validation.formulaireInvalide"), details },
       { status: 400 }
     );
   }
@@ -174,6 +196,7 @@ export async function POST(request: NextRequest) {
       estimation_manuelle: estimationManuelle,
       score_lead: score,
       utm: lead.utm ?? {},
+      locale: lead.locale,
     })
     .select("id")
     .single();
@@ -181,7 +204,7 @@ export async function POST(request: NextRequest) {
   if (insertError || !inserted) {
     console.error("[leads] échec d'insertion :", insertError);
     return NextResponse.json(
-      { error: "Enregistrement impossible, merci de réessayer." },
+      { error: t("validation.enregistrementImpossible") },
       { status: 500 }
     );
   }

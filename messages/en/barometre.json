@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "titre": "{annee} property price barometer: rises, falls and the most expensive towns",
+    "description": "Rankings based on actual sales (DVF database): biggest rises and falls in price per m², the most expensive and most affordable towns in France. Continuously updated."
+  },
+  "jsonLd": {
+    "nom": "{marque} property price barometer {annee}",
+    "description": "Property price rankings by town (rises, falls, most expensive towns) calculated from actual sales in the DVF database (DGFiP), rolling 12 months."
+  },
+  "filAriane": {
+    "accueil": "Home",
+    "barometre": "Barometer"
+  },
+  "h1": "{annee} property price barometer",
+  "intro": "The rankings below are calculated from <strong>sales actually recorded by the French State</strong> (DVF database) over the last 12 months of published data, not from listings. Updated on {date, date, long}.",
+  "indisponible": "The rankings are being updated and will be back shortly. In the meantime you can <lien>value your property</lien>.",
+  "kpis": {
+    "ventes": "Sales analysed (12 months)",
+    "communes": "Towns tracked",
+    "source": "Source"
+  },
+  "colonnes": {
+    "ville": "Town",
+    "evolution": "1-year change",
+    "prixAppart": "Flat price",
+    "appartement": "Flat",
+    "maison": "House",
+    "ventes": "Sales, 12 months"
+  },
+  "sections": {
+    "hausses": "Biggest rises over 1 year",
+    "baisses": "Biggest falls over 1 year",
+    "cheres": "Most expensive towns",
+    "abordables": "Most affordable towns"
+  },
+  "seuil": "Rankings limited to towns with at least {seuil} sales over 12 months, to remain statistically meaningful. Paris, Marseille and Lyon appear by arrondissement.",
+  "grandsMarches": "The 20 largest markets in France",
+  "prixM2": "{prix}/m²",
+  "evolution": "{evo, number, evolution}%",
+  "cta": {
+    "titre": "And your property, how much is it worth?",
+    "texte": "Free valuation in 2 minutes, based on actual sales in your neighbourhood.",
+    "bouton": "Value my property"
+  },
+  "methodologie": {
+    "titre": "Methodology",
+    "texte": "Median prices per m² calculated by town and property type from transactions in the \"Demandes de valeurs foncières\" database (DVF, DGFiP): private sales only, one dwelling per transaction, outlier bounds (surface 8-500 m², price €200-25,000/m²). Change: median of the last 12 months of published data compared with the previous 12 months. {dvf}. {anil}.",
+    "presse": "<strong>Journalists, bloggers:</strong> this data may be freely reused with the credit \"source: {marque} barometer\" and a link to this page. Contact: {email}."
+  }
+}

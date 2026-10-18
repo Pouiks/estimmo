@@ -1,0 +1,57 @@
+{
+  "mentions": {
+    "titre": "Legal notice",
+    "editeur": {
+      "titre": "Site publisher",
+      "texte": "The {marque} website is published by {agent}, real estate agent.",
+      "contact": "Contact: {email} - {telephone}."
+    },
+    "hebergement": {
+      "titre": "Hosting",
+      "texte": "This site is hosted by Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, United States (vercel.com). Data is stored by Supabase Inc. (supabase.com)."
+    },
+    "honoraires": {
+      "titre": "Fees",
+      "texte": "Agency fees: {exclusif} incl. VAT of the sale price with an exclusive mandate, {simple} incl. VAT with a simple mandate. Full fee schedule available on request and displayed at the agency."
+    },
+    "sources": {
+      "titre": "Data sources",
+      "texte": "Sale price statistics come from the \"Demandes de valeurs foncières\" (DVF) database published by the DGFiP on data.gouv.fr (Licence Ouverte 2.0). Only aggregated statistics are displayed. Rent indicators are ANIL estimates based on data from Groupe SeLoger and leboncoin. Address geocoding uses the IGN Géoplateforme."
+    },
+    "propriete": {
+      "titre": "Intellectual property",
+      "texte": "All content on this site (texts, trademarks, logos, structure) is protected. Any unauthorised reproduction is prohibited."
+    }
+  },
+  "confidentialite": {
+    "titre": "Privacy policy",
+    "responsable": {
+      "titre": "Data controller",
+      "texte": "The controller of the data collected on {marque} is {agent} - {email} - {telephone}."
+    },
+    "donnees": {
+      "titre": "Data collected",
+      "texte": "When you request a valuation, we collect: your contact details (first name, last name, email, phone), the features of the property described (address, surface area, condition…) and the date and proof of your consent."
+    },
+    "finalites": {
+      "titre": "Purposes and legal basis",
+      "texte": "This data is used, on the basis of your explicit consent, to: (1) calculate and send you the valuation of your property; (2) contact you about your real estate project. It is never sold to third parties."
+    },
+    "destinataires": {
+      "titre": "Recipients and processors",
+      "texte": "Data is hosted by Supabase (database) and Vercel (website hosting). Transactional emails are sent by Resend. Data is also transmitted to the data controller's customer relationship management (CRM) tool."
+    },
+    "conservation": {
+      "titre": "Retention period",
+      "texte": "Prospect data is kept for <strong>3 years after the last contact</strong>, then deleted or anonymised."
+    },
+    "droits": {
+      "titre": "Your rights",
+      "texte": "Under the GDPR, you have the right to access, rectify, erase, restrict and object to the processing of your data. To exercise it, write to <lien>{email}</lien>. You may also lodge a complaint with the CNIL (cnil.fr), the French data protection authority."
+    },
+    "cookies": {
+      "titre": "Cookies",
+      "texte": "This site does not use advertising cookies. Only strictly necessary technical cookies (admin session, chosen language) and cookieless audience measurement are used."
+    }
+  }
+}

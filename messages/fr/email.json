@@ -1,0 +1,58 @@
+{
+  "sujet": {
+    "manuelle": "{prenom}, votre estimation personnalisée arrive sous 24 h",
+    "vente": "{prenom}, votre {bien} vaut entre {basse} et {haute}",
+    "location": "{prenom}, votre {bien} se loue autour de {loyer}/mois"
+  },
+  "preheader": {
+    "manuelle": "{agent} vous prépare une estimation sur mesure et vous rappelle sous 24 h.",
+    "vente": "Le détail de votre estimation, et {agent} pour la transformer en vente réussie.",
+    "location": "Le détail de votre estimation de loyer, et {agent} pour vous accompagner dans la mise en location."
+  },
+  "bonjour": "Bonjour {prenom},",
+  "merci": "Merci d'avoir estimé votre bien avec {marque}. Voici votre résultat, fondé sur les ventes réelles de votre quartier.",
+  "recap": {
+    "titre": "Votre bien",
+    "surface": "{surface} m²",
+    "pieces": "{n, plural, one {# pièce} other {# pièces}}"
+  },
+  "manuelle": {
+    "titre": "Votre estimation personnalisée arrive sous 24 h",
+    "texte": "Votre secteur mérite une analyse sur mesure. <strong>{agent}</strong> réalise votre estimation offerte et vous rappelle au numéro indiqué sous 24 heures."
+  },
+  "vente": {
+    "titre": "Estimation de la valeur de votre bien",
+    "basse": "Basse",
+    "estimation": "Estimation",
+    "haute": "Haute",
+    "details": "Prix de votre zone : <strong>{prixM2}/m²</strong> · {n, plural, one {# vente comparable} other {# ventes comparables}}{rayon, select, none {} other { dans un rayon de {rayon} m}} · confiance {confiance}.",
+    "source": "{dvf}."
+  },
+  "location": {
+    "titre": "Loyer mensuel estimé (charges comprises)",
+    "basse": "Basse",
+    "estimation": "Loyer estimé",
+    "haute": "Haute",
+    "source": "{anil}."
+  },
+  "conseillere": {
+    "role": "Votre conseillère immobilière",
+    "manuelle": "Bonjour {prenom}, je prépare personnellement votre estimation et je vous rappelle très vite. Ensemble, nous verrons comment valoriser au mieux votre bien.",
+    "vente": "Bonjour {prenom}, je vous rappelle personnellement pour affiner cette estimation sur place et, si vous le souhaitez, vendre votre bien au meilleur prix. Photos professionnelles, diffusion prioritaire, négociation : je m'occupe de tout.",
+    "location": "Bonjour {prenom}, je vous rappelle personnellement pour affiner cette estimation de loyer et vous accompagner dans la mise en location de votre bien, de la recherche du locataire au bail.",
+    "bouton": "📞 Je souhaite être rappelé(e)",
+    "ouAppeler": "Ou appelez directement {prenomAgent} :"
+  },
+  "honoraires": {
+    "titre": "Vendez au meilleur prix, accompagné(e) de bout en bout",
+    "texte": "Honoraires <strong>{exclusif}</strong> en mandat exclusif (diffusion prioritaire, photos professionnelles, engagement de moyens écrit) contre {simple} en mandat simple."
+  },
+  "pied": {
+    "recu": "Vous recevez cet email suite à votre demande d'estimation sur {marque}.",
+    "confidentialite": "Politique de confidentialité",
+    "stop": "Pour ne plus être contacté(e), répondez « STOP » à cet email."
+  },
+  "interne": {
+    "langue": "Langue du prospect : {langue}"
+  }
+}

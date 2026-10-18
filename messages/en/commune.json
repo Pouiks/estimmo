@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "titre": "Property prices in {nom} ({cp}) - Price per m² {annee}",
+    "descriptionVentes": "Median price in {nom}: {appart}/m² for flats{aMaison, select, true {, {maison}/m² for houses} other {}}. Official DVF data, ANIL rents and free online valuation.",
+    "descriptionLoyers": "Property market in {nom}: ANIL reference rents and a free valuation of your property by a local advisor.",
+    "introuvable": "Town not found"
+  },
+  "jsonLd": {
+    "datasetNom": "Property prices in {nom} ({cp})",
+    "datasetDescription": "Median prices per m² and property sales volume in {nom}, aggregated from the public DVF database (DGFiP).",
+    "medianAppart": "Median price per m² - flat",
+    "medianMaison": "Median price per m² - house"
+  },
+  "filAriane": {
+    "accueil": "Home",
+    "prix": "Property prices"
+  },
+  "h1": "Property prices in {nom}",
+  "intro": {
+    "sansVentes": "In {nom}, property transactions are not published in the DVF database (Livre foncier regime in Alsace-Moselle, or too few sales). You will find the observed reference rents below, and our team provides a free personalised valuation of your property on request.",
+    "v0": "The property market in {nom} shows a median price of {prix}, calculated from sales actually recorded by the French tax authorities (DVF database). Over the last twelve months of published data, {ventes, plural, =0 {no sales were analysed} one {# sale was analysed} other {# sales were analysed}} in the town.",
+    "v1": "How much is a property worth in {nom}? Deeds of sale recorded by the DGFiP (DVF database) show a median value of {prix}. This price level is based on {ventes, plural, one {# transaction observed} other {# transactions observed}} over twelve months in the town.",
+    "v2": "In {nom}, officially recorded property sales over the last twelve months - {ventes, number, integer} in total - set the median price at {prix}. These figures come from public DVF data, the same data used by notaries and professionals."
+  },
+  "prix": {
+    "appart": "{appart, number, currency}/m² for a flat",
+    "maison": "{maison, number, currency}/m² for a house",
+    "deux": "{appart, number, currency}/m² for a flat and {maison, number, currency}/m² for a house"
+  },
+  "evolution": {
+    "stableV0": "Prices are broadly stable in {nom} over one year ({evo}).",
+    "stableV1": "Over twelve months, the market in {nom} remains stable ({evo}).",
+    "tendanceV0": "Over one year, prices per m² {hausse, select, true {rose} other {fell}} by {evo} in {nom}.",
+    "tendanceV1": "The annual trend is {hausse, select, true {upward} other {downward}}: {evo} compared with the previous twelve months.",
+    "valeur": "{evo, number, evolution}%"
+  },
+  "chiffres": {
+    "appart": "Flat - median price",
+    "maison": "House - median price",
+    "ventes": "Sales analysed (12 months)",
+    "evolution": "1-year change",
+    "maj": "{dvf} - aggregated statistics over the last 12 months of published data, updated on {date, date, short}."
+  },
+  "loyers": {
+    "titre": "What rent in {nom}?",
+    "appart": "Flat (all types)",
+    "typologies": "Studio / 1-bed - 2-bed and larger",
+    "maison": "House",
+    "parM2": "€{valeur, number, decimal1}/m²",
+    "fourchette": "€{bas} - €{haut}/m²",
+    "note": "{anil} ({millesime} edition). Advertised rents including charges."
+  },
+  "cta": {
+    "titre": "How much is your property worth in {nom}?",
+    "texte": "Free valuation in 2 minutes, based on actual sales in your neighbourhood - instant result.",
+    "bouton": "Value my property"
+  },
+  "faq": {
+    "titre": "Frequently asked questions - {nom}",
+    "appart": {
+      "question": "What is the price per m² of a flat in {nom} in {annee}?",
+      "reponse": "The median price of a flat in {nom} is {prix, number, currency}/m², based on sales recorded in the DVF database over the last twelve months of published data. Depending on condition, floor and fittings, the actual value of a property may differ significantly from this median."
+    },
+    "maison": {
+      "question": "What is the price per m² of a house in {nom}?",
+      "reponse": "Houses sell for a median of {prix, number, currency}/m² in {nom}. Plot size, overall condition and precise location cause this price to vary considerably."
+    },
+    "loyer": {
+      "question": "What rent for a flat in {nom}?",
+      "reponse": "The average advertised rent observed is about €{loyerM2, number, decimal1}/m² including charges (ANIL {millesime} estimates, based on data from Groupe SeLoger and leboncoin). For a 45 m² one-bedroom flat, this represents a rent of around {loyerT2, number, currency} per month."
+    },
+    "estimer": {
+      "question": "How can I get an accurate valuation of my property in {nom}?",
+      "reponse": "Use our free online estimator: it compares your property with actual sales in your neighbourhood and gives you an instant range. For a precise appraisal, a visit remains essential - your local advisor will call you back free of charge."
+    }
+  },
+  "maillage": {
+    "titre": "Property prices in the department ({code})",
+    "toutes": "All towns in {paris, select, true {} other {the}} {nom} ({code})"
+  }
+}

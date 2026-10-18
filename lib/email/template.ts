@@ -3,11 +3,22 @@
  * HTML « email-safe » : layout en tables, styles inline, largeur 600 px,
  * polices web-safe - compatible Gmail, Outlook, Apple Mail.
  * Aucune dépendance serveur ici (pur rendu) → réutilisable en preview.
+ *
+ * Les textes viennent de messages/<locale>/email.json (+ labels, common) :
+ * l'appelant fournit un traducteur racine `t` et un formateur `format`
+ * (getTranslations/getFormatter côté serveur, createTranslator/
+ * createFormatter dans le script de preview).
  */
+import type { useFormatter, useTranslations } from "next-intl";
 import type { EstimationResultat } from "@/lib/crm/payload";
 import type { LeadPayload } from "@/lib/leads/schema";
-import { MENTIONS, SITE } from "@/lib/config";
+import { SITE } from "@/lib/config";
+import type { Locale } from "@/lib/i18n/routing";
+import { urlAbsolue } from "@/lib/i18n/seo";
 import { escapeHtml } from "@/lib/security/html";
+
+export type TraducteurEmail = ReturnType<typeof useTranslations<never>>;
+export type FormateurEmail = ReturnType<typeof useFormatter>;
 
 const COL = {
   brand: "#2e90e5",
@@ -21,13 +32,6 @@ const COL = {
   cardBg: "#f9fafb",
   pageBg: "#eef2f1",
 } as const;
-
-const euro = (n: number) =>
-  n.toLocaleString("fr-FR", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  });
 
 /**
  * « virgile » → « Virgile », « jean-pierre » → « Jean-Pierre ».
@@ -48,8 +52,17 @@ const initiales = SITE.agent.name
   .join("")
   .toUpperCase();
 
-function typeBienLabel(lead: LeadPayload): string {
-  return lead.typeBien === "appartement" ? "Appartement" : "Maison";
+const prenomAgent = SITE.agent.name.split(/\s+/)[0];
+
+/** Balise <strong> pour t.markup (messages HTML). */
+const strong = (chunks: string) => `<strong>${chunks}</strong>`;
+
+interface Contexte {
+  lead: LeadPayload;
+  estimation: EstimationResultat;
+  t: TraducteurEmail;
+  format: FormateurEmail;
+  euro: (n: number) => string;
 }
 
 /** Bouton « bulletproof » (table + cellule colorée). */
@@ -65,18 +78,18 @@ function bouton(href: string, label: string): string {
 }
 
 /** Récapitulatif du bien (carte grise). */
-function recapBien(lead: LeadPayload): string {
+function recapBien({ lead, t }: Contexte): string {
   const details = [
-    typeBienLabel(lead),
-    `${lead.surface} m²`,
-    `${lead.pieces} pièce${lead.pieces > 1 ? "s" : ""}`,
+    t(`labels.typeBien.${lead.typeBien}`),
+    t("email.recap.surface", { surface: String(lead.surface) }),
+    t("email.recap.pieces", { n: lead.pieces }),
   ].join(" · ");
 
   return `
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${COL.cardBg};border:1px solid ${COL.border};border-radius:12px;margin:0 0 24px">
     <tr>
       <td style="padding:16px 18px;font-family:Arial,Helvetica,sans-serif">
-        <p style="margin:0 0 4px;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:${COL.faint}">Votre bien</p>
+        <p style="margin:0 0 4px;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:${COL.faint}">${t("email.recap.titre")}</p>
         <p style="margin:0;font-size:15px;font-weight:bold;color:${COL.ink}">${details}</p>
         <p style="margin:4px 0 0;font-size:13px;color:${COL.muted}">${escapeHtml(lead.adresse.libelle)}</p>
       </td>
@@ -107,18 +120,16 @@ function colChiffre(
 }
 
 /** Bloc résultat selon le type d'estimation (vente / location / manuelle). */
-function blocEstimation(estimation: EstimationResultat): string {
+function blocEstimation({ estimation, t, euro }: Contexte): string {
   // Zone non couverte / trop peu de comparables → analyse manuelle offerte
   if (estimation === null) {
     return `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${COL.brandLight};border:1px solid ${COL.brandBorder};border-radius:12px;margin:0 0 8px">
       <tr>
         <td style="padding:20px;font-family:Arial,Helvetica,sans-serif;text-align:center">
-          <p style="margin:0 0 6px;font-size:17px;font-weight:bold;color:${COL.brandDark}">Votre estimation personnalisée arrive sous 24&nbsp;h</p>
+          <p style="margin:0 0 6px;font-size:17px;font-weight:bold;color:${COL.brandDark}">${t("email.manuelle.titre")}</p>
           <p style="margin:0;font-size:14px;color:${COL.ink};line-height:1.6">
-            Votre secteur mérite une analyse sur mesure. <strong>${SITE.agent.name}</strong>
-            réalise votre estimation offerte et vous rappelle au numéro indiqué
-            sous 24&nbsp;heures.
+            ${t.markup("email.manuelle.texte", { agent: SITE.agent.name, strong })}
           </p>
         </td>
       </tr>
@@ -126,46 +137,48 @@ function blocEstimation(estimation: EstimationResultat): string {
   }
 
   if (estimation.projet === "vente") {
+    const details = t.markup("email.vente.details", {
+      prixM2: euro(estimation.prixM2Zone),
+      n: estimation.nbComparables,
+      rayon: estimation.rayonM ? String(estimation.rayonM) : "none",
+      confiance: t(`labels.confiance.${estimation.confiance}`).toLowerCase(),
+      strong: (chunks: string) => `<strong style="color:${COL.muted}">${chunks}</strong>`,
+    });
     return `
-    <p style="margin:0 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:${COL.muted};text-align:center">Estimation de la valeur de votre bien</p>
+    <p style="margin:0 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:${COL.muted};text-align:center">${t("email.vente.titre")}</p>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 10px">
       <tr>
-        ${colChiffre("Basse", euro(estimation.fourchetteBasse))}
-        ${colChiffre("Estimation", euro(estimation.mediane), true)}
-        ${colChiffre("Haute", euro(estimation.fourchetteHaute))}
+        ${colChiffre(t("email.vente.basse"), euro(estimation.fourchetteBasse))}
+        ${colChiffre(t("email.vente.estimation"), euro(estimation.mediane), true)}
+        ${colChiffre(t("email.vente.haute"), euro(estimation.fourchetteHaute))}
       </tr>
     </table>
     <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:${COL.faint};text-align:center;line-height:1.6">
-      Prix de votre zone : <strong style="color:${COL.muted}">${euro(estimation.prixM2Zone)}/m²</strong> ·
-      ${estimation.nbComparables} ventes comparables${estimation.rayonM ? ` dans un rayon de ${estimation.rayonM} m` : ""} ·
-      confiance ${estimation.confiance}.<br>${MENTIONS.dvf}.
+      ${details}<br>${t("email.vente.source", { dvf: t("common.mentions.dvf") })}
     </p>`;
   }
 
   return `
-    <p style="margin:0 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:${COL.muted};text-align:center">Loyer mensuel estimé (charges comprises)</p>
+    <p style="margin:0 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:${COL.muted};text-align:center">${t("email.location.titre")}</p>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 10px">
       <tr>
-        ${colChiffre("Basse", euro(estimation.loyerBas))}
-        ${colChiffre("Loyer estimé", euro(estimation.loyerMedian), true)}
-        ${colChiffre("Haute", euro(estimation.loyerHaut))}
+        ${colChiffre(t("email.location.basse"), euro(estimation.loyerBas))}
+        ${colChiffre(t("email.location.estimation"), euro(estimation.loyerMedian), true)}
+        ${colChiffre(t("email.location.haute"), euro(estimation.loyerHaut))}
       </tr>
     </table>
-    <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:${COL.faint};text-align:center;line-height:1.6">${MENTIONS.anil}.</p>`;
+    <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:${COL.faint};text-align:center;line-height:1.6">${t("email.location.source", { anil: t("common.mentions.anil") })}</p>`;
 }
 
-/** Carte « Carenza vous rappelle » - cœur de l'email (recontact + vente). */
-function blocCarenza(
-  lead: LeadPayload,
-  estimation: EstimationResultat,
+/** Carte « la conseillère vous rappelle » - cœur de l'email (recontact + vente). */
+function blocConseillere(
+  { lead, estimation, t }: Contexte,
+  prenom: string,
   ctaHref: string
 ): string {
-  const message =
-    estimation === null
-      ? `Bonjour ${escapeHtml(lead.prenom)}, je prépare personnellement votre estimation et je vous rappelle très vite. Ensemble, nous verrons comment valoriser au mieux votre bien.`
-      : lead.projet === "vente"
-        ? `Bonjour ${escapeHtml(lead.prenom)}, je vous rappelle personnellement pour affiner cette estimation sur place et, si vous le souhaitez, vendre votre bien au meilleur prix. Photos professionnelles, diffusion prioritaire, négociation : je m'occupe de tout.`
-        : `Bonjour ${escapeHtml(lead.prenom)}, je vous rappelle personnellement pour affiner cette estimation de loyer et vous accompagner dans la mise en location de votre bien, de la recherche du locataire au bail.`;
+  const cas =
+    estimation === null ? "manuelle" : lead.projet === "vente" ? "vente" : "location";
+  const message = t(`email.conseillere.${cas}`, { prenom: escapeHtml(prenom) });
 
   return `
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${COL.brandLight};border:1px solid ${COL.brandBorder};border-radius:14px;margin:8px 0 24px">
@@ -182,7 +195,7 @@ function blocCarenza(
             </td>
             <td valign="middle" style="padding-left:14px;font-family:Arial,Helvetica,sans-serif">
               <div style="font-size:16px;font-weight:bold;color:${COL.ink}">${SITE.agent.name}</div>
-              <div style="font-size:13px;color:${COL.brandDark}">Votre conseillère immobilière</div>
+              <div style="font-size:13px;color:${COL.brandDark}">${t("email.conseillere.role")}</div>
             </td>
           </tr>
         </table>
@@ -191,10 +204,10 @@ function blocCarenza(
           ${message}
         </p>
 
-        ${bouton(ctaHref, "📞 Je souhaite être rappelé(e)")}
+        ${bouton(ctaHref, t("email.conseillere.bouton"))}
 
         <p style="margin:12px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:${COL.muted};text-align:center">
-          Ou appelez directement Carenza :
+          ${t("email.conseillere.ouAppeler", { prenomAgent })}
           <a href="${SITE.agent.phoneHref}" style="color:${COL.brand};font-weight:bold;text-decoration:none">${SITE.agent.phone}</a>
         </p>
       </td>
@@ -203,27 +216,33 @@ function blocCarenza(
 }
 
 /** Bloc honoraires (exclusif vs simple) - uniquement pour un projet de vente. */
-function blocHonoraires(lead: LeadPayload): string {
+function blocHonoraires({ lead, t }: Contexte): string {
   if (lead.projet !== "vente") return "";
+  const texte = t.markup("email.honoraires.texte", {
+    exclusif: t("common.honoraires.exclusif", { taux: SITE.honoraires.tauxExclusif }),
+    simple: t("common.honoraires.simple", { taux: SITE.honoraires.tauxSimple }),
+    strong: (chunks: string) => `<strong style="color:${COL.brandDark}">${chunks}</strong>`,
+  });
   return `
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ${COL.border};border-radius:12px;margin:0 0 24px">
     <tr>
       <td style="padding:16px 18px;font-family:Arial,Helvetica,sans-serif">
-        <p style="margin:0 0 6px;font-size:14px;font-weight:bold;color:${COL.ink}">Vendez au meilleur prix, accompagné(e) de bout en bout</p>
-        <p style="margin:0;font-size:13px;color:${COL.muted};line-height:1.6">
-          Honoraires <strong style="color:${COL.brandDark}">${SITE.honoraires.exclusif}</strong> en mandat exclusif
-          (diffusion prioritaire, photos professionnelles, engagement de moyens écrit)
-          contre ${SITE.honoraires.simple} en mandat simple.
-        </p>
+        <p style="margin:0 0 6px;font-size:14px;font-weight:bold;color:${COL.ink}">${t("email.honoraires.titre")}</p>
+        <p style="margin:0;font-size:13px;color:${COL.muted};line-height:1.6">${texte}</p>
       </td>
     </tr>
   </table>`;
 }
 
 /** Enveloppe complète (préheader caché + header + contenu + footer). */
-function layout(preheader: string, contenu: string): string {
+function layout(
+  { t }: Contexte,
+  locale: Locale,
+  preheader: string,
+  contenu: string
+): string {
   return `<!DOCTYPE html>
-<html lang="fr" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="${locale}" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -243,7 +262,7 @@ function layout(preheader: string, contenu: string): string {
           <tr>
             <td align="center" bgcolor="${COL.brand}" style="padding:26px 24px;border-radius:16px 16px 0 0">
               <div style="font-family:Arial,Helvetica,sans-serif;font-size:24px;font-weight:bold;letter-spacing:.03em;color:#ffffff">ESTI<span style="color:#bbdcfb">MMO</span></div>
-              <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#dbeafb;margin-top:4px">${SITE.baseline}</div>
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#dbeafb;margin-top:4px">${t("common.baseline")}</div>
             </td>
           </tr>
 
@@ -263,11 +282,11 @@ function layout(preheader: string, contenu: string): string {
                   ${SITE.agent.phone} ·
                   <a href="mailto:${SITE.agent.email}" style="color:${COL.brand};text-decoration:none">${SITE.agent.email}</a>
                 </p>
-                <p style="margin:0 0 12px;font-size:11px;color:${COL.faint};line-height:1.6">${MENTIONS.disclaimer}</p>
+                <p style="margin:0 0 12px;font-size:11px;color:${COL.faint};line-height:1.6">${t("common.mentions.disclaimer")}</p>
                 <p style="margin:0;font-size:11px;color:${COL.faint};line-height:1.6">
-                  Vous recevez cet email suite à votre demande d'estimation sur ${SITE.name}.
-                  <a href="${SITE.url}/politique-confidentialite" style="color:${COL.muted}">Politique de confidentialité</a>.
-                  Pour ne plus être contacté(e), répondez «&nbsp;STOP&nbsp;» à cet email.
+                  ${t("email.pied.recu", { marque: SITE.name })}
+                  <a href="${urlAbsolue("/politique-confidentialite", locale)}" style="color:${COL.muted}">${t("email.pied.confidentialite")}</a>.
+                  ${t("email.pied.stop")}
                 </p>
               </div>
             </td>
@@ -286,43 +305,51 @@ export interface EmailRendu {
   html: string;
 }
 
-/** Email de confirmation envoyé au prospect. */
+/** Email de confirmation envoyé au prospect, dans sa langue. */
 export function renderEmailProspect(params: {
   lead: LeadPayload;
   estimation: EstimationResultat;
+  locale: Locale;
+  t: TraducteurEmail;
+  format: FormateurEmail;
   /** URL signée de demande de rappel (flag RGPD). Défaut : lien tel: (preview). */
   rappelUrl?: string;
 }): EmailRendu {
-  const { lead, estimation } = params;
+  const { lead, estimation, locale, t, format } = params;
+  const euro = (n: number) => format.number(n, "currency");
+  const ctx: Contexte = { lead, estimation, t, format, euro };
   const ctaHref = params.rappelUrl ?? SITE.agent.phoneHref;
 
   const prenom = prenomPropre(lead.prenom);
-  const bien = typeBienLabel(lead).toLowerCase();
+  const bien = t(`labels.typeBienMinuscule.${lead.typeBien}`);
+  const cas =
+    estimation === null ? "manuelle" : estimation.projet === "vente" ? "vente" : "location";
 
   // Sujet : le chiffre dans l'objet, c'est ce qui fait ouvrir le mail.
   const subject =
     estimation === null
-      ? `${prenom}, votre estimation personnalisée arrive sous 24 h`
+      ? t("email.sujet.manuelle", { prenom })
       : estimation.projet === "vente"
-        ? `${prenom}, votre ${bien} vaut entre ${euro(estimation.fourchetteBasse)} et ${euro(estimation.fourchetteHaute)}`
-        : `${prenom}, votre ${bien} se loue autour de ${euro(estimation.loyerMedian)}/mois`;
+        ? t("email.sujet.vente", {
+            prenom,
+            bien,
+            basse: euro(estimation.fourchetteBasse),
+            haute: euro(estimation.fourchetteHaute),
+          })
+        : t("email.sujet.location", { prenom, bien, loyer: euro(estimation.loyerMedian) });
 
-  const preheader =
-    estimation === null
-      ? `${SITE.agent.name} vous prépare une estimation sur mesure et vous rappelle sous 24 h.`
-      : `Le détail de votre estimation, et ${SITE.agent.name} pour la transformer en vente réussie.`;
+  const preheader = t(`email.preheader.${cas}`, { agent: SITE.agent.name });
 
   const contenu = `
-    <p style="margin:0 0 4px;font-family:Arial,Helvetica,sans-serif;font-size:16px;color:${COL.ink}">Bonjour ${escapeHtml(prenom)},</p>
+    <p style="margin:0 0 4px;font-family:Arial,Helvetica,sans-serif;font-size:16px;color:${COL.ink}">${t("email.bonjour", { prenom: escapeHtml(prenom) })}</p>
     <p style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:${COL.muted}">
-      Merci d'avoir estimé votre bien avec ${SITE.name}. Voici votre résultat,
-      fondé sur les ventes réelles de votre quartier.
+      ${t("email.merci", { marque: SITE.name })}
     </p>
-    ${recapBien(lead)}
-    ${blocEstimation(estimation)}
-    ${blocCarenza(lead, estimation, ctaHref)}
-    ${blocHonoraires(lead)}
+    ${recapBien(ctx)}
+    ${blocEstimation(ctx)}
+    ${blocConseillere(ctx, prenom, ctaHref)}
+    ${blocHonoraires(ctx)}
   `;
 
-  return { subject, html: layout(preheader, contenu) };
+  return { subject, html: layout(ctx, locale, preheader, contenu) };
 }

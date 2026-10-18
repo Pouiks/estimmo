@@ -1,0 +1,10 @@
+{
+  "meta": {
+    "titre": "Call-back request"
+  },
+  "titre": "Got it!",
+  "titreAvecPrenom": "Got it, {prenom}!",
+  "texte": "Your call-back request has been recorded. <strong>{agent}</strong> will call you back shortly on the number you provided to refine your valuation and answer all your questions.",
+  "direct": "Prefer to call directly?",
+  "appeler": "Call {telephone}"
+}
