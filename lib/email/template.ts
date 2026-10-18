@@ -29,6 +29,18 @@ const euro = (n: number) =>
     maximumFractionDigits: 0,
   });
 
+/**
+ * « virgile » → « Virgile », « jean-pierre » → « Jean-Pierre ».
+ * Le prénom est saisi librement dans le formulaire ; en sujet d'email une
+ * minuscule initiale fait brouillon.
+ */
+export function prenomPropre(prenom: string): string {
+  return prenom
+    .trim()
+    .toLocaleLowerCase("fr-FR")
+    .replace(/(^|[\s-])(\p{L})/gu, (_, sep, l) => sep + l.toLocaleUpperCase("fr-FR"));
+}
+
 const initiales = SITE.agent.name
   .split(/\s+/)
   .map((w) => w[0])
@@ -284,18 +296,24 @@ export function renderEmailProspect(params: {
   const { lead, estimation } = params;
   const ctaHref = params.rappelUrl ?? SITE.agent.phoneHref;
 
+  const prenom = prenomPropre(lead.prenom);
+  const bien = typeBienLabel(lead).toLowerCase();
+
+  // Sujet : le chiffre dans l'objet, c'est ce qui fait ouvrir le mail.
   const subject =
     estimation === null
-      ? `${lead.prenom}, votre estimation personnalisée arrive sous 24 h`
-      : `${lead.prenom}, votre estimation ${SITE.name} est prête`;
+      ? `${prenom}, votre estimation personnalisée arrive sous 24 h`
+      : estimation.projet === "vente"
+        ? `${prenom}, votre ${bien} vaut entre ${euro(estimation.fourchetteBasse)} et ${euro(estimation.fourchetteHaute)}`
+        : `${prenom}, votre ${bien} se loue autour de ${euro(estimation.loyerMedian)}/mois`;
 
   const preheader =
     estimation === null
       ? `${SITE.agent.name} vous prépare une estimation sur mesure et vous rappelle sous 24 h.`
-      : `Découvrez votre estimation et échangez avec ${SITE.agent.name}, votre conseillère.`;
+      : `Le détail de votre estimation, et ${SITE.agent.name} pour la transformer en vente réussie.`;
 
   const contenu = `
-    <p style="margin:0 0 4px;font-family:Arial,Helvetica,sans-serif;font-size:16px;color:${COL.ink}">Bonjour ${escapeHtml(lead.prenom)},</p>
+    <p style="margin:0 0 4px;font-family:Arial,Helvetica,sans-serif;font-size:16px;color:${COL.ink}">Bonjour ${escapeHtml(prenom)},</p>
     <p style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:${COL.muted}">
       Merci d'avoir estimé votre bien avec ${SITE.name}. Voici votre résultat,
       fondé sur les ventes réelles de votre quartier.

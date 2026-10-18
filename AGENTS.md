@@ -15,7 +15,7 @@ Estimateur immobilier (vente/location) + générateur de leads, France entière.
 
 ## Stack
 Next.js 16 App Router (TS) · Tailwind v4 + shadcn/ui (base-ui, pas radix) ·
-Supabase cloud (Postgres + PostGIS, Auth, Storage) · Resend (email, domaine earlypanel.fr) · Zod v4 ·
+Supabase cloud (Postgres + PostGIS, Auth, Storage) · Resend (email, domaine estimmo-direct.com) · Zod v4 ·
 Vitest · pnpm. Déploiement Vercel.
 
 ## Commandes
@@ -40,7 +40,7 @@ Vitest · pnpm. Déploiement Vercel.
   `dvf_mutations` est au format compact (lat/lon en micro-degrés, prix_m2 real,
   type 'A'/'M', pas de PostGIS stocké) : ~92 octets/ligne, ~210 Mo France entière
   → tient dans le plan Supabase **gratuit** (500 Mo). Moteur et signatures SQL inchangés
-- Email : Resend (pas Brevo - Brevo bloquait l'envoi des comptes gratuits). `lib/email`, `EMAIL_FROM` sur domaine vérifié earlypanel.fr. Sans clé en dev → simulation console
+- Email : Resend (pas Brevo - Brevo bloquait l'envoi des comptes gratuits). `lib/email`, `EMAIL_FROM` sur domaine vérifié estimmo-direct.com. Sans clé en dev → simulation console
 - CRM sans clé en dev → file en pending
 - Départements sans DVF : 57, 67, 68, 976 (le brief inversait 67/68) → fallback estimation manuelle
 - `annee_construction` stockée en texte (tranches du formulaire), pas en int

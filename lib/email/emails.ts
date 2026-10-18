@@ -14,7 +14,7 @@ import { renderEmailProspect } from "./template";
  * le lead.
  *
  * EMAIL_FROM doit utiliser un domaine vérifié dans Resend, au format
- * « Nom affiché <adresse@domaine-verifie> » (ex. earlypanel.fr).
+ * « Nom affiché <adresse@domaine-verifie> » (ex. estimmo-direct.com).
  */
 const RESEND_URL = "https://api.resend.com/emails";
 
@@ -25,9 +25,22 @@ interface EmailParams {
   replyTo?: string;
 }
 
+/**
+ * Garantit un nom d'expéditeur lisible dans la boîte mail : si EMAIL_FROM
+ * est une adresse nue (« no-reply@… »), Gmail afficherait « no-reply ».
+ * On la préfixe alors avec SITE.emailSender.
+ */
+export function expediteur(from: string | undefined): string | undefined {
+  if (!from) return undefined;
+  const brut = from.trim().replace(/^"(.*)"$/, "$1");
+  if (!brut) return undefined;
+  if (brut.includes("<")) return brut;
+  return `${SITE.emailSender} <${brut}>`;
+}
+
 async function envoyerEmail(params: EmailParams): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM;
+  const from = expediteur(process.env.EMAIL_FROM);
 
   if (!apiKey || !from) {
     console.log(

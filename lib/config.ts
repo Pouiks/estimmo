@@ -36,6 +36,11 @@ export const SITE = {
     phoneHref: "tel:+33611118469",
     email: "carenza.brown@iadfrance.fr",
   },
+  /**
+   * Nom affiché dans la boîte mail du prospect (colonne « expéditeur »).
+   * Utilisé quand EMAIL_FROM ne contient qu'une adresse nue.
+   */
+  emailSender: "Carenza Brown · ESTIMMO",
   honoraires: {
     exclusif: "à partir de 3 %",
     simple: "minimum 6 %",

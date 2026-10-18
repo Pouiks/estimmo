@@ -37,7 +37,7 @@ Import partiel pour développer plus vite :
 | `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Projet Supabase (Dashboard → Settings → API) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Accès serveur (jamais côté client) |
 | `SUPABASE_DB_URL` | Chaîne Postgres « Session pooler » - scripts locaux/CI uniquement |
-| `RESEND_API_KEY` / `EMAIL_FROM` | Emails transactionnels via Resend (absents = simulation en console) ; `EMAIL_FROM` sur domaine vérifié |
+| `RESEND_API_KEY` / `EMAIL_FROM` | Emails transactionnels via Resend (absents = simulation en console) ; `EMAIL_FROM` sur domaine vérifié, format `Nom affiché <adresse>` (une adresse nue est préfixée par `SITE.emailSender`) |
 | `CRM_WEBHOOK_URL` / `CRM_API_KEY` | Webhook du CRM externe (absents = file en attente) |
 | `CRON_SECRET` | Protège `/api/cron/crm-sync` et `/api/revalidate` ; signe les liens « être rappelé » (**obligatoire en production**) |
 | `ADMIN_NOTIFICATION_EMAIL` | Destinataire des notifications de nouveaux leads |
