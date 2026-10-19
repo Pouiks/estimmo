@@ -38,7 +38,7 @@ const { values: opts } = parseArgs({
 const COLONNES_CONTENU = [
   "lang", "titre", "meta_title", "meta_description", "extrait", "categorie",
   "auteur", "temps_lecture", "contenu_html", "image_cover", "image_cover_alt",
-  "image_cover_largeur", "image_cover_hauteur", "faq", "articles_lies",
+  "image_cover_largeur", "image_cover_hauteur", "image_cover_prompt", "faq", "articles_lies",
   "mot_cle_principal", "mots_cles_secondaires", "points_cles", "images",
 ] as const;
 const JSONB = new Set(["faq", "images"]);

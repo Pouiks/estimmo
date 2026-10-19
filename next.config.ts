@@ -6,6 +6,13 @@ const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
   : "*.supabase.co";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: {
+      // Envoi d'images depuis l'admin (1 Mo par défaut). Le navigateur réduit
+      // les photos avant l'envoi ; Vercel plafonne de toute façon à 4,5 Mo.
+      bodySizeLimit: "4mb",
+    },
+  },
   images: {
     remotePatterns: [
       {

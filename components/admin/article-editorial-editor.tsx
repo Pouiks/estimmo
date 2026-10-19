@@ -2,8 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, ImageOff, Loader2, Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { EditeurCorps } from "@/components/admin/editeur-corps";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,12 +43,13 @@ export function ArticleEditorialEditor({
   article,
   autresArticles,
   motsCles,
-  visuels,
+  imagesResolues,
 }: {
   article: ArticleEditorialData;
   autresArticles: { slug: string; titre: string }[];
   motsCles: string[];
-  visuels: { src: string; disponible: boolean }[];
+  /** Chemin logique → URL affichable des images (aperçu dans l'éditeur visuel). */
+  imagesResolues: Record<string, string>;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -102,21 +104,11 @@ export function ArticleEditorialEditor({
           <Textarea id="extrait" rows={2} value={a.extrait} onChange={(e) => maj("extrait", e.target.value)} />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="contenuHtml">Corps de l'article (HTML)</Label>
-          <p className="text-xs text-muted-foreground">
-            Classes disponibles : aside.a-retenir, figure.article-image, div.table-wrapper,
-            div.cta-estimation. Pas de h1, de script ni d'iframe.
-          </p>
-          <Textarea
-            id="contenuHtml"
-            rows={28}
-            spellCheck={false}
-            className="font-mono text-xs leading-relaxed"
-            value={a.contenuHtml}
-            onChange={(e) => maj("contenuHtml", e.target.value)}
-          />
-        </div>
+        <EditeurCorps
+          valeur={a.contenuHtml}
+          onChange={(html) => maj("contenuHtml", html)}
+          imagesResolues={imagesResolues}
+        />
 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -232,37 +224,6 @@ export function ArticleEditorialEditor({
               />
             </div>
           </div>
-        </div>
-
-        <div className="space-y-4 rounded-xl border p-4">
-          <div className="space-y-2">
-            <Label htmlFor="imageCover">Image de couverture</Label>
-            <Input id="imageCover" value={a.imageCover} onChange={(e) => maj("imageCover", e.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="imageCoverAlt">Texte alternatif de la couverture</Label>
-            <Textarea
-              id="imageCoverAlt"
-              rows={2}
-              value={a.imageCoverAlt}
-              onChange={(e) => maj("imageCoverAlt", e.target.value)}
-            />
-          </div>
-          <ul className="space-y-1 text-xs">
-            {visuels.map((v) => (
-              <li key={v.src} className="flex items-center gap-1.5 break-all">
-                {v.disponible ? (
-                  <CheckCircle2 className="size-3.5 shrink-0 text-green-600" />
-                ) : (
-                  <ImageOff className="size-3.5 shrink-0 text-amber-600" />
-                )}
-                <span className={v.disponible ? "" : "text-amber-700"}>{v.src}</span>
-              </li>
-            ))}
-          </ul>
-          <p className="text-xs text-muted-foreground">
-            Images à déposer dans public/images/blog/ (WebP, moins de 200 Ko) puis à déployer.
-          </p>
         </div>
 
         <div className="space-y-2 rounded-xl border p-4">

@@ -1,4 +1,5 @@
 import "server-only";
+import { imagesPubliees } from "@/lib/blog/images";
 import { estLocale } from "@/lib/i18n/routing";
 import { getAllCommuneSlugs, getDepartementsResume } from "@/lib/seo/communes";
 import { hrefDepartement, nomDepartement } from "@/lib/seo/departements";
@@ -20,7 +21,7 @@ export async function sitemapPagesFixes(): Promise<EntreeSitemap[]> {
     getDepartementsResume().catch(() => []),
     createAdminClient()
       .from("articles")
-      .select("slug, published_at, updated_at, lang")
+      .select("slug, published_at, updated_at, lang, image_cover, visuels, contenu_html")
       .eq("statut", "publie")
       // Les articles programmés (date future) restent hors sitemap.
       .lte("published_at", new Date().toISOString())
@@ -52,6 +53,8 @@ export async function sitemapPagesFixes(): Promise<EntreeSitemap[]> {
       lastModified: new Date(a.updated_at > a.published_at ? a.updated_at : a.published_at),
       changeFrequency: "monthly",
       priority: 0.6,
+      // Couverture et images du corps réellement affichées (Google Images).
+      images: imagesPubliees(a),
     })
   );
 

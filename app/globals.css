@@ -337,3 +337,61 @@
   line-height: 1.7;
   color: var(--muted-foreground);
 }
+
+/* Éditeur visuel du corps d'article (admin) : même rendu que le site
+   (.article-corps) + repères d'édition. */
+.editeur-corps .ProseMirror {
+  outline: none;
+}
+.editeur-corps .ProseMirror .ProseMirror-selectednode {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+.editeur-corps .ProseMirror aside.a-retenir::before,
+.editeur-corps .ProseMirror div.cta-estimation::before {
+  display: block;
+  margin-bottom: 0.4em;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+.editeur-corps .ProseMirror aside.a-retenir::before {
+  content: "Encadré « À retenir »";
+}
+.editeur-corps .ProseMirror div.cta-estimation::before {
+  content: "Appel à l'action";
+}
+.editeur-corps .ProseMirror figcaption:empty::before {
+  content: "Légende (facultative)";
+  color: var(--muted-foreground);
+}
+.editeur-corps .ProseMirror .image-attente {
+  display: block;
+  width: 100%;
+  border-radius: calc(var(--radius) * 1.4);
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--primary) 10%, transparent),
+    color-mix(in oklab, var(--primary) 22%, transparent)
+  );
+}
+.editeur-corps .ProseMirror table {
+  table-layout: fixed;
+  margin: 1.6em 0;
+}
+.editeur-corps .ProseMirror td,
+.editeur-corps .ProseMirror th {
+  position: relative;
+  min-width: 4em;
+  border: 1px solid var(--border);
+}
+.editeur-corps .ProseMirror .selectedCell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: color-mix(in oklab, var(--primary) 15%, transparent);
+}

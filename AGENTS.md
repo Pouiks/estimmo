@@ -117,15 +117,50 @@ Vitest · pnpm. Déploiement Vercel.
   une date passe (`diffuse_le`). Admin : publier / dépublier / publier maintenant en
   un clic, éditeur dédié (SEO, date, HTML, FAQ, articles liés), aperçu `/admin/blog/[id]/apercu`.
 - **Rendu** (`lib/blog/html.ts`) : un lien vers un article pas encore en ligne devient
-  du texte (pas de 404) ; une image absente devient un aplat. Images statiques dans
-  `public/images/blog/<slug>/` (cover 1200×630, image-1/2 1200×800, WebP < 200 Ko),
-  recensées dans `lib/blog/images-disponibles.json` par `pnpm blog:images` (lancé
-  par `pnpm build` ; public/ est illisible depuis les fonctions Vercel).
+  du texte (pas de 404) ; une image absente devient un aplat.
+- **Images** : le HTML et `image_cover` gardent les chemins logiques du JSON
+  (`/images/blog/<slug>/cover.webp`…), résolus au rendu par `resoudreImage`
+  (`lib/blog/images.ts`) : 1) emplacement affecté depuis l'admin (colonne `visuels`
+  { chemin → url }, jamais touchée par l'import) ; 2) fichier dans `public/images/blog/`
+  recensé par `pnpm blog:images` (lancé par `pnpm build`) ; 3) sinon aplat.
+- **Bibliothèque** (`lib/blog/medias.ts`, table `medias`, bucket Storage `blog`) : un
+  média par fichier (alt/légende par défaut, dimensions, format cover 1200×630 / corps
+  1200×800 / libre, prompt, parent_id si recadrage). Un emplacement d'article = un média
+  (url) ; alt et légende publiés = ceux de l'article (`image_cover_alt`, `<img alt>` +
+  `<figcaption>` réécrits par `modifierImageCorps`). Dans la page d'un article :
+  Envoyer (recadrage exact, WebP < 200 Ko, sharp `lib/blog/optimisation.ts`, position
+  « auto » = stratégie attention) ou Bibliothèque (sélecteur ; format différent → média
+  dérivé recadré). `/admin/medias` : envois libres (≤ 2000 px, ≤ 350 Ko), alt/légende,
+  usages par article, suppression (libère les emplacements), purge des non utilisées ;
+  la page synchronise au chargement les fichiers Storage absents de la table. Le
+  navigateur réduit la photo avant envoi (`lib/blog/reduire-image.ts`) ;
+  `serverActions.bodySizeLimit` = 4 Mo (Vercel plafonne à 4,5 Mo). Fichiers :
+  `visuels/<slug>-<nom>-<id>.webp`, `bibliotheque/`, `articles/` (ancien éditeur).
+  Prompts de génération : `content/blog/prompts-images.md` et `aiPrompt` du JSON.
+- **Éditeur du corps** (`components/admin/editeur-corps.tsx`) : mode visuel (TipTap,
+  rendu identique au site via `.article-corps`) ou HTML brut, bascule libre. Nœuds sur
+  mesure `components/admin/tiptap-editorial.ts` (aside.a-retenir, div.cta-estimation,
+  figure + figcaption, img avec width/height/loading, tableaux TableKit) ; images
+  insérées depuis la bibliothèque. Sortie normalisée par `normaliserHtmlEditeur`
+  (table-wrapper, attributs techniques retirés) avant enregistrement.
+- **HTML de confiance** : `problemesHtml` (lib/blog/html.ts) est une liste noire
+  (script/iframe/svg/base…, attributs on*, srcdoc/formaction, URLs javascript:/data:)
+  testée sur la forme brute ET décodée (entités, caractères de contrôle). Le corps est
+  rédigé par un admin authentifié : ce n'est pas une allowlist pour contenu tiers.
+- **Sitemap images** : `imagesPubliees` (couverture + images du corps résolues) dans
+  `<image:image>` de chaque article de `/sitemaps/pages.xml`.
 - **SEO** : `<title>` = metaTitle (+ « | ESTIMMO » si ≤ 60 car.), canonical, OG/Twitter
   article, JSON-LD BlogPosting + BreadcrumbList + FAQPage. `updated_at` (= dateModified,
   lastmod) ne bouge que sur un changement éditorial (trigger, migration 20261019120000).
 
 ## Sécurité (16/10/2026)
+- Admin (19/10/2026) : chaque action serveur commence par `requireAdmin()` (session
+  Supabase + rôle `profiles`) ; `proxy.ts` redirige /admin vers /admin/login. Aucune
+  requête SQL construite par concaténation (supabase-js / RPC ; scripts en `$1`).
+  Uploads : taille ≤ 4 Mo, décodage par sharp (fichier non-image refusé), toujours
+  ré-encodé en WebP (métadonnées et charges utiles supprimées), noms slugifiés sous
+  préfixes fixes ; suppression par uuid. Bucket Storage `blog` public en lecture,
+  écriture service_role seulement. Pas de CSP (à envisager).
 - `lib/security/rate-limit.ts` : limite par IP en mémoire sur /api/leads (5/10 min), track, geocode, quartier. Par instance serverless, pas globale
 - Pot de miel `website` dans le payload lead : si rempli → faux succès, rien n'est enregistré
 - Emails : toute valeur saisie par le prospect passe par `escapeHtml` ; export CSV neutralise les formules
@@ -145,7 +180,8 @@ Vitest · pnpm. Déploiement Vercel.
 - Blog : les 28 articles sont en base en **brouillon** (dates du 20/10 au 13/12/2026 déjà
   posées) car la prod tournait encore sur l'ancien code, qui affiche tout article
   « publie » sans regarder la date. Après déploiement : `pnpm import:articles --programmer`
-  (et `--replanifier --debut <date>` si le 20/10 est passé). Puis livrer les 84 images.
+  (et `--replanifier --debut <date>` si le 20/10 est passé). Puis livrer les 84 images
+  (fait le 19/10 : 1er article en ligne, 27 programmés ; images via /admin/blog).
 - Clé Resend (RESEND_API_KEY) + EMAIL_FROM sur domaine vérifié (sinon simulation console)
 - URL + clé du webhook CRM du propriétaire
 - Repo GitHub (secrets SUPABASE_DB_URL, CRON_SECRET, var SITE_URL) + déploiement Vercel

@@ -122,6 +122,12 @@ describe("sitemapXml", () => {
     expect(xml).toContain("&amp;c=2");
   });
 
+  it("ajoute les images de la page (sitemap images Google)", () => {
+    const xml = sitemapXml([{ url: `${base}/blog/x`, images: ["https://cdn.test/a.webp"] }]);
+    expect(xml).toContain('xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"');
+    expect(xml).toContain("<image:image><image:loc>https://cdn.test/a.webp</image:loc></image:image>");
+  });
+
   it("réponse XML avec le bon content-type", async () => {
     const res = reponseXml("<x/>");
     expect(res.headers.get("content-type")).toContain("application/xml");

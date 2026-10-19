@@ -18,7 +18,7 @@ import { escapeHtml } from "@/lib/security/html";
 export const COMMUNES_PAR_SITEMAP = 20_000;
 
 export type EntreeSitemap = MetadataRoute.Sitemap[number];
-type Extra = Pick<EntreeSitemap, "lastModified" | "changeFrequency" | "priority">;
+type Extra = Pick<EntreeSitemap, "lastModified" | "changeFrequency" | "priority" | "images">;
 
 /** Alternates hreflang d'une page existant dans toutes les langues. */
 export function alternatesSitemap(
@@ -102,10 +102,14 @@ export function sitemapXml(entrees: EntreeSitemap[]): string {
           `    <xhtml:link rel="alternate" hreflang="${lang}" href="${escapeHtml(String(href))}"/>`
         );
       }
+      // Sitemap images (Google Images) : images de la page, URLs absolues.
+      for (const image of e.images ?? []) {
+        lignes.push(`    <image:image><image:loc>${escapeHtml(image)}</image:loc></image:image>`);
+      }
       return `  <url>\n${lignes.join("\n")}\n  </url>`;
     })
     .join("\n");
-  return `${ENTETE}<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls}\n</urlset>\n`;
+  return `${ENTETE}<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urls}\n</urlset>\n`;
 }
 
 export function reponseXml(xml: string): Response {

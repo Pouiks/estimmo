@@ -7,7 +7,7 @@ import { CarteArticle } from "@/components/blog/carte-article";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { texteDepuisHtml } from "@/lib/blog/html";
-import { couvertureAffichable } from "@/lib/blog/images";
+import { resoudreImage } from "@/lib/blog/images";
 import {
   articleEnLigne,
   articlesEnLigne,
@@ -74,10 +74,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const titre = article.meta_title ?? article.titre;
   const desc = description(article);
   const chemin = `/blog/${slug}`;
-  const image = couvertureAffichable(article.image_cover)
+  const cover = resoudreImage(article.image_cover, article.visuels);
+  const image = cover
     ? [
         {
-          url: article.image_cover,
+          url: cover,
           width: article.image_cover_largeur ?? undefined,
           height: article.image_cover_hauteur ?? undefined,
           alt: article.image_cover_alt ?? article.titre,
@@ -107,7 +108,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: image ? "summary_large_image" : "summary",
       title: titre,
       description: desc,
-      images: image?.map((i) => i.url),
+      images: image,
     },
   };
 }
@@ -144,6 +145,7 @@ export default async function ArticlePage({ params }: Props) {
   const auteur = article.auteur ?? SITE.agent.name;
   const lies = articlesLies(article, enLigne);
   const url = urlAbsolue(`/blog/${article.slug}`, locale);
+  const cover = resoudreImage(article.image_cover, article.visuels);
 
   const jsonLd = [
     {
@@ -151,10 +153,10 @@ export default async function ArticlePage({ params }: Props) {
       "@type": "BlogPosting",
       headline: article.titre,
       description: description(article),
-      image: couvertureAffichable(article.image_cover)
+      image: cover
         ? {
             "@type": "ImageObject",
-            url: new URL(article.image_cover, SITE.url).toString(),
+            url: new URL(cover, SITE.url).toString(),
             width: article.image_cover_largeur ?? undefined,
             height: article.image_cover_hauteur ?? undefined,
           }

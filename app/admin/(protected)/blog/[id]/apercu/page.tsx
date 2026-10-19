@@ -24,7 +24,7 @@ export default async function ApercuArticlePage({
   const { data } = await createAdminClient()
     .from("articles")
     .select(
-      "slug, titre, extrait, meta_description, contenu, contenu_html, categorie, temps_lecture, image_cover, image_cover_alt, published_at, meta_title, auteur, image_cover_largeur, image_cover_hauteur, faq, articles_lies, updated_at, lang"
+      "slug, titre, extrait, meta_description, contenu, contenu_html, categorie, temps_lecture, image_cover, image_cover_alt, visuels, published_at, meta_title, auteur, image_cover_largeur, image_cover_hauteur, faq, articles_lies, updated_at, lang"
     )
     .eq("id", id)
     .maybeSingle();

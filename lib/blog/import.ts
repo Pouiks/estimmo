@@ -122,6 +122,7 @@ export function versLigne(a: ArticleSource) {
     image_cover_alt: a.coverImage.alt,
     image_cover_largeur: a.coverImage.width,
     image_cover_hauteur: a.coverImage.height,
+    image_cover_prompt: a.coverImage.aiPrompt ?? null,
     faq: a.faq,
     articles_lies: a.relatedSlugs,
     mot_cle_principal: a.primaryKeyword,

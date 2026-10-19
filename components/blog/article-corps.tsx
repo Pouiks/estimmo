@@ -1,7 +1,7 @@
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Couverture } from "@/components/blog/couverture";
 import { preparerHtml } from "@/lib/blog/html";
-import { imageDisponible } from "@/lib/blog/images";
+import { resoudreImage } from "@/lib/blog/images";
 import type { ArticleComplet } from "@/lib/blog/publication";
 import { ArticleContent } from "@/lib/blog/render";
 import { SITE } from "@/lib/config";
@@ -29,7 +29,7 @@ export async function ArticleCorps({
   const corpsHtml = article.contenu_html
     ? preparerHtml(article.contenu_html, {
         articleEnLigne: (s) => slugsEnLigne.has(s),
-        imageDisponible,
+        resoudreImage: (src) => resoudreImage(src, article.visuels),
       })
     : null;
 
@@ -59,7 +59,7 @@ export async function ArticleCorps({
 
       {(article.image_cover || article.contenu_html) && (
         <Couverture
-          src={article.image_cover}
+          src={resoudreImage(article.image_cover, article.visuels)}
           alt={article.image_cover_alt ?? article.titre}
           largeur={article.image_cover_largeur}
           hauteur={article.image_cover_hauteur}

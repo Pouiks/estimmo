@@ -8,15 +8,60 @@
  */
 
 const INTERDITS: { motif: RegExp; message: string }[] = [
-  { motif: /<\s*(script|iframe|object|embed|style|link|meta|form)\b/i, message: "balise interdite (script, iframe, style, form…)" },
+  {
+    motif: /<\s*(script|iframe|object|embed|style|link|meta|form|base|svg|math|template)\b/i,
+    message: "balise interdite (script, iframe, style, form, svg…)",
+  },
   { motif: /\son[a-z]+\s*=/i, message: "attribut d'événement interdit (onclick, onerror…)" },
-  { motif: /(href|src)\s*=\s*["']?\s*javascript:/i, message: "URL javascript: interdite" },
+  { motif: /\s(srcdoc|formaction)\s*=/i, message: "attribut interdit (srcdoc, formaction)" },
+  {
+    motif: /(href|src|action|xlink:href|data)\s*=\s*["']?\s*(javascript|vbscript|data)\s*:/i,
+    message: "URL javascript:/data: interdite",
+  },
   { motif: /<\s*h1\b/i, message: "<h1> interdit dans le corps (le titre de la page est le seul h1)" },
 ];
 
-/** Problèmes bloquants d'un corps d'article ; tableau vide = accepté. */
+const ENTITES: Record<string, string> = { colon: ":", tab: "\t", newline: "\n", lt: "<", gt: ">", quot: '"', amp: "&", sol: "/" };
+
+/**
+ * Forme sous laquelle le navigateur lira le HTML : entités décodées
+ * (« java&#115;cript: », « &colon; ») et caractères de contrôle retirés
+ * (« java\tscript: »). Sert uniquement aux contrôles, jamais au rendu.
+ */
+function formeNavigateur(html: string): string {
+  return html
+    .replace(/&#x([0-9a-f]+);?/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);?/g, (_, d) => String.fromCodePoint(Number(d)))
+    .replace(/&([a-z]+);/gi, (m, nom: string) => ENTITES[nom.toLowerCase()] ?? m)
+    .replace(/[\x00-\x1f]/g, "");
+}
+
+/**
+ * Problèmes bloquants d'un corps d'article ; tableau vide = accepté.
+ * Le HTML est rédigé par un admin authentifié (contenu de confiance) : ce
+ * filtre bloque ce qui exécuterait du code ou casserait la page, testé sur
+ * la forme brute et sur la forme décodée.
+ */
 export function problemesHtml(html: string): string[] {
-  return INTERDITS.filter(({ motif }) => motif.test(html)).map((i) => i.message);
+  const formes = [html, formeNavigateur(html)];
+  return INTERDITS.filter(({ motif }) => formes.some((f) => motif.test(f))).map((i) => i.message);
+}
+
+/**
+ * HTML produit par l'éditeur visuel (TipTap) → forme éditoriale : tableaux
+ * enveloppés dans div.table-wrapper (défilement mobile), attributs
+ * techniques et blocs vides retirés. Idempotent sur un HTML déjà conforme.
+ */
+export function normaliserHtmlEditeur(html: string): string {
+  return html
+    .replace(/<colgroup>[\s\S]*?<\/colgroup>/g, "")
+    .replace(/<table\s[^>]*>/g, "<table>")
+    .replace(/\s(colspan|rowspan)="1"/g, "")
+    .replace(/<div class="table-wrapper">\s*(<table[\s\S]*?<\/table>)\s*<\/div>/g, "$1")
+    .replace(/<table[\s\S]*?<\/table>/g, (table) => `<div class="table-wrapper">${table}</div>`)
+    .replace(/<figcaption><\/figcaption>/g, "")
+    .replace(/<p><\/p>/g, "")
+    .trim();
 }
 
 /** Slugs des articles du blog cités dans les liens internes du corps. */
@@ -40,8 +85,11 @@ function attribut(balise: string, nom: string): string | undefined {
 export interface OptionsRendu {
   /** Un lien vers /blog/<slug> n'est gardé que si l'article est en ligne. */
   articleEnLigne: (slug: string) => boolean;
-  /** Les images pas encore livrées sont remplacées par un aplat neutre. */
-  imageDisponible: (src: string) => boolean;
+  /**
+   * URL à afficher pour un chemin d'image du corps (Storage, public/) ;
+   * null = pas encore livrée → aplat neutre.
+   */
+  resoudreImage: (src: string) => string | null;
 }
 
 /**
@@ -49,7 +97,8 @@ export interface OptionsRendu {
  *  - un lien vers un article programmé (pas encore en ligne) devient du texte
  *    simple, sans quoi il mènerait à une 404 ; il redevient un lien quand sa
  *    cible est publiée (le cron revalide tous les articles) ;
- *  - une image absente de public/ devient un bloc neutre aux bonnes
+ *  - le chemin logique d'une image est remplacé par son URL (Storage ou
+ *    public/) ; une image pas encore livrée devient un bloc neutre aux bonnes
  *    proportions (pas d'image cassée ni de décalage de mise en page).
  */
 export function preparerHtml(html: string, options: OptionsRendu): string {
@@ -61,10 +110,12 @@ export function preparerHtml(html: string, options: OptionsRendu): string {
 
   return avecLiens.replace(/<img\b[^>]*>/g, (balise) => {
     const src = attribut(balise, "src");
-    if (src && options.imageDisponible(src)) {
-      return /\sdecoding=/.test(balise)
-        ? balise
-        : balise.replace(/<img\b/, '<img decoding="async"');
+    const url = src ? options.resoudreImage(src) : null;
+    if (url) {
+      const resolue = balise.replace(/\ssrc="[^"]*"/, ` src="${url.replace(/"/g, "&quot;")}"`);
+      return /\sdecoding=/.test(resolue)
+        ? resolue
+        : resolue.replace(/<img\b/, '<img decoding="async"');
     }
     const largeur = Number(attribut(balise, "width")) || 3;
     const hauteur = Number(attribut(balise, "height")) || 2;
@@ -86,4 +137,57 @@ export function texteDepuisHtml(html: string, max = 160): string {
     .replace(/\s+/g, " ")
     .trim();
   return texte.length <= max ? texte : `${texte.slice(0, max - 1).trimEnd()}…`;
+}
+
+/** Dimensions déclarées par le <img> d'une source dans le corps (défaut 1200×800). */
+export function dimensionsImage(html: string, src: string): { largeur: number; hauteur: number } {
+  const balise = [...html.matchAll(/<img\b[^>]*>/g)]
+    .map((m) => m[0])
+    .find((b) => attribut(b, "src") === src);
+  return {
+    largeur: Number(balise && attribut(balise, "width")) || 1200,
+    hauteur: Number(balise && attribut(balise, "height")) || 800,
+  };
+}
+
+function echapperAttribut(valeur: string): string {
+  return valeur.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+}
+
+/**
+ * Met à jour l'alt du <img> d'une source et, si la balise est dans une
+ * <figure>, le texte de sa <figcaption> (légende vide = figcaption retirée).
+ * Renvoie le HTML inchangé si la source n'y figure pas.
+ */
+export function modifierImageCorps(
+  html: string,
+  src: string,
+  champs: { alt?: string; legende?: string | null }
+): string {
+  const cible = [...html.matchAll(/<img\b[^>]*>/g)].find((m) => attribut(m[0], "src") === src);
+  if (!cible) return html;
+  const debut = cible.index;
+  let balise = cible[0];
+
+  if (champs.alt !== undefined) {
+    const alt = ` alt="${echapperAttribut(champs.alt)}"`;
+    balise = /\salt="[^"]*"/.test(balise)
+      ? balise.replace(/\salt="[^"]*"/, alt)
+      : balise.replace(/\s*\/?>$/, (fin) => `${alt}${fin}`);
+  }
+  let resultat = html.slice(0, debut) + balise + html.slice(debut + cible[0].length);
+
+  if (champs.legende !== undefined) {
+    // <figure> englobante : la dernière ouverte avant l'image, fermée après elle.
+    const ouverture = resultat.lastIndexOf("<figure", debut);
+    const fermeture = resultat.indexOf("</figure>", debut);
+    const englobe =
+      ouverture !== -1 && fermeture !== -1 && resultat.indexOf("</figure>", ouverture) === fermeture;
+    if (englobe) {
+      let figure = resultat.slice(ouverture, fermeture).replace(/<figcaption>[\s\S]*?<\/figcaption>/, "");
+      if (champs.legende) figure += `<figcaption>${echapperAttribut(champs.legende)}</figcaption>`;
+      resultat = resultat.slice(0, ouverture) + figure + resultat.slice(fermeture);
+    }
+  }
+  return resultat;
 }

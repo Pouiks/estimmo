@@ -4,6 +4,7 @@ import { revaliderSite } from "@/lib/i18n/revalidate";
 import type { Locale } from "@/lib/i18n/routing";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Categorie } from "./categories";
+import type { Visuels } from "./images";
 import type { TiptapNode } from "./render";
 
 /**
@@ -24,6 +25,8 @@ export interface ArticleCarte {
   temps_lecture: number | null;
   image_cover: string | null;
   image_cover_alt: string | null;
+  /** Images envoyées depuis l'admin : chemin logique → URL Storage */
+  visuels: Visuels;
   published_at: string;
 }
 
@@ -38,7 +41,7 @@ export interface ArticleComplet extends ArticleCarte {
 }
 
 const CHAMPS_CARTE =
-  "slug, titre, extrait, meta_description, contenu, contenu_html, categorie, temps_lecture, image_cover, image_cover_alt, published_at";
+  "slug, titre, extrait, meta_description, contenu, contenu_html, categorie, temps_lecture, image_cover, image_cover_alt, visuels, published_at";
 const CHAMPS_COMPLETS = `${CHAMPS_CARTE}, meta_title, auteur, image_cover_largeur, image_cover_hauteur, faq, articles_lies, updated_at`;
 
 function enLigne(locale: Locale) {

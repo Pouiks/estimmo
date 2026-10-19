@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { couvertureAffichable } from "@/lib/blog/images";
 import { cn } from "@/lib/utils";
 
 /**
@@ -16,6 +15,7 @@ export function Couverture({
   enTete = false,
   className,
 }: {
+  /** URL résolue (resoudreImage) ; null = image pas encore fournie. */
   src: string | null;
   alt: string;
   largeur?: number | null;
@@ -34,7 +34,7 @@ export function Couverture({
       )}
       style={{ aspectRatio: ratio }}
     >
-      {couvertureAffichable(src) && (
+      {src && (
         <Image
           src={src}
           alt={alt}

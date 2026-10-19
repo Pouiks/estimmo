@@ -48,7 +48,7 @@
       "alt": "Maison ancienne en pierre dans un bourg français, critères de valeur d'un bien immobilier",
       "brief": "Façade d'une maison ancienne en pierre avec volets en bois et petit jardin, dans une rue calme d'un bourg français, photographiée de trois quarts en fin d'après-midi sous une lumière douce, sans personnage.",
       "stockKeywords": "french stone house, village street, wooden shutters, real estate France",
-      "aiPrompt": "Realistic photo of a traditional French stone house with wooden shutters and a small front garden on a quiet village street, three-quarter view, soft late afternoon light, no people, no text, no logo."
+      "aiPrompt": "Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop: an old limestone house with weathered painted wooden shutters, a slate roof and a small front garden behind a low stone wall, on a quiet street of a French market town in the Périgord, three-quarter view, climbing rose by the door, no people. Realistic editorial photography, full-frame 35 mm camera, soft late-afternoon natural light, warm neutral tones with discreet touches of blue in the shutters and sky, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -57,7 +57,7 @@
         "caption": "Dans une même commune, l'écart de prix se joue souvent à la rue : calme, nuisances et trajet à pied vers l'école comptent autant que l'adresse.",
         "brief": "Rue résidentielle calme d'une ville moyenne française, trottoirs arborés, maisons mitoyennes des années 1930 avec jardinets et portails, lumière de matinée, sans personnage.",
         "stockKeywords": "quiet residential street France, french houses, neighborhood",
-        "aiPrompt": "Realistic photo of a quiet residential street in a mid-sized French town, 1930s semi-detached houses with small front gardens and metal gates, trees along the sidewalk, morning light, no people, no text, no logo."
+        "aiPrompt": "3:2 landscape. A calm tree-lined residential street in a mid-sized French town such as Angers, 1930s semi-detached houses in brick and cream render with small front gardens and wrought-iron gates, plane trees along a wide pavement, a small parked French hatchback, a school building glimpsed at the end of the street within walking distance, no traffic, no people. Realistic editorial photography, full-frame 35 mm camera, soft morning natural light, warm neutral tones with discreet touches of blue in a painted gate and the sky, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/criteres-valeur-bien-immobilier/image-2.webp",
@@ -65,7 +65,7 @@
         "caption": "Selon les notaires, une maison classée F ou G se vendait en 2021 jusqu'à 20 % moins cher qu'une maison classée D, avec de forts écarts entre régions.",
         "brief": "Artisan vu de dos ou de profil, en train de poser une fenêtre double vitrage blanche dans le mur d'une maison ancienne française en rénovation, outils et panneaux isolants visibles, lumière naturelle.",
         "stockKeywords": "window installation, energy renovation, house insulation, craftsman",
-        "aiPrompt": "Realistic photo of a craftsman seen from behind installing a white double-glazed window in an old French house under renovation, insulation panels and tools visible, natural daylight, face not visible, no text, no logo."
+        "aiPrompt": "3:2 landscape. A craftsman seen from behind, face not visible, fitting a new white double-glazed window into the thick stone wall of an old French village house under energy renovation, wood-fibre insulation panels stacked against the wall, a spirit level and cordless drill on a trestle, fine dust floating in the light, blue work trousers. Realistic editorial photography, full-frame 35 mm camera, soft natural daylight through the opening, warm neutral tones with discreet touches of blue in the workwear, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -123,7 +123,7 @@
       "alt": "Propriétaire consultant les ventes immobilières de son quartier pour estimer sa maison gratuitement",
       "brief": "Mains d'un propriétaire sur un ordinateur portable affichant une carte de quartier, sur la table de cuisine en bois d'une maison française, tasse de café et documents à côté, lumière du matin par la fenêtre.",
       "stockKeywords": "laptop map, home kitchen, house valuation, homeowner",
-      "aiPrompt": "Realistic photo of a homeowner's hands on a laptop showing a neighborhood map, on a wooden kitchen table in a French house, coffee cup and papers nearby, morning window light, no visible face, no readable text, no logo."
+      "aiPrompt": "Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop: a homeowner's hands resting on an open laptop displaying a neighbourhood map dotted with coloured sale markers, on a solid oak kitchen table in a French house, a blue ceramic coffee cup and a few out-of-focus papers beside it, face out of frame, screen without legible labels. Realistic editorial photography, full-frame 35 mm camera, soft morning natural light from a side window, warm neutral tones with discreet touches of blue, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -132,7 +132,7 @@
         "caption": "La base DVF publie les prix de vente réels des cinq dernières années, partout sauf en Alsace, en Moselle et à Mayotte.",
         "brief": "Écran d'ordinateur posé sur un bureau, affichant une carte cadastrale avec des parcelles colorées et des points de vente, sans texte lisible, arrière-plan flou d'un intérieur français.",
         "stockKeywords": "cadastral map screen, property data, computer desk",
-        "aiPrompt": "Realistic photo of a computer screen on a desk displaying a cadastral map with colored land parcels and sale markers, no readable text, blurred French home interior in background, no logo."
+        "aiPrompt": "3:2 landscape. A desktop computer monitor on a home-office desk in a French apartment, the screen seen slightly from the side showing a cadastral map of land parcels in pastel colours with small round markers for recorded property sales, no legible labels or numbers, a hand on the mouse at the edge of the frame, blurred bookshelf and a window over grey zinc rooftops behind. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue in the map, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/estimer-maison-gratuitement/image-2.webp",
@@ -140,7 +140,7 @@
         "caption": "Un avis de valeur sérieux repose sur une visite complète, combles et sous-sol compris, et sur une liste de ventes comparables récentes.",
         "brief": "Conseillère immobilière vue de profil, mesurant un séjour au télémètre laser dans une maison française habitée, carnet à la main, lumière naturelle douce.",
         "stockKeywords": "real estate agent measuring, laser meter, house visit",
-        "aiPrompt": "Realistic photo of a female real estate advisor seen from the side measuring a living room with a laser distance meter in a lived-in French house, notebook in hand, soft natural light, face not in close-up, no text, no logo."
+        "aiPrompt": "3:2 landscape. A female real estate advisor seen in profile at mid-distance, face turned away and softly out of focus, aiming a laser distance meter across the living room of a lived-in French family house, a notebook in her other hand, terracotta tile floor, stone fireplace, a wooden staircase leading up toward the attic, family furniture around. Realistic editorial photography, full-frame 35 mm camera, soft natural window light, warm neutral tones with discreet touches of blue in her jacket, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -198,7 +198,7 @@
       "alt": "Conseillère immobilière et propriétaire échangeant sur l'estimation d'une maison à la table du salon",
       "brief": "Conseillère immobilière et propriétaire assis à la table du salon d'une maison française, documents et plan du bien étalés devant eux, cadrage sur les mains et les papiers, lumière naturelle chaleureuse.",
       "stockKeywords": "real estate consultation, homeowner meeting, documents table",
-      "aiPrompt": "Realistic photo of a real estate advisor and a homeowner sitting at a living room table in a French house, property documents and floor plan spread out, framing focused on hands and papers, warm natural light, no recognizable faces, no text, no logo."
+      "aiPrompt": "Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop: tight framing on two pairs of hands across a living-room table in a French house, a real estate advisor pointing with a pen at a floor plan of the property while the homeowner holds a printed sheet, documents seen at an angle and blurred, a blue folder and a cup of tea nearby, faces out of frame. Realistic editorial photography, full-frame 35 mm camera, warm soft natural light, warm neutral tones with discreet touches of blue, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -207,7 +207,7 @@
         "caption": "Fin du troisième trimestre 2026, un bien restait en moyenne 101 jours en vente, et un prix trop ambitieux allonge encore ce délai.",
         "brief": "Panneau « À vendre » générique, sans nom d'agence, fixé au portail métallique d'une maison de lotissement française, façade enduite et haie en arrière-plan, ciel gris clair.",
         "stockKeywords": "for sale sign, house gate, France suburb",
-        "aiPrompt": "Realistic photo of a generic for sale sign with no readable text and no brand attached to the metal gate of a French suburban house, rendered facade and hedge in background, soft overcast light, no logo."
+        "aiPrompt": "3:2 landscape. A plain generic for-sale panel, slightly faded by weeks of sun and rain, tied to the grey metal gate of a 1990s French subdivision house on the edge of town, cream rendered facade, terracotta tile roof, closed roller shutters on one window, a trimmed laurel hedge, quiet street, no people, the panel blank with no lettering. Realistic editorial photography, full-frame 35 mm camera, soft overcast natural light under a pale grey sky, warm neutral tones with discreet touches of blue in the panel border, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/pourquoi-professionnel-estimation-immobiliere/image-2.webp",
@@ -215,7 +215,7 @@
         "caption": "Pour une résidence principale, la comparaison avec les ventes récentes du secteur reste la base, ajustée ensuite selon l'état et les atouts du bien.",
         "brief": "Vue de dessus d'un bureau avec un plan de maison annoté, une liste imprimée de ventes comparables surlignée, une calculatrice et un stylo, lumière du jour.",
         "stockKeywords": "floor plan, documents desk, calculator, property appraisal",
-        "aiPrompt": "Realistic top-down photo of a desk with an annotated house floor plan, a printed list of comparable sales with highlighter marks, a calculator and a pen, daylight, no readable text, no logo."
+        "aiPrompt": "3:2 landscape. Top-down view of a wooden desk laid out for a property valuation: an annotated house floor plan with pencil marks, a printed table of recent comparable sales with several lines highlighted, a calculator, a pen and a pencil, all writing rendered as illegible soft lines, a pair of glasses at the corner. Realistic editorial photography, full-frame 35 mm camera, soft natural daylight, warm neutral tones with discreet touches of blue in the highlighter strokes and a folder, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -273,7 +273,7 @@
       "alt": "Maison familiale française vue du jardin, estimée sans projet de vente",
       "brief": "Maison familiale française des années 1980 vue depuis son jardin, terrasse avec salon de jardin, pelouse entretenue, aucun panneau à vendre, lumière dorée de fin de journée.",
       "stockKeywords": "french family house, garden, terrace, evening light",
-      "aiPrompt": "Realistic photo of a 1980s French family house seen from its back garden, terrace with garden furniture, tidy lawn, no for sale sign, golden evening light, no people, no text, no logo."
+      "aiPrompt": "Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop: a 1980s French family house with a light ochre rendered facade and a red tile roof seen from its back garden, a terrace with wooden garden furniture, a tidy lawn and a fruit tree, a lived-in peaceful home with no for-sale sign, no people. Realistic editorial photography, full-frame 35 mm camera, soft golden evening natural light, warm neutral tones with discreet touches of blue in a cushion and the shutters, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -282,7 +282,7 @@
         "caption": "La valeur déclarée dans la succession devient le prix d'acquisition retenu pour calculer la plus-value si le bien hérité est revendu.",
         "brief": "Bureau en bois d'une étude notariale française, dossier papier, trousseau de clés de maison et stylo au premier plan, bibliothèque floue en arrière-plan, lumière feutrée.",
         "stockKeywords": "notary office, house keys, documents, inheritance",
-        "aiPrompt": "Realistic photo of a wooden desk in a French notary office, paper file, house key ring and fountain pen in the foreground, blurred bookshelves in background, soft warm light, no people, no readable text, no logo."
+        "aiPrompt": "3:2 landscape. Close view of a polished wooden desk in a traditional French notary office: a closed succession file in a cardboard folder with an elastic strap, a ring of old house keys and a fountain pen in the foreground, papers seen at an angle with no legible writing, blurred shelves of bound legal volumes behind, no people. Realistic editorial photography, full-frame 35 mm camera, soft muted natural window light, warm neutral tones with discreet touches of blue in the folder strap, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/estimer-maison-sans-vendre/image-2.webp",
@@ -290,7 +290,7 @@
         "caption": "La banque finance en général un prêt relais à hauteur de 60 à 80 % de la valeur estimée, sur la base d'une estimation de moins de trois mois.",
         "brief": "Couple de quadragénaires vu de trois quarts dos face à un conseiller bancaire dans une agence française, documents et calculatrice sur le bureau, ambiance sobre et lumineuse.",
         "stockKeywords": "bank meeting, mortgage advisor, couple, loan",
-        "aiPrompt": "Realistic photo of a couple in their forties seen from behind at a desk facing a bank advisor in a French bank branch, documents and calculator on the desk, bright sober setting, no recognizable faces, no text, no logo."
+        "aiPrompt": "3:2 landscape. A couple in their forties seen from three-quarter behind, faces turned away, sitting at a desk opposite a bank advisor whose face is out of frame, in a bright, sober office of a French bank branch, a bridging loan simulation printout lying at an angle, a calculator and a pen on the desk, a glass partition and blurred street behind. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue in a chair and a folder, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -347,7 +347,7 @@
       "alt": "Simulateur en ligne sur tablette à côté de l'avis de valeur d'un agent immobilier",
       "brief": "Sur la table de salle à manger d'un appartement français, une tablette affichant un graphique de fourchette de prix à côté d'un avis de valeur imprimé et relié, clés et lunettes posées à côté, lumière naturelle.",
       "stockKeywords": "tablet chart, printed report, real estate valuation, table",
-      "aiPrompt": "Realistic photo of a dining table in a French apartment with a tablet showing a price range chart next to a bound printed valuation report, keys and glasses nearby, natural light, no people, no readable text, no logo."
+      "aiPrompt": "Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop: on the dining table of a Haussmann-style Parisian apartment, a tablet displaying a simple price-range bar chart lies side by side with a bound printed valuation report, keys and reading glasses between them, herringbone parquet and a tall window softly blurred behind, no people, no legible figures. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue in the chart and report cover, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -356,7 +356,7 @@
         "caption": "Ni le simulateur ni l'avis de valeur d'un agent n'ont de valeur juridique : en cas de litige ou de succession conflictuelle, mieux vaut un expert ou un notaire.",
         "brief": "Agent immobilier vu de profil, tablette en main, dans le séjour lumineux d'un appartement ancien français avec parquet et moulures, en train de comparer l'écran à la pièce.",
         "stockKeywords": "real estate agent tablet, apartment visit, parquet floor",
-        "aiPrompt": "Realistic photo of a real estate agent seen from the side holding a tablet in the bright living room of an old French apartment with parquet floor and moldings, face not in close-up, no readable text, no logo."
+        "aiPrompt": "3:2 landscape. A real estate agent seen in profile at mid-distance, face turned toward the room and not identifiable, holding a tablet with a blurred estimation screen while looking up to compare it with the space, in the bright living room of an old apartment in Lyon with oak parquet, ceiling mouldings, a marble fireplace and tall French windows. Realistic editorial photography, full-frame 35 mm camera, soft natural daylight, warm neutral tones with discreet touches of blue in the agent's shirt, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/simulateur-en-ligne-ou-agent-immobilier/image-2.webp",
@@ -364,7 +364,7 @@
         "caption": "Une estimation en ligne suffit pour suivre son patrimoine, mais la visite devient indispensable dès qu'il faut fixer un prix de mise en vente.",
         "brief": "Personne assise dans le canapé d'un appartement français, vue par-dessus l'épaule, consultant sur une tablette une courbe d'évolution de prix, fenêtre et plantes en arrière-plan, lumière de fin de journée.",
         "stockKeywords": "tablet chart, sofa, home, price trend",
-        "aiPrompt": "Realistic over-the-shoulder photo of a person on a sofa in a French apartment looking at a price trend curve on a tablet, window and plants in background, late afternoon light, no visible face, no readable text, no logo."
+        "aiPrompt": "3:2 landscape. Over-the-shoulder view of a person relaxing on a linen sofa in a recent French apartment, holding a tablet that shows a gently rising price trend curve without legible figures, a mug on the armrest, a balcony window with a metal railing and potted plants behind, face not visible, calm routine check rather than a sale. Realistic editorial photography, full-frame 35 mm camera, soft late-afternoon natural light, warm neutral tones with discreet touches of blue in the curve and a cushion, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -421,7 +421,7 @@
       "alt": "Façade d'immeuble résidentiel en ville, pour estimer un bien immobilier loué",
       "brief": "Façade d'un immeuble résidentiel français, balcons avec plantes montrant des logements habités, vue depuis la rue, lumière de matinée, sans personnage.",
       "stockKeywords": "french apartment building, balconies, facade, rental",
-      "aiPrompt": "Realistic photo of a French residential apartment building facade with balconies, some with plants showing occupied homes, seen from the street, morning light, no people, no text, no logo."
+      "aiPrompt": "Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop: the facade of a French residential apartment building in pale stone with wrought-iron balconies, several with potted plants, a folded bicycle or drying linen showing homes occupied by tenants, one balcony with a blue parasol, seen from the street slightly from below, no people. Realistic editorial photography, full-frame 35 mm camera, soft morning natural light, warm neutral tones with discreet touches of blue in the parasol and sky, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -430,7 +430,7 @@
         "caption": "L'acquéreur d'un logement occupé reprend le bail en l'état, avec son loyer et sa date d'échéance, et ne peut donc pas y emménager rapidement.",
         "brief": "Séjour d'un deux-pièces français visiblement habité : canapé, livres, plantes, table avec une tasse, sans personne, cadrage depuis l'entrée, lumière naturelle.",
         "stockKeywords": "lived-in apartment, living room, rental flat",
-        "aiPrompt": "Realistic photo of a lived-in living room in a small French two-room apartment, sofa, books, plants, table with a cup, no people, shot from the doorway, natural light, no text, no logo."
+        "aiPrompt": "3:2 landscape. View from the doorway into the lived-in living room of a small French two-room rental apartment: a grey sofa with a throw, a bookshelf of paperbacks, houseplants, a small round table with a cup, a jacket on a chair, a white panel radiator under a window with a Juliet balcony, everyday belongings showing a tenant at home, no people. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue in a cushion and a vase, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/estimer-bien-immobilier-loue/image-2.webp",
@@ -438,7 +438,7 @@
         "caption": "Le congé pour vendre doit parvenir au locataire au moins six mois avant l'échéance du bail vide, et il vaut offre de vente à son profit.",
         "brief": "Enveloppe de lettre recommandée avec avis de réception posée sur un contrat de bail imprimé, stylo et lunettes à côté, sur un bureau en bois, lumière douce.",
         "stockKeywords": "registered letter, lease contract, desk, envelope",
-        "aiPrompt": "Realistic photo of a registered mail envelope with acknowledgment slip lying on a printed lease contract, pen and glasses nearby, on a wooden desk, soft light, no readable text, no logo."
+        "aiPrompt": "3:2 landscape. Close-up on a wooden desk: a French registered-mail envelope with its pale acknowledgment-of-receipt card lying on a printed residential lease contract, both seen at a slant so no writing is legible, a pen and folded reading glasses beside them, a house key nearby, no people. Realistic editorial photography, full-frame 35 mm camera, soft natural window light, warm neutral tones with discreet touches of blue in the pen and envelope edge, moderate depth of field with the background falling away, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -495,7 +495,7 @@
       "alt": "Vitrine d'un local commercial en rez-de-chaussée dans une rue commerçante de centre-ville",
       "brief": "Vitrine d'un commerce indépendant sans enseigne lisible au rez-de-chaussée d'un immeuble ancien, dans une rue piétonne de centre-ville français, passants flous au loin, lumière de matinée.",
       "stockKeywords": "shop front, french high street, retail storefront",
-      "aiPrompt": "Realistic photo of an independent shop front with no readable sign on the ground floor of an old building in a pedestrian street of a French town center, blurred distant passers-by, morning light, no text, no logo."
+      "aiPrompt": "Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop: the ground-floor shop front of an independent boutique in an old limestone building on a pedestrian street of a French town centre such as Bordeaux, large display window in a painted wooden frame, blank sign band without lettering, apartments with wrought-iron balconies above, distant passers-by blurred. Realistic editorial photography, full-frame 35 mm camera, soft morning natural light, warm neutral tones with discreet touches of blue in the painted shop frame, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -504,7 +504,7 @@
         "caption": "Le taux de capitalisation dépend d'abord de l'emplacement : autour de 4 à 6 % en centre-ville recherché, de 7 à 10 % en périphérie.",
         "brief": "Enfilade de boutiques en rez-de-chaussée d'immeubles anciens le long d'une rue commerçante de centre-ville français, vitrines variées sans marque identifiable, perspective de rue, lumière de fin de matinée.",
         "stockKeywords": "shopping street France, storefronts, town center retail",
-        "aiPrompt": "Realistic photo of a row of ground-floor shops in old buildings along a French town center shopping street, varied storefronts with no identifiable brands, street perspective, late morning light, no readable text, no logo."
+        "aiPrompt": "3:2 landscape. Street-level perspective down a busy, well-kept shopping street in a French town centre, a long row of ground-floor shops beneath four-storey old stone and rendered buildings, varied storefronts and canvas awnings with no identifiable brands or lettering, stone paving, a few blurred silhouettes in the distance, prime retail location feel. Realistic editorial photography, full-frame 35 mm camera, soft late-morning natural light, warm neutral tones with discreet touches of blue in an awning and the sky, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/estimer-local-commercial-bien-professionnel/image-2.webp",
@@ -512,7 +512,7 @@
         "caption": "Loué par bail professionnel, sans droit au renouvellement ni indemnité d'éviction, un cabinet libéral offre un revenu moins sécurisé qu'un commerce.",
         "brief": "Salle d'attente sobre d'un cabinet de profession libérale en ville, chaises, plante, porte de bureau entrouverte, sans personne ni plaque lisible, lumière naturelle.",
         "stockKeywords": "waiting room, professional office, practice interior",
-        "aiPrompt": "Realistic photo of a sober waiting room in a French professional practice office, chairs, a plant, a half-open office door, no people, no readable sign, natural light, no text, no logo."
+        "aiPrompt": "3:2 landscape. The sober waiting room of a liberal profession practice in an office building in a French city: a row of simple chairs, a large green plant, a low table with blurred magazines, light wooden floor, a half-open office door revealing a desk and a bookshelf, no people, no nameplate or readable sign. Realistic editorial photography, full-frame 35 mm camera, soft natural light from a tall window, warm neutral tones with discreet touches of blue in the chair upholstery, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -569,7 +569,7 @@
       "alt": "Propriétaire devant sa maison française en vente, hésitant entre vendre seul ou avec une agence",
       "brief": "Maison individuelle française en pierre ou enduit clair avec volets bois, jardin entretenu, propriétaire de dos sur l'allée qui regarde la façade. Lumière douce de fin d'après-midi, ambiance calme de lotissement ou de bourg.",
       "stockKeywords": "french house, homeowner, house for sale, suburban home",
-      "aiPrompt": "Realistic photo of a traditional French detached house with light rendered walls and wooden shutters, small tidy garden, a homeowner seen from behind standing on the driveway looking at the facade, soft late afternoon light, natural colors, no text, no logo, no recognizable face"
+      "aiPrompt": "A homeowner seen from behind stands on the gravel driveway of a traditional French detached house in a quiet stone village, light lime-rendered walls, soft blue painted wooden shutters, terracotta roof tiles, a small tidy garden with lavender; one hand in a pocket, pausing as if weighing whether to sell alone or with a professional. Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop. Realistic editorial photography, full-frame 35mm camera, soft late-afternoon natural light, warm neutral tones with the discreet blue of the shutters, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -578,7 +578,7 @@
         "caption": "Le dossier de diagnostics doit être annexé à la promesse : mieux vaut le réunir avant même de publier l'annonce.",
         "brief": "Table de cuisine française avec une pile de documents (rapports de diagnostics, DPE, plan), un ordinateur portable ouvert et une tasse de café ; mains d'un propriétaire qui trie les feuilles. Lumière naturelle du matin.",
         "stockKeywords": "paperwork, kitchen table, documents, home sale",
-        "aiPrompt": "Realistic photo of hands sorting real estate documents and technical reports on a wooden kitchen table in a French home, open laptop and coffee cup nearby, morning daylight from a window, shallow depth of field, no readable text, no logo, no face"
+        "aiPrompt": "Three-quarter overhead view of a homeowner's hands sorting a pile of property diagnostic reports, an energy performance booklet and a folded floor plan on a worn oak kitchen table in a French home, gathering the sale file before listing; an open laptop, a ceramic coffee cup and a blue cardboard folder nearby, terracotta floor tiles and a window behind. Papers blurred or seen at an angle, no face. 3:2 landscape. Realistic editorial photography, full-frame 35mm camera, soft morning natural light, warm neutral tones with a discreet touch of blue, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/vendre-sans-agence-ou-avec-professionnel/image-2.webp",
@@ -586,7 +586,7 @@
         "caption": "Sous la loi Hoguet, l'agent n'est rémunéré qu'une fois la vente conclue, en pratique à la signature de l'acte définitif.",
         "brief": "Visite d'un séjour lumineux dans une maison française : une conseillère montre la pièce à un couple, tous vus de dos ou de trois quarts. Parquet, grandes fenêtres, décoration sobre.",
         "stockKeywords": "real estate agent, house viewing, couple, living room",
-        "aiPrompt": "Realistic photo of a real estate agent showing a bright living room to a couple during a house viewing in a French home, people seen from behind or three-quarter view, wooden floor, large windows, neutral decor, natural light, no text, no logo, no recognizable face"
+        "aiPrompt": "During a house viewing, a female real estate advisor guides a couple of buyers through the bright living room of a French house, all three seen from behind or in soft three-quarter view, the advisor gesturing toward tall French windows with old brass espagnolette handles; oak parquet, plain white walls, sober furniture, a pale blue linen cushion on the sofa. Faces never visible. 3:2 landscape. Realistic editorial photography, full-frame 35mm camera, soft natural daylight, warm neutral tones with a discreet touch of blue, moderate depth of field, calm professional and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -643,7 +643,7 @@
       "alt": "Propriétaire recevant une conseillère immobilière dans son salon pour choisir l'agence qui vendra son bien",
       "brief": "Rendez-vous dans le salon d'un appartement français ancien : une conseillère et un propriétaire assis autour d'une table basse, documents posés devant eux, personnes vues de profil ou de dos. Lumière naturelle, ambiance sérieuse et cordiale.",
       "stockKeywords": "real estate meeting, homeowner, agent, living room",
-      "aiPrompt": "Realistic photo of a homeowner meeting a real estate advisor in the living room of an old French apartment, both seated around a coffee table with documents, seen in profile or from behind, moldings and wooden floor, soft daylight, no text, no logo, no recognizable face"
+      "aiPrompt": "In the living room of a Haussmann-era Parisian apartment, a homeowner receives a female real estate advisor: both seated around a low coffee table with a few documents and a tablet, the homeowner seen from behind over the shoulder, the advisor in softly blurred profile, attentive and serious; ornate moldings, marble fireplace, herringbone parquet, a muted blue velvet armchair. Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop. Realistic editorial photography, full-frame 35mm camera, soft natural window light, warm neutral tones with a discreet touch of blue, moderate depth of field, cordial and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -652,7 +652,7 @@
         "caption": "Un avis de valeur sérieux s'appuie sur des ventes conclues et datées du secteur, pas sur des biens encore en vente.",
         "brief": "Vue plongeante sur une table où sont étalés trois dossiers d'avis de valeur différents, un stylo et une calculatrice ; une main pointe un chiffre. Intérieur français, lumière douce.",
         "stockKeywords": "comparing documents, property valuation, desk, calculator",
-        "aiPrompt": "Realistic overhead photo of three different property valuation reports spread on a table with a pen and a calculator, a hand pointing at a page, French home interior, soft natural light, no readable text, no logo, no face"
+        "aiPrompt": "Overhead flat view of a light wooden dining table where a seller compares three different agency property valuation reports laid side by side, each with small blurred comparison tables and photos of sold homes; a hand points at a figure on one page, a blue pen and a calculator beside them, a French home interior hinted at the edges. All text blurred and unreadable, no face. 3:2 landscape. Realistic editorial photography, full-frame 35mm camera, soft natural light, warm neutral tones with a discreet touch of blue, moderate depth of field, focused and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/choisir-agence-immobiliere-vendre/image-2.webp",
@@ -660,7 +660,7 @@
         "caption": "Le barème doit être affiché TTC en vitrine et préciser qui paie : c'est l'un des défauts les plus relevés par la DGCCRF.",
         "brief": "Vitrine d'agence immobilière dans une rue de centre-ville française (pavés, façades en pierre), fiches d'annonces avec photos de maisons, texte illisible. Passant flou en arrière-plan, lumière de journée.",
         "stockKeywords": "real estate agency window, french street, property listings",
-        "aiPrompt": "Realistic photo of a real estate agency shop window on a French town center street with stone facades, property listing sheets with house photos displayed, unreadable text, blurred passerby in background, daylight, no logo, no brand name, no recognizable face"
+        "aiPrompt": "Street-level view of a small real estate agency shop window on a cobbled pedestrian street in a French town center, pale limestone facades and wrought-iron balconies above; behind the glass, rows of property listing sheets with house photos and a small printed fee schedule card, all text unreadable; a plain unbranded fascia, a blurred passerby walking past. 3:2 landscape. Realistic editorial photography, full-frame 35mm camera, soft daytime natural light, warm neutral tones with a discreet touch of blue in a window frame, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -717,7 +717,7 @@
       "alt": "Conseiller immobilier faisant visiter une maison française à un couple qui compare agence et mandataire",
       "brief": "Entrée d'une maison française typique (porte en bois, carrelage ancien) où un conseiller accueille un couple pour une visite ; personnes de dos ou de trois quarts. Lumière naturelle chaleureuse.",
       "stockKeywords": "real estate advisor, house visit, couple, french home",
-      "aiPrompt": "Realistic photo of a real estate advisor welcoming a couple at the entrance of a typical French house with a wooden door and old tiled floor, people seen from behind or three-quarter view, warm natural light, no text, no logo, no recognizable face"
+      "aiPrompt": "At the open front door of a typical French house, a real estate advisor welcomes a couple for a viewing, the three people seen from behind and in soft three-quarter view, faces hidden; a painted blue wooden door, an entrance hall with old patterned cement floor tiles, a stone threshold and potted geranium. Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop. Realistic editorial photography, full-frame 35mm camera, soft warm natural light, warm neutral tones with the discreet blue of the door, moderate depth of field, welcoming and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -726,7 +726,7 @@
         "caption": "Une agence est dirigée par le titulaire de la carte « Transactions », délivrée par la CCI et à renouveler tous les trois ans.",
         "brief": "Façade d'une agence immobilière de quartier au rez-de-chaussée d'un immeuble français en pierre de taille, vitrine éclairée avec annonces, enseigne neutre sans nom lisible. Fin de journée.",
         "stockKeywords": "real estate office, storefront, french building",
-        "aiPrompt": "Realistic photo of a neighborhood real estate agency storefront on the ground floor of a French cut-stone building, lit window with property listings, neutral sign without readable name, early evening, no logo, no text, no people in close-up"
+        "aiPrompt": "Frontal view of a neighborhood real estate agency occupying the ground floor of a French cut-stone apartment building, large lit shop window displaying neat rows of property listings, a plain blank fascia with no readable name, a closed wooden carriage door next to it, empty sidewalk with a few distant blurred silhouettes. The image conveys an established storefront agency. 3:2 landscape. Realistic editorial photography, full-frame 35mm camera, soft early-evening natural light at blue hour, warm neutral tones with discreet blue in the dusk sky, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/agence-traditionnelle-ou-mandataire-immobilier/image-2.webp",
@@ -734,7 +734,7 @@
         "caption": "Signé à domicile, un mandat doit prévoir 14 jours de rétractation et un formulaire dédié, que l'on traite avec une agence ou un mandataire.",
         "brief": "Table de salon d'un particulier : un conseiller et un vendeur penchés sur un contrat, stylo en main, vue sur les mains et les documents. Intérieur français simple, lumière douce.",
         "stockKeywords": "signing contract, home, real estate mandate, hands",
-        "aiPrompt": "Realistic close-up photo of a seller and a real estate advisor reviewing a sales contract at a living room table in a French home, hands holding a pen over the document, soft daylight, no readable text, no logo, no face"
+        "aiPrompt": "Close-up at a living room table in a modest French home: the hands of a seller and an independent real estate advisor leaning over a multi-page sales mandate, one hand holding a pen above the page, a separate detachable withdrawal form lying beside the contract, reading glasses and a blue ceramic mug nearby. Papers blurred or seen at an angle, no face visible. 3:2 landscape. Realistic editorial photography, full-frame 35mm camera, soft natural daylight from the side, warm neutral tones with a discreet touch of blue, moderate depth of field, careful and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -791,7 +791,7 @@
       "alt": "Propriétaire relisant un mandat de vente immobilière avant de choisir entre mandat simple et exclusif",
       "brief": "Gros plan sur un contrat posé sur une table en bois, stylo à côté, mains d'un propriétaire qui tient la page ; trousseau de clés et tasse en arrière-plan. Intérieur français, lumière naturelle latérale.",
       "stockKeywords": "contract, signing, house keys, real estate",
-      "aiPrompt": "Realistic photo of a homeowner's hands holding a real estate sales mandate on a wooden table, pen beside it, house keys and a cup in the background, French interior, side natural light, no readable text, no logo, no face"
+      "aiPrompt": "Close-up of a homeowner's hands holding a single page of a real estate sales mandate above a warm wooden table, rereading it before choosing; a pen lying beside it, a set of house keys with a blue leather key tag and a cup of coffee softly blurred behind. No face. Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop. Realistic editorial photography, full-frame 35mm camera, soft natural side light from a French window, warm neutral tones with a discreet touch of blue, moderate depth of field, calm and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -800,7 +800,7 @@
         "caption": "Confié à trois agences, un même bien peut s'afficher à trois prix différents sur les portails, ce qui invite l'acheteur à négocier.",
         "brief": "Personne de dos devant un ordinateur portable affichant une grille d'annonces immobilières avec des photos de salons similaires, texte illisible. Bureau à la maison, soirée, lampe allumée.",
         "stockKeywords": "browsing listings, laptop, property search, home office",
-        "aiPrompt": "Realistic photo of a person seen from behind browsing a grid of property listings on a laptop, several similar living room photos on screen, unreadable text, home office at evening with a desk lamp, no logo, no recognizable face"
+        "aiPrompt": "Over-the-shoulder view of a person seen from behind at a desk in a Parisian apartment, browsing a property website on a laptop: the screen shows a grid of listings where the same bright living room appears three times in slightly different photos, suggesting one apartment listed by several agencies at different prices; all text unreadable; a desk lamp glowing, zinc rooftops through the window at dusk. 3:2 landscape. Realistic editorial photography, full-frame 35mm camera, soft evening light, warm neutral tones with a discreet touch of blue from the twilight sky, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/mandat-simple-ou-mandat-exclusif/image-2.webp",
@@ -808,7 +808,7 @@
         "caption": "Une fois les trois premiers mois écoulés, un recommandé avec quinze jours de préavis suffit pour mettre fin à l'exclusivité.",
         "brief": "Enveloppe de lettre recommandée française avec son avis de réception, posée sur un contrat et un calendrier de bureau. Cadrage serré, lumière neutre, aucun texte lisible.",
         "stockKeywords": "registered letter, envelope, contract, calendar",
-        "aiPrompt": "Realistic close-up photo of a French registered mail envelope with its acknowledgment of receipt card lying on a contract next to a desk calendar, tight framing, neutral light, no readable text, no logo"
+        "aiPrompt": "Tight still life on a light desk: a French registered letter envelope with its small attached acknowledgment-of-receipt card resting on top of an exclusive sales mandate, next to a desk calendar with a blue spiral binding and a few days softly marked, a fountain pen across the corner. Envelope markings and papers blurred, nothing readable. The image evokes ending an exclusivity after three months with fifteen days notice. 3:2 landscape. Realistic editorial photography, full-frame 35mm camera, soft neutral natural light, warm neutral tones with a discreet touch of blue, moderate depth of field, orderly and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -865,7 +865,7 @@
       "alt": "Calcul des honoraires d'agence immobilière avec calculatrice, mandat et clés de maison",
       "brief": "Nature morte sur un bureau : calculatrice, contrat de mandat, stylo et trousseau de clés de maison, main qui tape un calcul. Intérieur français lumineux, tons neutres.",
       "stockKeywords": "calculator, real estate fees, contract, house keys",
-      "aiPrompt": "Realistic photo of a hand typing on a calculator next to a real estate contract, a pen and a set of house keys on a desk, bright French interior, neutral tones, no readable text, no logo, no face"
+      "aiPrompt": "Still life on a desk in a bright French apartment: a hand typing on a large calculator next to a real estate sales mandate, a pen and a set of house keys, the composition clearly centered on the calculation of agency fees; a blue notebook and a small plant softly blurred in the background. Papers unreadable, no face. Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop. Realistic editorial photography, full-frame 35mm camera, soft natural daylight, warm neutral tones with a discreet touch of blue, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -874,7 +874,7 @@
         "caption": "Selon que les tranches du barème se cumulent ou non, la commission sur une maison à 300 000 € peut varier de 4 000 €.",
         "brief": "Bloc-notes avec des colonnes de chiffres manuscrits flous, calculatrice et barème imprimé à côté ; main tenant un crayon. Table de cuisine française, lumière du jour.",
         "stockKeywords": "calculation, notepad, calculator, fees",
-        "aiPrompt": "Realistic photo of a hand with a pencil over a notepad with blurred handwritten figures, a calculator and a printed fee schedule nearby, French kitchen table, daylight, no readable text, no logo, no face"
+        "aiPrompt": "Close-up of a homeowner's hand holding a pencil over a paper notepad filled with blurred handwritten figures arranged in stepped columns, as if testing a tiered agency fee scale for a house sale; a calculator and a printed fee schedule lie beside it on a French kitchen table with checkered linen and a blue enamel coffee pot. All writing blurred and unreadable, no face. 3:2 landscape. Realistic editorial photography, full-frame 35mm camera, soft natural daylight, warm neutral tones with a discreet touch of blue, moderate depth of field, focused and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/honoraires-agence-immobiliere-calcul/image-2.webp",
@@ -882,7 +882,7 @@
         "caption": "Reportage photo, visites qualifiées et dossier complet font partie de ce qu'une commission moyenne de 5,78 % TTC doit couvrir.",
         "brief": "Photographe sur trépied dans le séjour d'un appartement français ancien (parquet, moulures, grandes fenêtres), vu de dos en train de cadrer la pièce. Lumière naturelle abondante.",
         "stockKeywords": "real estate photographer, tripod, living room, interior",
-        "aiPrompt": "Realistic photo of a real estate photographer seen from behind using a camera on a tripod in the living room of an old French apartment with parquet floor, moldings and tall windows, abundant natural light, no text, no logo, no recognizable face"
+        "aiPrompt": "A real estate photographer seen from behind frames a living room with a full-frame camera on a tripod, carrying out the professional photo shoot before a sale; old French apartment with herringbone parquet, ornate ceiling moldings, tall double windows flooding the room with light, sober staged furniture and a pale blue throw on the sofa. Face never visible. 3:2 landscape. Realistic editorial photography, full-frame 35mm camera, abundant soft natural light, warm neutral tones with a discreet touch of blue, moderate depth of field, professional and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -939,7 +939,7 @@
       "alt": "Maison individuelle française avec jardin mise en vente, illustrant le délai de vente en 2026",
       "brief": "Maison individuelle française des années 1970-1990 (enduit beige, toit en tuiles, volets) avec jardin et portail, vue depuis la rue. Lumière dorée d'automne, feuilles au sol, ambiance paisible.",
       "stockKeywords": "french house, garden, autumn, residential street",
-      "aiPrompt": "Realistic photo of a French detached house with beige render, tiled roof and shutters, front garden and gate, seen from the street, golden autumn light with fallen leaves, peaceful atmosphere, no text, no sign, no logo, no people"
+      "aiPrompt": "A 1980s French detached house in a quiet suburban subdivision seen from the street: beige render, terracotta tile roof, wooden shutters, a front garden with a trimmed hedge and a low white metal gate, fallen autumn leaves on the lawn and path, evoking the months a sale takes. No sign, no people. Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop. Realistic editorial photography, full-frame 35mm camera, soft golden autumn natural light, warm neutral tones with discreet blue in a clear sky, moderate depth of field, peaceful and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -948,7 +948,7 @@
         "caption": "Rétractation de dix jours, condition de prêt et réponse de la mairie expliquent l'essentiel des trois mois entre compromis et acte.",
         "brief": "Bureau d'une étude notariale française : mains de vendeurs et d'acheteurs signant un compromis, dossier épais et stylo plume. Mobilier en bois sombre, lumière douce.",
         "stockKeywords": "notary, signing, property sale, contract",
-        "aiPrompt": "Realistic photo of hands signing a property sale agreement at a notary office desk in France, thick file and fountain pen, dark wood furniture, soft light, no readable text, no logo, no face"
+        "aiPrompt": "Close-up on the desk of a French notary office: the hands of sellers and buyers signing a preliminary sale agreement, a thick bound file, a fountain pen, a leather desk blotter in deep blue, dark polished wood furniture and shelves of archive boxes softly blurred behind. Documents seen at an angle, no readable text, no faces. 3:2 landscape. Realistic editorial photography, full-frame 35mm camera, soft natural light through a tall window, warm neutral tones with a discreet touch of blue, moderate depth of field, formal and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/combien-de-temps-vendre-maison/image-2.webp",
@@ -956,7 +956,7 @@
         "caption": "Les maisons anciennes ont perdu 1,3 % en un an : une estimation de 2021 ou 2022 conduit presque toujours à un prix trop haut.",
         "brief": "Grande maison ancienne ou longère en pierre dans un bourg rural français, volets fermés à moitié, herbe un peu haute, ciel gris clair. Ambiance d'attente, sans pancarte lisible.",
         "stockKeywords": "old stone house, rural france, countryside, village",
-        "aiPrompt": "Realistic photo of a large old stone house in a rural French village, shutters half closed, slightly overgrown grass, pale grey sky, quiet waiting atmosphere, no readable sign, no text, no logo, no people"
+        "aiPrompt": "A large old stone longère in a rural French village, on the market for several months: faded blue wooden shutters half closed, grass grown slightly too high, a weathered wooden gate and a quiet lane in front, no sign visible, a sense of waiting for buyers. No people. 3:2 landscape, slightly off-center composition. Realistic editorial photography, full-frame 35mm camera, soft diffuse light under a pale grey sky, warm neutral tones with the discreet faded blue of the shutters, moderate depth of field, calm and sober mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -1013,7 +1013,7 @@
       "alt": "Séjour lumineux d'un appartement ancien français avant sa revente par son propriétaire",
       "brief": "Séjour d'appartement ancien français (parquet en chevrons, moulures, fenêtres sur balcon filant), meublé sobrement, prêt pour une visite. Lumière naturelle du matin, ambiance claire et rangée.",
       "stockKeywords": "french apartment, living room, parquet, bright interior",
-      "aiPrompt": "Realistic photo of a bright living room in an old French apartment with herringbone parquet, moldings and tall windows opening onto a balcony, sober furniture, tidy and ready for a viewing, morning daylight, no text, no logo, no people"
+      "aiPrompt": "The bright living room of an old French apartment ready for resale, empty of people: herringbone oak parquet, ornate moldings, tall French windows opening onto a continuous wrought-iron balcony, sober furniture, a tidy coffee table with a single blue ceramic vase, a few neatly stacked folders on a sideboard. Clear central focus on the window light. Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop. Realistic editorial photography, full-frame 35mm camera, soft morning natural light, warm neutral tones with a discreet touch of blue, moderate depth of field, clear orderly and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -1022,7 +1022,7 @@
         "caption": "Sur 230 000 € empruntés à 3,5 % sur 25 ans, environ 6 000 € de capital seulement sont remboursés la première année.",
         "brief": "Tableau d'amortissement imprimé (colonnes de chiffres floues) posé sur un bureau avec calculatrice, surligneur et lunettes. Appartement français, lumière de fin de journée.",
         "stockKeywords": "loan schedule, mortgage, calculator, paperwork",
-        "aiPrompt": "Realistic photo of a printed mortgage amortization schedule with blurred columns of figures on a desk, with a calculator, a highlighter and glasses, French apartment, late afternoon light, no readable text, no logo, no face"
+        "aiPrompt": "Close-up of a printed mortgage amortization schedule with long blurred columns of figures, lying on a wooden desk in a French apartment, a calculator, a highlighter and a pair of blue-framed reading glasses resting on it, one line partly highlighted to suggest checking the capital repaid after a few years. All figures unreadable, no people. 3:2 landscape. Realistic editorial photography, full-frame 35mm camera, soft late-afternoon natural light raking across the paper, warm neutral tones with a discreet touch of blue, moderate depth of field, thoughtful and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/quand-revendre-appartement-sans-perdre-argent/image-2.webp",
@@ -1030,7 +1030,7 @@
         "caption": "Les appels de fonds d'un ravalement exigibles avant l'acte restent à la charge du vendeur, sauf répartition négociée dans le compromis.",
         "brief": "Immeuble ancien de centre-ville français partiellement couvert d'échafaudages et de bâches pour un ravalement, vu de la rue. Ciel clair, cadrage en contre-plongée légère.",
         "stockKeywords": "building facade renovation, scaffolding, apartment building, france",
-        "aiPrompt": "Realistic photo of an old French city apartment building partially covered with scaffolding and protective netting during facade renovation, seen from the street with a slight low angle, clear sky, no readable text, no logo, no people in close-up"
+        "aiPrompt": "An old French city-center apartment building with cream stone facade and wrought-iron balconies, partially covered with scaffolding and white protective netting during a facade renovation voted by the co-owners, seen from the street at a slight low angle, neighboring buildings with grey zinc roofs, no people in close-up. 3:2 landscape. Realistic editorial photography, full-frame 35mm camera, soft natural daylight, warm neutral tones with discreet blue in a clear sky, moderate depth of field, sober and reassuring mood, no oversaturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -1063,7 +1063,7 @@
       "alt": "Façade d'une maison de ville française avec un panneau à vendre au portail",
       "brief": "Maison de ville française en pierre claire, volets bois, petit portail en fer forgé où est accroché un panneau « À vendre » sans nom d'agence. Lumière douce de fin d'après-midi, cadrage horizontal depuis le trottoir.",
       "stockKeywords": "french house, for sale sign, townhouse, real estate france",
-      "aiPrompt": "Realistic photo of a French stone townhouse with wooden shutters and a small wrought iron gate holding a blank 'for sale' sign, soft late afternoon light, street-level horizontal framing, no text, no logo, no people"
+      "aiPrompt": "Street-level view of a narrow French townhouse in pale limestone in a quiet small-town street, tall wooden shutters, a small black wrought iron gate with a blank, unmarked for-sale panel hung on it, a few geraniums on the sill, late afternoon light raking the facade, suggesting an owner weighing whether to sell early. Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (pale blue shutters), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "keyTakeaways": [
       "Aucune loi n'impose de garder un logement cinq ans : ce délai n'est qu'un repère lié aux frais d'achat et au crédit.",
@@ -1078,7 +1078,7 @@
         "caption": "Sur un achat à 300 000 €, frais de notaire et de crédit dépassent 25 000 € avant même la première mensualité.",
         "brief": "Vue plongeante sur une table de cuisine en bois avec un tableau d'amortissement imprimé, une calculatrice, un stylo et une tasse de café. Lumière naturelle de fenêtre, ambiance studieuse et sobre.",
         "stockKeywords": "mortgage documents, calculator, home budget, loan paperwork",
-        "aiPrompt": "Realistic overhead photo of a wooden kitchen table with a printed mortgage amortization schedule, a calculator, a pen and a cup of coffee, natural window light, no readable text, no logo, no people"
+        "aiPrompt": "Overhead view of a worn oak kitchen table in a French apartment: a printed loan amortization schedule with dense blurred columns, a simple calculator, a ballpoint pen, a separate stack of notary fee papers seen at an angle, a cup of coffee, window light from the side, quiet studious atmosphere about the upfront cost of buying. 3:2 landscape composition. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (a blue ceramic coffee cup), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/revendre-avant-5-ans/image-2.webp",
@@ -1086,7 +1086,7 @@
         "caption": "En cas de mutation, de licenciement ou de décès, la banque ne peut pas facturer d'indemnités de remboursement anticipé liées à la vente.",
         "brief": "Séjour d'un appartement haussmannien ou ancien français, parquet en point de Hongrie, cartons de déménagement fermés empilés près d'une fenêtre haute. Lumière du matin, pièce à moitié vidée.",
         "stockKeywords": "moving boxes, apartment, relocation, parquet floor",
-        "aiPrompt": "Realistic photo of stacked closed cardboard moving boxes in a half-empty old French apartment living room with herringbone parquet and tall windows, morning light, no text, no logo, no people"
+        "aiPrompt": "Half-emptied living room of an old Parisian Haussmann-style apartment, herringbone parquet, ornate cornice, tall French windows with wrought iron guardrail, closed cardboard moving boxes stacked near the window, a rolled rug, a blurred silhouette seen from behind carrying a box in the doorway, morning light, evoking an unplanned move for a job transfer. 3:2 landscape composition. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (a blue tape roll on a box), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "faq": [
@@ -1137,7 +1137,7 @@
       "alt": "Maison individuelle française avec jardin en automne, prête à être mise en vente",
       "brief": "Pavillon français typique (enduit clair, toit en tuiles, volets) avec jardin entouré d'une haie, feuilles d'automne au sol, ciel dégagé. Plan large depuis la rue, lumière dorée d'octobre.",
       "stockKeywords": "french house, autumn, garden, suburban home",
-      "aiPrompt": "Realistic photo of a typical French detached house with light render, terracotta tile roof and shutters, garden with hedge and autumn leaves, clear sky, golden October light, wide street view, no text, no logo, no people"
+      "aiPrompt": "Wide street view of a typical French suburban pavilion with light ochre render, terracotta Roman tile roof and painted shutters, front garden behind a trimmed hedge, autumn leaves on the lawn, a small unbadged European hatchback in the driveway, clear October sky, golden light, the house looking ready to be put on the market. Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (a clear blue sky and shutters), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "keyTakeaways": [
       "Au deuxième trimestre 2026, les maisons anciennes ont perdu 1,3 % sur un an, davantage que les appartements.",
@@ -1152,7 +1152,7 @@
         "caption": "Quand le taux passe de 3,4 % à 4 %, un ménage qui rembourse 1 000 € par mois sur vingt ans perd environ 9 000 € de budget.",
         "brief": "Bureau d'une agence bancaire française sobre, un couple vu de trois quarts dos face à un conseiller qui montre un document de simulation. Lumière neutre, visages non identifiables.",
         "stockKeywords": "mortgage meeting, bank advisor, couple, loan simulation",
-        "aiPrompt": "Realistic photo of a couple seen from behind at a desk in a sober French bank office while an advisor points at a loan simulation document, neutral light, faces not visible, no text, no logo"
+        "aiPrompt": "Inside a sober French bank branch office, a couple seen from three-quarter back seated at a desk facing an advisor whose face is cropped out of frame, the advisor's hand pointing at a loan simulation printout with blurred figures, a monitor turned away, light wood and grey furniture, neutral daylight, conveying reduced borrowing capacity as rates rise. 3:2 landscape composition. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (a blue folder on the desk), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/bon-moment-vendre-maison-2026/image-2.webp",
@@ -1160,7 +1160,7 @@
         "caption": "À l'automne, les acheteurs encore en recherche ont souvent un projet mûr, face à moins de maisons concurrentes en vente.",
         "brief": "Jardin arrière d'une maison française en octobre, pelouse entretenue, arbre fruitier aux feuilles jaunes, terrasse en dalles avec salon de jardin. Lumière rasante de fin de journée.",
         "stockKeywords": "autumn garden, french house, backyard, fall season",
-        "aiPrompt": "Realistic photo of the back garden of a French house in October, tidy lawn, fruit tree with yellow leaves, stone-tiled terrace with garden furniture, low evening sunlight, no text, no logo, no people"
+        "aiPrompt": "Back garden of a French house in late October, neatly mowed lawn, an old apple tree with yellow leaves, a stone-slab terrace with a metal bistro table and two chairs, low raking evening sun through the branches, a few fallen apples, calm and welcoming, showing a house that still presents well in autumn. 3:2 landscape composition. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (a blue-grey painted garden chair), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "faq": [
@@ -1211,7 +1211,7 @@
       "alt": "Personne rédigeant une annonce immobilière sur un ordinateur portable dans un séjour",
       "brief": "Mains sur le clavier d'un ordinateur portable posé sur une table de séjour français, à côté d'un carnet de notes et d'un plan du logement. Arrière-plan flou d'une pièce lumineuse.",
       "stockKeywords": "writing listing, laptop, home office, real estate ad",
-      "aiPrompt": "Realistic photo of hands typing on a laptop on a living room table in a bright French home, notebook and floor plan beside it, blurred background, no readable text on screen, no logo, no face"
+      "aiPrompt": "Close-up of hands typing on a laptop on a wooden living room table in a bright French apartment, screen angled away and unreadable, an open notebook with blurred handwritten notes and a printed floor plan beside it, a pencil, softly blurred background of a sofa and tall window, focused writing atmosphere. Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (a blue notebook cover), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "keyTakeaways": [
       "La photo de tête doit montrer l'atout qui justifie le prix, et la première phrase un fait que les filtres ignorent.",
@@ -1226,7 +1226,7 @@
         "caption": "Sur un portail, l'acheteur décide de cliquer à partir d'une vignette, d'un prix et de quelques mots seulement.",
         "brief": "Main tenant un smartphone qui fait défiler une liste d'annonces de maisons avec vignettes photo, textes illisibles. Arrière-plan flou d'un canapé, lumière du soir.",
         "stockKeywords": "smartphone, property search, real estate app, browsing",
-        "aiPrompt": "Realistic photo of a hand holding a smartphone scrolling a list of house listings with photo thumbnails, text unreadable, blurred sofa background, evening light, no logo, no face"
+        "aiPrompt": "Tight shot of a hand holding a smartphone, the screen showing a scrolling list of house listing cards with photo thumbnails of French homes and blurred unreadable lines, thumb mid-scroll, background a softly blurred linen sofa and cushion, warm evening lamp light, capturing the split-second choice of which listing to open. 3:2 landscape composition. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (a blue cushion in the background), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/rediger-annonce-immobiliere-efficace/image-2.webp",
@@ -1234,7 +1234,7 @@
         "caption": "Lumière du jour, volets relevés, appareil à hauteur de poitrine : douze à vingt clichés bien faits suffisent.",
         "brief": "Appareil photo reflex sur trépied au premier plan, cadrant un séjour français rangé et lumineux, fenêtres ouvertes, parquet clair. Lumière naturelle abondante.",
         "stockKeywords": "real estate photography, camera tripod, bright living room",
-        "aiPrompt": "Realistic photo of a camera on a tripod in the foreground framing a tidy bright French living room with open windows and light parquet, abundant natural light, no text, no logo, no people"
+        "aiPrompt": "A DSLR camera on a tripod in the foreground, seen from behind at chest height, framing a tidy, bright French living room with light oak parquet, tall windows wide open and shutters folded back, no personal clutter, a single plant, abundant daylight, illustrating careful listing photography. 3:2 landscape composition. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (shutters painted pale blue), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "faq": [
@@ -1285,7 +1285,7 @@
       "alt": "Séjour épuré et lumineux préparé en home staging avant la vente d'une maison",
       "brief": "Séjour d'une maison française dépersonnalisé : canapé clair orienté vers la fenêtre, plaid, plante verte, table basse dégagée, murs blancs. Lumière naturelle douce, aucun objet personnel.",
       "stockKeywords": "home staging, bright living room, minimalist interior",
-      "aiPrompt": "Realistic photo of a decluttered French house living room staged for sale, light sofa facing the window, throw blanket, green plant, empty coffee table, white walls, soft natural light, no text, no logo, no people"
+      "aiPrompt": "Decluttered, depersonalized living room of a French house staged for sale: a light linen sofa facing a tall window, folded throw, one large green plant, a clear low coffee table, bare white walls, oak floor, nothing personal, soft natural light, airy and easy to project oneself into, clearly readable as a thumbnail. Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (a soft blue throw blanket), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "keyTakeaways": [
       "Le home staging accélère surtout la vente et améliore les visites ; son effet sur le prix final reste modeste.",
@@ -1300,7 +1300,7 @@
         "caption": "Séjour, cuisine et chambre principale ouvrent l'annonce : ce sont les trois pièces à préparer en premier.",
         "brief": "Cuisine française simple et un peu datée mais impeccable, plans de travail presque vides, un bol de fruits, électroménager rangé. Lumière de fenêtre latérale.",
         "stockKeywords": "clean kitchen, empty countertop, home staging, tidy",
-        "aiPrompt": "Realistic photo of a simple slightly dated but spotless French kitchen, nearly empty countertops with a fruit bowl, appliances put away, side window light, no text, no logo, no people"
+        "aiPrompt": "A simple, slightly dated but spotless French kitchen, beige tiled splashback, laminate worktops almost entirely clear except a bowl of fresh fruit, appliances put away, gleaming sink, a small window with side light, an orderly kitchen ready for viewings and listing photos. 3:2 landscape composition. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (a blue tea towel on the oven handle), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/home-staging-valoriser-bien/image-2.webp",
@@ -1308,7 +1308,7 @@
         "caption": "Repeindre les murs marqués coûte peu ; pour une cuisine ou une salle de bains, un devis d'artisan à montrer suffit.",
         "brief": "Rouleau et bac de peinture blanche posés au sol sur une bâche, devant un mur fraîchement repeint en blanc cassé dans une chambre vide. Lumière douce.",
         "stockKeywords": "paint roller, fresh paint, white wall, home renovation",
-        "aiPrompt": "Realistic photo of a paint roller and tray of white paint on a drop cloth in front of a freshly painted off-white wall in an empty bedroom, soft light, no text, no logo, no people"
+        "aiPrompt": "Empty bedroom in a French house with a freshly repainted off-white wall, a paint roller resting on a tray of white paint on a canvas drop cloth on the floor, masking tape on the skirting board, a closed paint tin, soft daylight, showing an inexpensive visible fix rather than heavy renovation. 3:2 landscape composition. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (blue masking tape), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "faq": [
@@ -1355,7 +1355,7 @@
       "alt": "Maison française avec un panneau à vendre défraîchi, en vente depuis plusieurs mois",
       "brief": "Maison individuelle française aux volets fermés, panneau « À vendre » un peu délavé fixé au grillage, ciel gris d'automne. Plan moyen depuis la rue, ambiance d'attente sans dramatisation.",
       "stockKeywords": "house for sale, faded sign, french house, unsold home",
-      "aiPrompt": "Realistic photo of a French detached house with closed shutters and a slightly faded blank 'for sale' sign on the fence, grey autumn sky, medium shot from the street, no text, no logo, no people"
+      "aiPrompt": "Medium street shot of a French detached house in a residential lotissement, cream render, closed roller shutters, a slightly sun-faded blank for-sale panel tied to the green wire fence, some fallen leaves on the path, grey autumn sky, a quiet waiting mood without drama, house clearly readable in the center. Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (faded blue-grey shutters), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "keyTakeaways": [
       "Sans offre sérieuse après quatre mois là où les biens comparables partent en deux ou trois, il faut agir.",
@@ -1370,7 +1370,7 @@
         "caption": "Un prix calé sur ses propres besoins plutôt que sur les ventes comparables bloque la plupart des dossiers.",
         "brief": "Table avec plusieurs fiches d'annonces imprimées de maisons, surlignées, un stylo et une tasse ; mains d'un propriétaire qui compare. Lumière de lampe de bureau, ambiance de réflexion.",
         "stockKeywords": "comparing prices, house listings, paperwork, pricing",
-        "aiPrompt": "Realistic photo of a table with several printed house listing sheets with highlighted prices, a pen and a mug, hands comparing them, desk lamp light, no readable text, no logo, no face"
+        "aiPrompt": "Close view of a dining table where an owner's hands, face out of frame, compare several printed house listing sheets with blurred photos and highlighted price zones, a pen, a mug, a desk lamp casting warm pooled light in the evening, a thoughtful mood about setting price against comparable sales. 3:2 landscape composition. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (a blue highlighter), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/maison-qui-ne-se-vend-pas-erreurs/image-2.webp",
@@ -1378,7 +1378,7 @@
         "caption": "Deux ou trois remarques identiques recueillies après les visites désignent presque toujours ce qui bloque la vente.",
         "brief": "Couple vu de dos entrant dans le séjour d'une maison française, une professionnelle légèrement en retrait tenant un dossier. Lumière naturelle, visages non visibles.",
         "stockKeywords": "house viewing, real estate visit, couple, agent",
-        "aiPrompt": "Realistic photo of a couple seen from behind entering the living room of a French house during a viewing, a real estate professional slightly behind holding a folder, natural light, faces not visible, no text, no logo"
+        "aiPrompt": "A couple seen from behind stepping into the living room of a French house during a viewing, pausing and looking around, a female estate agent slightly behind and out of focus holding a folder, faces not visible, furnished room with tall windows, natural light, capturing the on-site impression that decides an offer. 3:2 landscape composition. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (the agent's blue folder), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "faq": [
@@ -1425,7 +1425,7 @@
       "alt": "Vendeur examinant plusieurs offres d'achat écrites pour son bien immobilier",
       "brief": "Bureau ou table de séjour avec trois offres d'achat écrites étalées côte à côte, un stylo et des lunettes ; mains d'un vendeur qui les compare. Lumière naturelle, ambiance calme et sérieuse.",
       "stockKeywords": "purchase offers, documents, home sale, decision",
-      "aiPrompt": "Realistic photo of three written purchase offer letters laid side by side on a table with a pen and reading glasses, hands of a seller comparing them, natural light, no readable text, no logo, no face"
+      "aiPrompt": "Three handwritten purchase offer letters laid side by side on a wooden table, seen at a low angle so writing stays blurred, reading glasses and a fountain pen between them, a seller's hands resting on the middle one, face out of frame, calm natural light, a serious moment of choice, layout simple and readable at thumbnail size. Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (a blue pen), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "keyTakeaways": [
       "Une offre au prix de l'annonce n'oblige pas le vendeur, mais accepter une offre ferme, même par e-mail, l'engage.",
@@ -1440,7 +1440,7 @@
         "caption": "Une offre plus élevée appuyée sur une simple simulation de prêt peut coûter bien plus qu'elle ne rapporte si elle échoue.",
         "brief": "Trois chemises cartonnées ouvertes contenant offres et attestations bancaires, post-it de couleur différents sur chacune, surligneur. Vue plongeante, lumière douce.",
         "stockKeywords": "document comparison, folders, financing proof, offers",
-        "aiPrompt": "Realistic overhead photo of three open cardboard folders containing offer letters and bank certificates, each marked with a different colored sticky note, a highlighter, soft light, no readable text, no logo, no people"
+        "aiPrompt": "Overhead view of three open cardboard document folders on a desk, each holding a purchase offer and bank financing letters with blurred lines, a different colored sticky note on each folder, a yellow highlighter, a paperclip pile, soft diffuse light, a methodical comparison beyond the price line. 3:2 landscape composition. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (one blue sticky note), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/gerer-plusieurs-offres-achat/image-2.webp",
@@ -1448,7 +1448,7 @@
         "caption": "Une fois l'avant-contrat signé, l'acquéreur garde dix jours pour se rétracter : ne fermez pas trop vite les autres pistes.",
         "brief": "Gros plan sur une main qui signe un document sur un bureau en bois d'étude notariale française, stylo plume, dossier ouvert. Lumière chaude, visages hors champ.",
         "stockKeywords": "signing contract, notary, real estate agreement, pen",
-        "aiPrompt": "Realistic close-up photo of a hand signing a document on a wooden desk in a French notary office, fountain pen, open folder, warm light, faces out of frame, no readable text, no logo"
+        "aiPrompt": "Close-up of a hand signing a preliminary sale contract with a fountain pen on a polished wooden desk in a traditional French notary office, open legal folder, document seen at an angle so nothing is readable, a brass desk lamp and leather blotter, faces out of frame, warm light. 3:2 landscape composition. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (a blue ink fountain pen), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "faq": [
@@ -1500,7 +1500,7 @@
       "alt": "Diagnostiqueur immobilier réalisant les diagnostics obligatoires dans une maison avant la vente",
       "brief": "Diagnostiqueur vu de dos ou de profil, tablette en main, inspectant le séjour d'une maison française ancienne, mètre laser posé sur une table. Lumière naturelle, ambiance professionnelle.",
       "stockKeywords": "home inspection, inspector, tablet, house survey",
-      "aiPrompt": "Realistic photo of a home inspector seen from behind holding a tablet while inspecting the living room of an old French house, laser measure on a table, natural light, face not visible, no text, no logo"
+      "aiPrompt": "A property diagnostician seen from behind, tablet in hand, inspecting the living room of an old French stone house with exposed beams, terracotta tile floor and a cast-iron radiator, a laser distance meter on the table, natural light, professional and calm, clearly readable figure centered in the frame. Wide 1.91:1 landscape, subject centered with breathing room on the sides so it survives a square crop. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (the inspector's blue work jacket), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "keyTakeaways": [
       "Seuls les DPE établis depuis juillet 2021 restent valables ; une attestation ADEME gratuite intègre le nouveau calcul de 2026.",
@@ -1515,7 +1515,7 @@
         "caption": "Hormis l'état des risques, que le vendeur peut remplir lui-même, chaque diagnostic exige un professionnel certifié.",
         "brief": "Mains d'un technicien avec testeur électrique devant un tableau électrique domestique ancien dans un cellier français. Éclairage de lampe frontale ou de plafonnier, cadrage serré.",
         "stockKeywords": "electrical inspection, fuse box, technician, home diagnosis",
-        "aiPrompt": "Realistic close-up photo of a technician's hands using an electrical tester on an old domestic fuse box in a French utility room, ceiling light, tight framing, no text, no logo, no face"
+        "aiPrompt": "Tight close-up of a certified technician's gloved hands holding an electrical tester against an old domestic French electrical panel with circuit breakers and a grey meter, in a whitewashed cellier utility room, overhead ceiling light, faces out of frame, conveying a professional diagnostic. 3:2 landscape composition. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (a blue tester body), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/diagnostics-immobiliers-obligatoires-vente-2026/image-2.webp",
@@ -1523,7 +1523,7 @@
         "caption": "Depuis juillet 2026, la carte des argiles classe 55 % de la métropole en exposition moyenne ou forte.",
         "brief": "Mur de façade enduit d'une maison française présentant une fissure en escalier partant d'un angle de fenêtre, sol argileux sec au pied du mur. Lumière d'été rasante.",
         "stockKeywords": "wall crack, facade, clay soil, subsidence",
-        "aiPrompt": "Realistic photo of the rendered facade of a French house with a stair-step crack running from a window corner, dry cracked clay soil at the base of the wall, low summer light, no text, no logo, no people"
+        "aiPrompt": "Rendered facade of a French single-storey house showing a stair-step crack running diagonally from the corner of a window down the wall, dry, cracked clay soil at the foot of the wall, a small flowerbed, low raking summer light highlighting the fissure, documentary and calm, illustrating clay shrink-swell risk. 3:2 landscape composition. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue (a pale blue window shutter), moderate depth of field, sober and reassuring mood, no excessive saturation. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "faq": [
@@ -1599,7 +1599,7 @@
       "alt": "Maison française avec véranda ajoutée, un cas typique de travaux non déclarés avant une vente",
       "brief": "Pavillon français des années 1980 en crépi clair, tuiles mécaniques, avec une véranda alu accolée sur le côté et un jardin entretenu ; plan large en lumière douce de fin d'après-midi, ambiance banlieue de province.",
       "stockKeywords": "french house, veranda extension, suburban home, house exterior, renovation",
-      "aiPrompt": "Realistic photo of a typical 1980s French suburban house with light rendered walls and terracotta roof tiles, an aluminium-framed glass veranda added on the side, tidy garden, soft late afternoon light, wide shot, no people, no text, no logo"
+      "aiPrompt": "A typical 1980s French suburban pavillon in a provincial housing estate, pale rendered walls, mechanical terracotta roof tiles, with an aluminium-framed glass veranda visibly added onto the side, slightly different in style from the original house, neat lawn and low hedge in front. Wide 1.91:1 landscape, house centered with breathing room on the sides so it survives a square crop, eye-level view, late afternoon light. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with a discreet touch of blue in the clear sky and veranda reflections, moderate depth of field, sober and reassuring mood, no excessive saturation. No people. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -1608,7 +1608,7 @@
         "caption": "Les piscines sont les constructions les plus souvent repérées par l'analyse des images aériennes, avec un rappel de taxe foncière qui peut couvrir plusieurs années.",
         "brief": "Vue aérienne verticale ou oblique d'un lotissement pavillonnaire du sud de la France, toits en tuiles, jardins et quelques piscines bleues ; lumière de midi, rendu réaliste type photo de drone.",
         "stockKeywords": "aerial view, swimming pools, residential neighborhood, drone, south of france",
-        "aiPrompt": "Realistic aerial drone photo of a residential subdivision in southern France, terracotta tiled roofs, private gardens, several blue swimming pools, midday sun, no text, no logo, no people visible"
+        "aiPrompt": "High oblique aerial drone view over a residential subdivision in southern France, near Montpellier or Toulouse, rows of pavillons with Roman terracotta tile roofs, fenced private gardens, olive trees and cypress hedges, several rectangular and kidney-shaped turquoise swimming pools clearly visible in the backyards, the kind of detail spotted by tax authorities on aerial imagery. 3:2 landscape, pools distributed across the frame, midday sun with short shadows. Realistic editorial photography, full-frame 35 mm sensor, soft natural light, warm neutral tones with the pools as the discreet blue accents, moderate depth of field, sober and reassuring look, no excessive saturation. No visible people. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/vendre-maison-travaux-non-declares/image-2.webp",
@@ -1616,7 +1616,7 @@
         "caption": "Le notaire compare l'état réel du bien aux autorisations obtenues : déclarer clairement l'irrégularité dans l'acte protège mieux le vendeur que le silence.",
         "brief": "Bureau en bois d'une étude notariale française, avec plans de maison dépliés, dossier cartonné, formulaires administratifs et stylo ; cadrage serré en plongée, lumière naturelle de fenêtre, sans personne identifiable.",
         "stockKeywords": "house plans, notary desk, building permit, documents, paperwork",
-        "aiPrompt": "Realistic photo of a wooden desk in a French notary office with unfolded house floor plans, a cardboard file folder, administrative forms and a pen, top-down close shot, natural window light, no readable text, no logo, no faces"
+        "aiPrompt": "Top-down close shot of an old oak desk in a French notary office, unfolded architectural house plans showing a floor layout, a beige cardboard urban planning file, a stapled building permit form and a cadastral extract seen at an angle and out of focus, a fountain pen resting across the plans. 3:2 landscape, documents filling the frame diagonally, window light from the left. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with a discreet touch of blue from a cardboard folder, moderate depth of field, sober and reassuring look, no excessive saturation. No faces. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -1674,7 +1674,7 @@
       "alt": "Maison française avec panneau à vendre, propriétaires préparant l'achat d'un nouveau logement",
       "brief": "Maison individuelle française en pierre ou en enduit, portail ouvert et panneau « à vendre » vierge accroché à la clôture ; au premier plan flou, une main tenant un trousseau de clés ; lumière matinale, ton optimiste.",
       "stockKeywords": "house for sale, keys, moving home, french house, property",
-      "aiPrompt": "Realistic photo of a French detached house with a blank for-sale sign on the garden fence, a hand holding house keys in the blurred foreground, soft morning light, optimistic mood, no readable text, no logo, no recognizable face"
+      "aiPrompt": "A French detached house in light stone render with grey slate-style roof and blue-grey painted shutters, open wrought-iron gate, a blank white for-sale panel hung on the low garden fence, and in the soft blurred foreground a hand holding a ring of keys. Wide 1.91:1 landscape, house and sign centered with breathing room on the sides so it survives a square crop, early morning light, optimistic mood. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet blue on the shutters, moderate depth of field, sober and reassuring, no excessive saturation. No faces. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -1683,7 +1683,7 @@
         "caption": "La banque avance en général 50 à 80 % de la valeur estimée du bien à vendre, moins le capital restant dû : une estimation crédible conditionne donc le montant obtenu.",
         "brief": "Rendez-vous dans une agence bancaire française sobre : un couple vu de dos ou de trois quarts face à un conseiller, documents et calculatrice sur la table ; lumière neutre de bureau, visages non reconnaissables.",
         "stockKeywords": "bank meeting, mortgage advisor, couple, loan, financial planning",
-        "aiPrompt": "Realistic photo of a couple seen from behind meeting a bank advisor at a desk in a modest French bank branch, loan documents and a calculator on the table, neutral office light, no recognizable faces, no text, no logo"
+        "aiPrompt": "Inside a sober French bank branch office, a couple seen from behind, shoulders and hair only, seated across a light wood desk from a bank advisor whose face is cropped out of frame, loan simulation papers blurred on the desk, a calculator, a pen and a closed folder. 3:2 landscape, over-the-shoulder framing on the paperwork between them. Realistic editorial photography, full-frame 35 mm camera, soft natural window light, warm neutral tones with a discreet touch of blue in the advisor's folder, moderate depth of field, sober and reassuring, no excessive saturation. No recognizable faces, no readable documents. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/acheter-avant-de-vendre-solutions/image-2.webp",
@@ -1691,7 +1691,7 @@
         "caption": "Rester quelques semaines dans les lieux après la vente se négocie dès l'offre, avec une convention qui fixe une date de départ et une pénalité de retard.",
         "brief": "Salon d'une maison française en cours de déménagement, cartons fermés empilés près d'une porte-fenêtre, parquet, murs presque vides ; lumière naturelle douce, ambiance de transition.",
         "stockKeywords": "moving boxes, empty living room, moving house, relocation, home",
-        "aiPrompt": "Realistic photo of stacked closed cardboard moving boxes in the living room of a French house, wooden floor, nearly bare walls, French window with soft daylight, calm transitional mood, no people, no text, no logo"
+        "aiPrompt": "Living room of a French house in the middle of a move, sealed brown cardboard moving boxes stacked beside tall French windows with white wooden frames, oak herringbone parquet, nearly bare walls showing pale marks where frames used to hang, the household still living there for a few final weeks. 3:2 landscape, boxes in the left third, window light flooding in. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with a discreet blue accent from a roll of packing tape, moderate depth of field, calm transitional mood, no excessive saturation. No people. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -1749,7 +1749,7 @@
       "alt": "Bureau de notaire avec acte de vente, calculatrice et clés pour estimer les frais d'achat",
       "brief": "Bureau d'étude notariale française avec un acte de vente, une calculatrice, un stylo-plume et un trousseau de clés ; cadrage rapproché, lumière chaude et sobre, ambiance sérieuse et rassurante.",
       "stockKeywords": "notary office, contract signing, calculator, house keys, real estate fees",
-      "aiPrompt": "Realistic close-up photo of a French notary office desk with a property sale contract, a calculator, a fountain pen and a set of house keys, warm sober lighting, serious reassuring mood, no readable text, no logo, no faces"
+      "aiPrompt": "Close view of a French notary's walnut desk with a thick bound property sale deed lying open and out of focus, a calculator beside it, a black fountain pen and a ring of house keys placed on top. Wide 1.91:1 landscape, objects grouped centrally with breathing room on the sides so it survives a square crop. Realistic editorial photography, full-frame 35 mm camera, soft warm natural light, warm neutral tones with a discreet blue key tag, moderate depth of field, serious and reassuring mood, no excessive saturation. No faces, no readable writing. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -1758,7 +1758,7 @@
         "caption": "C'est l'acheteur qui règle les frais d'acquisition le jour de l'acte, soit environ 23 000 € à financer en plus du prix pour un bien ancien à 300 000 €.",
         "brief": "Main d'un acquéreur signant un acte authentique sur un bureau de notaire, avec une seconde personne floue en arrière-plan ; plan serré, lumière naturelle, sans visage reconnaissable.",
         "stockKeywords": "signing contract, notary, property purchase, pen, hands",
-        "aiPrompt": "Realistic close-up photo of a buyer's hand signing a property deed on a notary desk in France, a second person blurred in the background, natural light, no recognizable face, no readable text, no logo"
+        "aiPrompt": "Tight shot of a buyer's hand signing the final page of an authentic property deed on a notary's desk in France, ballpoint pen pressed on paper, the document viewed at a low angle so the writing is blurred, and a second person in a dark suit softly out of focus across the desk, face outside the frame. 3:2 landscape, hand in the left third. Realistic editorial photography, full-frame 35 mm camera, soft natural window light, warm neutral tones with a discreet blue shirt cuff, moderate depth of field, sober and reassuring, no excessive saturation. No recognizable faces, no readable text on paper. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/frais-de-notaire-calcul/image-2.webp",
@@ -1766,7 +1766,7 @@
         "caption": "Dans le neuf, la taxe de publicité foncière réduite remplace les droits de mutation : les frais tombent autour de 2 à 3 % du prix, contre 7 à 8 % dans l'ancien.",
         "brief": "Petite résidence neuve française de trois ou quatre étages, façade claire, balcons en verre ou métal, espaces verts récemment plantés ; ciel bleu, lumière de matinée, rendu réaliste.",
         "stockKeywords": "new apartment building, residential construction, balconies, france, new build",
-        "aiPrompt": "Realistic photo of a small newly built French apartment building of three or four storeys, light facade, glass and metal balconies, freshly planted landscaping, blue sky, morning light, no people, no text, no logo"
+        "aiPrompt": "A small newly built residence in a French town, four storeys, light cream render with timber cladding accents, glass and metal balconies, flat roof, ground-floor bike shelter, freshly planted young trees and lawn strips still visibly new, a Renault parked along the street, a modern new-build apartment just delivered to its first owners. 3:2 landscape, three-quarter view from the pavement, morning light. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet blue from the clear sky and window reflections, moderate depth of field, sober and reassuring, no excessive saturation. No people. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -1824,7 +1824,7 @@
       "alt": "Maison de vacances en pierre en France, résidence secondaire concernée par l'impôt sur la plus-value",
       "brief": "Maison de vacances française en pierre avec volets bleus ou verts, jardin et terrasse, dans un village du sud-ouest ou de Bretagne ; lumière dorée d'été, plan large, ambiance résidence secondaire.",
       "stockKeywords": "french stone house, holiday home, countryside, shutters, village",
-      "aiPrompt": "Realistic photo of a French stone holiday house with painted wooden shutters, small garden and terrace in a rural village, golden summer light, wide shot, no people, no text, no logo"
+      "aiPrompt": "A French stone holiday house in a village of the Dordogne, honey-coloured limestone walls, old brown tile roof, painted blue wooden shutters, a small terrace with a wooden table under a vine pergola and a lavender-edged garden, clearly a second home now being sold. Wide 1.91:1 landscape, house centered with breathing room on the sides so it survives a square crop, golden summer light at the end of the day. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with the blue shutters as the discreet accent, moderate depth of field, sober and reassuring mood, no excessive saturation. No people. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -1833,7 +1833,7 @@
         "caption": "Après cinq ans de détention, le forfait travaux de 15 % du prix d'achat dépasse souvent le total des factures conservées.",
         "brief": "Classeur ouvert contenant des factures d'artisans, posé sur une table à côté d'un mètre ruban et d'un échantillon de carrelage, dans une maison en rénovation ; cadrage serré, lumière naturelle.",
         "stockKeywords": "invoices, renovation, home improvement, paperwork, tape measure",
-        "aiPrompt": "Realistic close-up photo of an open binder with contractor invoices on a table next to a tape measure and a tile sample, in a French house under renovation, natural light, no readable text, no logo, no people"
+        "aiPrompt": "Close shot of an open ring binder full of craftsmen's invoices and receipts kept over the years, papers seen at an angle and blurred, resting on a dust-covered trestle table in a French house under renovation, next to a yellow tape measure, a glazed ceramic tile sample and a carpenter's pencil, bare plaster walls and a stepladder softly blurred behind. 3:2 landscape, binder in the foreground right. Realistic editorial photography, full-frame 35 mm camera, soft natural light from a window, warm neutral tones with a discreet blue binder divider, moderate depth of field, sober and reassuring, no excessive saturation. No people, no readable documents. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/impot-plus-value-immobiliere/image-2.webp",
@@ -1841,7 +1841,7 @@
         "caption": "Après 22 ans de détention, l'impôt sur le revenu disparaît, mais il faut attendre 30 ans pour échapper aussi aux prélèvements sociaux.",
         "brief": "Maison ancienne française en pierre au toit d'ardoise ou de tuiles patinées, vieux arbre dans le jardin, lierre sur un mur ; lumière d'automne, sensation de bien détenu depuis longtemps.",
         "stockKeywords": "old french house, family home, autumn garden, stone facade, heritage",
-        "aiPrompt": "Realistic photo of an old French stone family house with weathered roof, a large old tree in the garden and ivy on one wall, warm autumn light, sense of long ownership, no people, no text, no logo"
+        "aiPrompt": "An old French family house in grey granite stone in Brittany, weathered slate roof patched with moss, ivy climbing one gable wall, a large old oak tree spreading over a rambling garden, a moss-covered stone wall and wooden gate, the feeling of a home owned for decades and passed through generations. 3:2 landscape, house slightly off-center with the tree framing it, warm autumn light with fallen leaves. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet faded blue paint on the gate, moderate depth of field, sober and reassuring, no excessive saturation. No people. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -1894,7 +1894,7 @@
       "alt": "Maison de campagne française avec jardin, mise en vente directement par son propriétaire",
       "brief": "Longère ou maison de bourg française avec jardin clos et portail, en zone rurale, panneau « à vendre » vierge fixé au portail ; plan large, lumière de printemps, ambiance authentique et calme.",
       "stockKeywords": "french countryside house, for sale by owner, rural home, garden gate",
-      "aiPrompt": "Realistic photo of a French countryside house with a walled garden and a gate, a blank handmade for-sale sign fixed on the gate, spring light, wide shot, calm authentic mood, no people, no readable text, no logo"
+      "aiPrompt": "A traditional French longère in the countryside of Normandy or the Loire, long low stone house with a slate roof, a walled garden behind an old painted iron gate, a simple blank handmade for-sale board tied to the gate as if put up by the owner himself, fields and hedgerows behind. Wide 1.91:1 landscape, house and gate centered with breathing room on the sides so it survives a square crop, fresh spring light. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with a discreet blue painted gate, moderate depth of field, calm authentic mood, sober and reassuring, no excessive saturation. No people. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -1903,7 +1903,7 @@
         "caption": "Dans un village, la boulangerie, le café ou la mairie apprennent souvent qu'une maison va se vendre avant qu'elle ne soit publiée nulle part.",
         "brief": "Rue principale d'un village français avec maisons anciennes, une boulangerie et un café en rez-de-chaussée, quelques passants de dos au loin ; lumière matinale, ambiance vie locale.",
         "stockKeywords": "french village street, bakery, local shops, old houses, rural france",
-        "aiPrompt": "Realistic photo of a main street in a French village with old houses, a bakery and a cafe at street level, a few distant passers-by seen from behind, morning light, local life atmosphere, no readable signs, no logo"
+        "aiPrompt": "Main street of a small French village in the morning, old stone houses with shutters, a bakery with baguettes in the window and a café terrace with a few bistro chairs at street level, the town hall with its tricolour flag in the distance, two or three passers-by seen from behind far away, where news of a house for sale travels by word of mouth. 3:2 landscape, street perspective. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet blue shutters, moderate depth of field, sober and reassuring local life atmosphere, no excessive saturation. No faces, no readable shop signs. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/trouver-maison-a-vendre-sans-agence/image-2.webp",
@@ -1911,7 +1911,7 @@
         "caption": "Comparer avec les ventes réellement signées évite que l'économie de commission soit absorbée par un prix de départ trop élevé.",
         "brief": "Mains d'un acheteur annotant au crayon un plan cadastral imprimé, à côté d'un carnet de notes et d'une calculatrice, sur une table de cuisine ; cadrage serré en plongée, lumière naturelle.",
         "stockKeywords": "cadastral map, price comparison, notes, calculator, home buying",
-        "aiPrompt": "Realistic top-down close-up photo of a home buyer's hands annotating a printed cadastral parcel map with a pencil, next to a notebook and a calculator on a kitchen table, natural light, no readable text, no logo, no faces"
+        "aiPrompt": "Top-down close shot of a home buyer's hands annotating a printed cadastral parcel map with a pencil, circling a few neighbouring parcels to compare with actual recorded sales, an open notebook with blurred figures and a calculator beside it, on a light wooden kitchen table in a French house, a coffee cup at the edge. 3:2 landscape, map filling the center. Realistic editorial photography, full-frame 35 mm camera, soft natural window light, warm neutral tones with a discreet blue pencil and notebook cover, moderate depth of field, sober and reassuring, no excessive saturation. No faces, no readable text or numbers. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -1969,7 +1969,7 @@
       "alt": "Personne consultant des annonces immobilières sur smartphone dans un appartement français",
       "brief": "Mains tenant un smartphone dont l'écran affiche une grille d'annonces volontairement floue et générique (aucun logo ni interface reconnaissable), sur fond flou d'un salon d'appartement haussmannien ; lumière naturelle douce.",
       "stockKeywords": "smartphone, property search, apartment, browsing listings, home",
-      "aiPrompt": "Realistic photo of hands holding a smartphone showing a blurred generic grid of house photos, no recognizable app interface, no logo, no text, blurred Parisian-style apartment living room in the background, soft natural light"
+      "aiPrompt": "Hands holding a smartphone in the foreground, the screen showing a deliberately blurred generic grid of house and apartment photos with no recognizable app interface, symbolising browsing property listings online, and behind it a softly blurred Haussmann-style Parisian living room with tall windows, moulded ceiling, marble fireplace and herringbone parquet. Wide 1.91:1 landscape, phone centered with breathing room on the sides so it survives a square crop. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with a discreet blue cushion on the sofa, moderate depth of field, sober and reassuring, no excessive saturation. No faces. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -1978,7 +1978,7 @@
         "caption": "Aucun portail ne couvre tout le marché : un même bien peut apparaître trois fois via plusieurs agences, ou n'exister que sur un site de particuliers.",
         "brief": "Table de salon avec un ordinateur portable et un smartphone affichant des photos de maisons floues et génériques, sans interface ni logo identifiable, carnet de notes à côté ; personne vue de dos ou seulement les mains, lumière du soir.",
         "stockKeywords": "laptop, house search, online listings, home buyer, notes",
-        "aiPrompt": "Realistic photo of a laptop and a smartphone on a living room table, both screens showing blurred generic photos of houses with no recognizable website interface, no logo, no text, a notebook beside them, person's hands only, warm evening light"
+        "aiPrompt": "Low coffee table in a French apartment living room in the evening, an open laptop and a smartphone side by side, both screens showing blurred generic photos of houses with no recognizable website interface, the same house apparently appearing on both, an open notebook with a pen and handwritten blurred notes, only a person's hands visible typing on the laptop. 3:2 landscape, three-quarter view from the side. Realistic editorial photography, full-frame 35 mm camera, warm evening lamp light mixed with soft natural dusk light, warm neutral tones with a discreet blue notebook, moderate depth of field, sober and reassuring, no excessive saturation. No faces, no readable screens. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/meilleurs-sites-immobiliers-france/image-2.webp",
@@ -1986,7 +1986,7 @@
         "caption": "Une annonce aux photos sombres perd des visites sur n'importe quel portail : la qualité des images pèse davantage que le choix du site.",
         "brief": "Salon d'une maison française lumineux et dépersonnalisé, photographié en grand angle à hauteur d'homme, appareil photo sur trépied visible au premier plan flou ; lumière naturelle abondante.",
         "stockKeywords": "bright living room, real estate photography, tripod camera, home staging",
-        "aiPrompt": "Realistic photo of a bright, tidy and depersonalized living room in a French house, wide-angle view at eye level, a camera on a tripod blurred in the foreground, abundant natural daylight, no people, no text, no logo"
+        "aiPrompt": "Bright, tidy, depersonalized living room of a French house prepared for listing photos, light linen sofa, oak floor, white walls, large French windows opening onto a garden, a few plants, no clutter, seen wide-angle at eye level, with a camera on a tripod softly blurred in the foreground, showing that bright, well-shot images matter more than the website chosen. 3:2 landscape. Realistic editorial photography, full-frame 35 mm camera, abundant soft natural daylight, warm neutral tones with a discreet blue throw cushion, moderate depth of field, sober and reassuring, no excessive saturation. No people. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [
@@ -2044,7 +2044,7 @@
       "alt": "Rue de maisons françaises dans un bourg, pour comparer les prix des ventes réalisées",
       "brief": "Rue résidentielle d'un bourg français avec une succession de maisons mitoyennes ou individuelles de styles proches, plan en perspective le long de la rue ; lumière de fin de matinée, rendu réaliste.",
       "stockKeywords": "french street, row of houses, small town, residential, property prices",
-      "aiPrompt": "Realistic photo of a residential street in a small French town with a row of similar detached and semi-detached houses, perspective view along the street, late morning light, no people, no readable text, no logo"
+      "aiPrompt": "A residential street in a small French bourg, a row of similar detached and semi-detached houses in pale render and stone with tiled roofs, low walls and gates, receding in perspective along the pavement, inviting comparison between neighbouring homes, a Peugeot parked in a driveway. Wide 1.91:1 landscape, street vanishing point centered with breathing room on the sides so it survives a square crop, late morning light. Realistic editorial photography, full-frame 35 mm camera, soft natural light, warm neutral tones with discreet touches of blue on a few shutters and the sky, moderate depth of field, sober and reassuring, no excessive saturation. No people. No text, no letters, no logos, no watermarks, no brand names. --ar 191:100"
     },
     "images": [
       {
@@ -2053,7 +2053,7 @@
         "caption": "Mise à jour en avril et en octobre, la base DVF ne garde que cinq années de ventes et ne couvre ni l'Alsace, ni la Moselle, ni Mayotte.",
         "brief": "Plan cadastral papier d'un quartier pavillonnaire étalé sur une table, parcelles et contours de maisons visibles, quelques parcelles surlignées au feutre ; vue en plongée, lumière naturelle.",
         "stockKeywords": "cadastral map, land parcels, property map, urban planning, paper map",
-        "aiPrompt": "Realistic top-down photo of a printed cadastral map of a residential neighbourhood spread on a table, parcel outlines and house footprints visible, a few parcels highlighted with a marker, natural light, no readable text, no logo"
+        "aiPrompt": "Top-down view of a printed French cadastral plan of a residential neighbourhood spread on a wooden table, thin parcel outlines and grey house footprints clearly visible, a few parcels highlighted with a translucent marker to locate recent recorded sales, a highlighter and reading glasses resting on the corner, papers slightly curled. 3:2 landscape, map filling the frame at a slight angle. Realistic editorial photography, full-frame 35 mm camera, soft natural window light, warm neutral tones with a discreet blue highlighter, moderate depth of field, sober and reassuring, no excessive saturation. No people, no readable labels or numbers. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       },
       {
         "src": "/images/blog/comparer-prix-immobiliers-ventes-realisees/image-2.webp",
@@ -2061,7 +2061,7 @@
         "caption": "À surface égale dans une même rue, l'état, le DPE ou le garage peuvent justifier jusqu'à 20 % d'écart de prix, ce qu'aucune base ne mesure.",
         "brief": "Deux maisons françaises mitoyennes ou voisines de même gabarit, l'une à la façade et aux menuiseries refaites, l'autre à l'enduit défraîchi et aux volets usés ; plan frontal, lumière douce.",
         "stockKeywords": "neighbouring houses, renovated house, old facade, comparison, street",
-        "aiPrompt": "Realistic photo of two neighbouring French houses of the same size side by side, one with a freshly renovated facade and new windows, the other with a worn render and faded shutters, frontal view, soft daylight, no people, no text, no logo"
+        "aiPrompt": "Two neighbouring French houses of the same size and shape side by side on a quiet street, the one on the left freshly renovated with clean cream render, new white windows and smart blue-grey shutters, the one on the right with cracked, greyish render, faded peeling wooden shutters and an old garage door, illustrating how condition creates a large price gap. 3:2 landscape, frontal straight-on view, both facades equally framed. Realistic editorial photography, full-frame 35 mm camera, soft diffuse daylight, warm neutral tones with the renovated blue-grey shutters as the discreet accent, moderate depth of field, sober and reassuring, no excessive saturation. No people. No text, no letters, no logos, no watermarks, no brand names. --ar 3:2"
       }
     ],
     "keyTakeaways": [

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { DeleteArticleButton } from "@/components/admin/delete-article-button";
 import { PublicationArticleButton } from "@/components/admin/publication-article-button";
-import { imageDisponible } from "@/lib/blog/images";
+import { resoudreImage, type Visuels } from "@/lib/blog/images";
 import { requireAdmin } from "@/lib/supabase/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -43,6 +43,7 @@ interface Ligne {
   contenu_html: string | null;
   image_cover: string | null;
   images: { src: string }[];
+  visuels: Visuels;
 }
 
 export default async function AdminBlogPage() {
@@ -51,7 +52,7 @@ export default async function AdminBlogPage() {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("articles")
-    .select("id, slug, titre, statut, lang, categorie, published_at, contenu_html, image_cover, images")
+    .select("id, slug, titre, statut, lang, categorie, published_at, contenu_html, image_cover, images, visuels")
     .order("published_at", { ascending: false, nullsFirst: true });
 
   if (error) throw new Error(error.message);
@@ -117,7 +118,7 @@ export default async function AdminBlogPage() {
                 const visuels = article.contenu_html
                   ? [article.image_cover, ...article.images.map((i) => i.src)].filter(Boolean)
                   : [];
-                const manquants = visuels.filter((src) => !imageDisponible(src)).length;
+                const manquants = visuels.filter((src) => !resoudreImage(src, article.visuels)).length;
                 const chemin = `${article.lang === "en" ? "/en" : ""}/blog/${article.slug}`;
                 return (
                   <TableRow key={article.id}>
@@ -137,7 +138,7 @@ export default async function AdminBlogPage() {
                         {manquants > 0 && (
                           <span
                             className="flex items-center gap-1 text-amber-700"
-                            title="Images à déposer dans public/images/blog/<slug>/ (un aplat neutre s'affiche en attendant)"
+                            title="À envoyer depuis la page de l'article (un aplat neutre s'affiche en attendant)"
                           >
                             <ImageOff className="size-3" /> {manquants}/{visuels.length} image(s) manquante(s)
                           </span>

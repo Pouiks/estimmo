@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Couverture } from "@/components/blog/couverture";
+import { resoudreImage } from "@/lib/blog/images";
 import { extraireTexte } from "@/lib/blog/render";
 import type { ArticleCarte } from "@/lib/blog/publication";
 import { Link } from "@/lib/i18n/navigation";
@@ -26,7 +27,7 @@ export async function CarteArticle({
       className="group flex h-full flex-col overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-md"
     >
       <Couverture
-        src={article.image_cover}
+        src={resoudreImage(article.image_cover, article.visuels)}
         alt={article.image_cover_alt ?? article.titre}
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
         className="transition-transform duration-300 group-hover:scale-[1.02]"
