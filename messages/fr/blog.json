@@ -6,9 +6,23 @@
   "h1": "Le blog {marque}",
   "intro": "Vendre, louer, estimer : nos conseils pour réussir votre projet immobilier.",
   "vide": "Les premiers articles arrivent bientôt.",
-  "tous": "Tous les articles",
-  "publie": "Publié le {date, date, long} par {agent}",
+  "videCategorie": "Pas encore d'article dans cette catégorie : revenez bientôt.",
   "introuvable": "Article introuvable",
+  "filtrer": "Filtrer les articles par catégorie",
+  "categories": {
+    "toutes": "Tous les articles",
+    "estimation": "Estimation",
+    "vente": "Vente",
+    "achat-fiscalite": "Achat & fiscalité"
+  },
+  "par": "Par {auteur}",
+  "lecture": "{minutes} min de lecture",
+  "filAriane": {
+    "accueil": "Accueil",
+    "blog": "Blog"
+  },
+  "faq": "Questions fréquentes",
+  "aLireAussi": "À lire aussi",
   "cta": {
     "titre": "Un projet de vente ou de location ?",
     "texte": "Estimez votre bien gratuitement en 2 minutes.",

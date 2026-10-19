@@ -103,6 +103,28 @@ Vitest · pnpm. Déploiement Vercel.
   Migration `20261018150000_traductions.sql`.
 - **Outils** : `pnpm email:preview` (6 aperçus fr/en), `pnpm test:coverage` (v8).
 
+## Blog éditorial (19/10/2026)
+- **Source** : `content/blog/articles.json` (28 articles, format du brief rédactionnel),
+  gabarit de page `content/blog/apercu-article.html`. Corps en HTML de confiance
+  (`contenu_html`) ; les anciens articles TipTap (`contenu` jsonb) restent rendus.
+- **Import** : `pnpm import:articles` (idempotent par slug, contrôles `lib/blog/import.ts`,
+  testés sur le vrai fichier). Calendrier : 1 article / 2 j à 7 h Paris dans l'ordre du
+  fichier (`--debut`, `--intervalle`, `--heure`, `--replanifier`, `--brouillon`,
+  `--programmer`, `--dry-run`). Une réimportation ne touche ni statut ni date.
+- **En ligne** = `statut = publie` ET `published_at <= now()` (`lib/blog/publication.ts`) ;
+  date future = programmé, invisible partout (liste, page, sitemap). Cron quotidien
+  `/api/cron/blog` (06:05 UTC, compatible Vercel gratuit) : revalide le blog quand
+  une date passe (`diffuse_le`). Admin : publier / dépublier / publier maintenant en
+  un clic, éditeur dédié (SEO, date, HTML, FAQ, articles liés), aperçu `/admin/blog/[id]/apercu`.
+- **Rendu** (`lib/blog/html.ts`) : un lien vers un article pas encore en ligne devient
+  du texte (pas de 404) ; une image absente devient un aplat. Images statiques dans
+  `public/images/blog/<slug>/` (cover 1200×630, image-1/2 1200×800, WebP < 200 Ko),
+  recensées dans `lib/blog/images-disponibles.json` par `pnpm blog:images` (lancé
+  par `pnpm build` ; public/ est illisible depuis les fonctions Vercel).
+- **SEO** : `<title>` = metaTitle (+ « | ESTIMMO » si ≤ 60 car.), canonical, OG/Twitter
+  article, JSON-LD BlogPosting + BreadcrumbList + FAQPage. `updated_at` (= dateModified,
+  lastmod) ne bouge que sur un changement éditorial (trigger, migration 20261019120000).
+
 ## Sécurité (16/10/2026)
 - `lib/security/rate-limit.ts` : limite par IP en mémoire sur /api/leads (5/10 min), track, geocode, quartier. Par instance serverless, pas globale
 - Pot de miel `website` dans le payload lead : si rempli → faux succès, rien n'est enregistré
@@ -120,6 +142,10 @@ Vitest · pnpm. Déploiement Vercel.
   Sans CRM_WEBHOOK_URL le cron ne fait rien.
 
 ## Reste à faire (nécessite le client)
+- Blog : les 28 articles sont en base en **brouillon** (dates du 20/10 au 13/12/2026 déjà
+  posées) car la prod tournait encore sur l'ancien code, qui affiche tout article
+  « publie » sans regarder la date. Après déploiement : `pnpm import:articles --programmer`
+  (et `--replanifier --debut <date>` si le 20/10 est passé). Puis livrer les 84 images.
 - Clé Resend (RESEND_API_KEY) + EMAIL_FROM sur domaine vérifié (sinon simulation console)
 - URL + clé du webhook CRM du propriétaire
 - Repo GitHub (secrets SUPABASE_DB_URL, CRON_SECRET, var SITE_URL) + déploiement Vercel

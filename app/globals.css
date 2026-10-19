@@ -159,3 +159,181 @@
 .dcx-step {
   animation: dcx-step-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+/* Blog : corps HTML des articles éditoriaux (content/blog/articles.json).
+   Gabarit de référence : content/blog/apercu-article.html, aux couleurs du site. */
+.article-corps {
+  /* Bleu de marque assombri : contraste AA (4,5:1) pour le texte */
+  --article-lien: color-mix(in oklab, var(--primary) 80%, black);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+}
+.article-corps > * + * {
+  margin-top: 1.1em;
+}
+.article-corps h2 {
+  margin-top: 2.2em;
+  margin-bottom: 0.6em;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.article-corps h3 {
+  margin-top: 1.8em;
+  margin-bottom: 0.4em;
+  font-size: 1.2rem;
+  line-height: 1.35;
+  font-weight: 600;
+}
+.article-corps h2 + *,
+.article-corps h3 + * {
+  margin-top: 0;
+}
+.article-corps ul,
+.article-corps ol {
+  padding-left: 1.5rem;
+}
+.article-corps ul {
+  list-style: disc;
+}
+.article-corps ol {
+  list-style: decimal;
+}
+.article-corps li + li {
+  margin-top: 0.35em;
+}
+.article-corps li::marker {
+  color: var(--primary);
+}
+.article-corps a {
+  color: var(--article-lien);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.article-corps a:hover {
+  text-decoration-thickness: 2px;
+}
+.article-corps strong {
+  font-weight: 600;
+}
+.article-corps blockquote {
+  border-left: 4px solid var(--primary);
+  padding: 0.25em 0 0.25em 1.25em;
+  font-style: italic;
+  color: var(--muted-foreground);
+}
+
+/* Images du corps : pleine colonne, coins arrondis, légende discrète */
+.article-corps figure.article-image {
+  margin: 2.2em 0;
+}
+.article-corps figure.article-image img,
+.article-corps .image-attente {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: calc(var(--radius) * 1.4);
+}
+.article-corps .image-attente {
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--primary) 10%, transparent),
+    color-mix(in oklab, var(--primary) 22%, transparent)
+  );
+}
+.article-corps figcaption {
+  margin-top: 0.6em;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+
+/* Encadré « À retenir » */
+.article-corps aside.a-retenir {
+  margin: 1.8em 0;
+  border-left: 5px solid var(--primary);
+  border-radius: var(--radius);
+  background: color-mix(in oklab, var(--primary) 7%, transparent);
+  padding: 1em 1.4em;
+}
+.article-corps aside.a-retenir p:first-child {
+  margin-bottom: 0.4em;
+}
+.article-corps aside.a-retenir ul {
+  margin: 0;
+}
+
+/* Tableaux : défilement horizontal sur mobile */
+.article-corps .table-wrapper {
+  margin: 1.6em 0;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.article-corps table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+.article-corps th,
+.article-corps td {
+  padding: 0.6em 0.9em;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+.article-corps th {
+  font-weight: 600;
+  background: color-mix(in oklab, var(--primary) 8%, transparent);
+}
+.article-corps tbody tr:nth-child(even) {
+  background: var(--muted);
+}
+.article-corps tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Appel à l'action de fin d'article */
+.article-corps .cta-estimation {
+  margin: 2.5em 0 1em;
+  border-radius: calc(var(--radius) * 1.8);
+  background: var(--article-lien);
+  color: var(--primary-foreground);
+  padding: 1.5em 1.75em;
+}
+.article-corps .cta-estimation p + p {
+  margin-top: 0.6em;
+}
+.article-corps .cta-estimation strong {
+  font-size: 1.15rem;
+}
+.article-corps .cta-estimation a {
+  display: inline-block;
+  margin-top: 0.4em;
+  border-radius: 999px;
+  background: var(--background);
+  color: var(--article-lien);
+  padding: 0.6em 1.3em;
+  font-weight: 600;
+  text-decoration: none;
+}
+.article-corps .cta-estimation a:hover {
+  opacity: 0.92;
+}
+
+/* FAQ en accordéon */
+.article-faq details {
+  border-bottom: 1px solid var(--border);
+  padding: 0.9em 0;
+}
+.article-faq summary {
+  cursor: pointer;
+  font-weight: 600;
+  line-height: 1.45;
+}
+.article-faq details p {
+  margin-top: 0.6em;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+}

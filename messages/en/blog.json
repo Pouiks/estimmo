@@ -6,9 +6,23 @@
   "h1": "The {marque} blog",
   "intro": "Selling, letting, valuing: our advice for a successful property project.",
   "vide": "The first articles are coming soon.",
-  "tous": "All articles",
-  "publie": "Published on {date, date, long} by {agent}",
+  "videCategorie": "No articles in this category yet: check back soon.",
   "introuvable": "Article not found",
+  "filtrer": "Filter articles by category",
+  "categories": {
+    "toutes": "All articles",
+    "estimation": "Valuation",
+    "vente": "Selling",
+    "achat-fiscalite": "Buying & tax"
+  },
+  "par": "By {auteur}",
+  "lecture": "{minutes} min read",
+  "filAriane": {
+    "accueil": "Home",
+    "blog": "Blog"
+  },
+  "faq": "Frequently asked questions",
+  "aLireAussi": "Read also",
   "cta": {
     "titre": "Planning to sell or let?",
     "texte": "Value your property for free in 2 minutes.",

@@ -20,8 +20,10 @@ export async function sitemapPagesFixes(): Promise<EntreeSitemap[]> {
     getDepartementsResume().catch(() => []),
     createAdminClient()
       .from("articles")
-      .select("slug, updated_at, lang")
+      .select("slug, published_at, updated_at, lang")
       .eq("statut", "publie")
+      // Les articles programmés (date future) restent hors sitemap.
+      .lte("published_at", new Date().toISOString())
       .limit(1000),
   ]);
 
@@ -46,7 +48,8 @@ export async function sitemapPagesFixes(): Promise<EntreeSitemap[]> {
   // Un article n'existe que dans sa langue : pas d'alternate.
   const pagesArticles = (articles.data ?? []).map((a) =>
     entreeMonolingue(`/blog/${a.slug}`, estLocale(a.lang) ? a.lang : "fr", {
-      lastModified: new Date(a.updated_at),
+      // Dernière modification éditoriale, jamais avant la publication.
+      lastModified: new Date(a.updated_at > a.published_at ? a.updated_at : a.published_at),
       changeFrequency: "monthly",
       priority: 0.6,
     })

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node --import tsx scripts/blog-images.ts && next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
@@ -17,6 +17,8 @@
     "import:loyers": "node --env-file-if-exists=.env.local --import tsx scripts/import-loyers.ts",
     "sql": "node --env-file-if-exists=.env.local --import tsx scripts/sql.ts",
     "seed:articles": "node --env-file-if-exists=.env.local --import tsx scripts/seed-articles.ts",
+    "import:articles": "node --env-file-if-exists=.env.local --import tsx scripts/import-articles.ts",
+    "blog:images": "node --import tsx scripts/blog-images.ts",
     "email:preview": "node --import tsx scripts/preview-email.ts"
   },
   "pnpm": {

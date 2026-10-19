@@ -1,14 +1,23 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { ArticleCorps } from "@/components/blog/article-corps";
+import { CarteArticle } from "@/components/blog/carte-article";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArticleContent, extraireTexte } from "@/lib/blog/render";
+import { texteDepuisHtml } from "@/lib/blog/html";
+import { couvertureAffichable } from "@/lib/blog/images";
+import {
+  articleEnLigne,
+  articlesEnLigne,
+  type ArticleCarte,
+  type ArticleComplet,
+} from "@/lib/blog/publication";
+import { extraireTexte } from "@/lib/blog/render";
 import { SITE } from "@/lib/config";
 import { Link } from "@/lib/i18n/navigation";
-import { estLocale, type Locale } from "@/lib/i18n/routing";
+import { estLocale } from "@/lib/i18n/routing";
 import {
   cheminLocalise,
   inLanguage,
@@ -16,148 +25,225 @@ import {
   urlAbsolue,
 } from "@/lib/i18n/seo";
 import { localeDeParams } from "@/lib/i18n/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 
-export const revalidate = 86400; // + revalidation on-demand à la publication
+// + revalidation on-demand : publication depuis l'admin, et cron quotidien
+// quand un article programmé passe sa date (liens internes, « À lire aussi »).
+export const revalidate = 86400;
 export const dynamicParams = true;
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
-/** Chaque langue ne prérend que ses propres articles. */
+/** Longueur au-delà de laquelle « | ESTIMMO » ferait tronquer le titre par Google. */
+const TITRE_MAX = 60;
+
+/** Chaque langue ne prérend que ses propres articles en ligne. */
 export async function generateStaticParams({
   params,
 }: {
   params: { locale: string };
 }) {
   if (!estLocale(params.locale)) return [];
-  const supabase = createAdminClient();
-  const { data } = await supabase
-    .from("articles")
-    .select("slug")
-    .eq("statut", "publie")
-    .eq("lang", params.locale)
-    .limit(500);
-  return (data ?? []).map((a) => ({ slug: a.slug }));
+  const articles = await articlesEnLigne(params.locale);
+  return articles.map((a) => ({ slug: a.slug }));
 }
 
-/** Un article n'existe que dans sa langue : /en/blog/<slug-fr> → 404. */
-async function getArticle(slug: string, locale: Locale) {
-  const supabase = createAdminClient();
-  const { data } = await supabase
-    .from("articles")
-    .select("slug, titre, meta_description, contenu, image_cover, published_at, updated_at")
-    .eq("slug", slug)
-    .eq("statut", "publie")
-    .eq("lang", locale)
-    .maybeSingle();
-  return data;
+function description(article: ArticleCarte): string {
+  return (
+    article.meta_description ??
+    (article.contenu_html
+      ? texteDepuisHtml(article.contenu_html, 160)
+      : extraireTexte(article.contenu, 160))
+  );
+}
+
+/** dateModified : la dernière modification éditoriale, jamais avant la publication. */
+function dateModification(article: ArticleComplet): string {
+  return article.updated_at > article.published_at
+    ? article.updated_at
+    : article.published_at;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const [{ slug }, locale] = await Promise.all([params, localeDeParams(params)]);
   const [article, t] = await Promise.all([
-    getArticle(slug, locale),
+    articleEnLigne(slug, locale),
     getTranslations({ locale, namespace: "blog" }),
   ]);
   if (!article) return { title: t("introuvable") };
 
-  const description =
-    article.meta_description ?? extraireTexte(article.contenu, 160);
+  const titre = article.meta_title ?? article.titre;
+  const desc = description(article);
   const chemin = `/blog/${slug}`;
+  const image = couvertureAffichable(article.image_cover)
+    ? [
+        {
+          url: article.image_cover,
+          width: article.image_cover_largeur ?? undefined,
+          height: article.image_cover_hauteur ?? undefined,
+          alt: article.image_cover_alt ?? article.titre,
+        },
+      ]
+    : undefined;
+
   return {
-    title: article.titre,
-    description,
-    // Pas d'alternates : l'article n'existe que dans sa langue.
+    // Gabarit « %s | ESTIMMO » seulement si le titre reste sous ~60 caractères.
+    title:
+      titre.length + ` | ${SITE.name}`.length <= TITRE_MAX
+        ? titre
+        : { absolute: titre },
+    description: desc,
+    // Pas d'alternates hreflang : l'article n'existe que dans sa langue.
     alternates: { canonical: cheminLocalise(chemin, locale) },
+    authors: [{ name: article.auteur ?? SITE.agent.name }],
     openGraph: {
-      ...openGraphPour({
-        locale,
-        cheminFr: chemin,
-        title: article.titre,
-        description,
-        type: "article",
-      }),
-      images: article.image_cover ? [article.image_cover] : undefined,
+      ...openGraphPour({ locale, cheminFr: chemin, title: titre, description: desc }),
+      type: "article",
+      publishedTime: article.published_at,
+      modifiedTime: dateModification(article),
+      authors: [article.auteur ?? SITE.agent.name],
+      images: image,
+    },
+    twitter: {
+      card: image ? "summary_large_image" : "summary",
+      title: titre,
+      description: desc,
+      images: image?.map((i) => i.url),
     },
   };
 }
 
+/** « À lire aussi » : les articles liés en ligne, complétés par la même catégorie. */
+function articlesLies(article: ArticleComplet, enLigne: ArticleCarte[]): ArticleCarte[] {
+  const parSlug = new Map(enLigne.map((a) => [a.slug, a]));
+  const choisis = article.articles_lies
+    .map((s) => parSlug.get(s))
+    .filter((a): a is ArticleCarte => !!a && a.slug !== article.slug);
+  const complements = [
+    ...enLigne.filter((a) => a.categorie && a.categorie === article.categorie),
+    ...enLigne,
+  ];
+  for (const a of complements) {
+    if (choisis.length >= 3) break;
+    if (a.slug !== article.slug && !choisis.includes(a)) choisis.push(a);
+  }
+  return choisis.slice(0, 3);
+}
+
 export default async function ArticlePage({ params }: Props) {
   const [{ slug }, locale] = await Promise.all([params, localeDeParams(params)]);
-  const [article, t] = await Promise.all([
-    getArticle(slug, locale),
+  const [article, enLigne, t] = await Promise.all([
+    articleEnLigne(slug, locale),
+    articlesEnLigne(locale),
     getTranslations({ locale, namespace: "blog" }),
   ]);
   if (!article) notFound();
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: article.titre,
-    description: article.meta_description ?? extraireTexte(article.contenu, 160),
-    image: article.image_cover ?? undefined,
-    datePublished: article.published_at,
-    dateModified: article.updated_at,
-    inLanguage: inLanguage(locale),
-    author: { "@type": "Person", name: SITE.agent.name },
-    publisher: { "@type": "Organization", name: SITE.name },
-    mainEntityOfPage: urlAbsolue(`/blog/${article.slug}`, locale),
-  };
+  const slugsEnLigne = new Set(enLigne.map((a) => a.slug));
+  // Les articles éditoriaux portent déjà leur appel à l'action en fin de corps.
+  const ctaDansCorps = !!article.contenu_html?.includes('class="cta-estimation"');
+  const auteur = article.auteur ?? SITE.agent.name;
+  const lies = articlesLies(article, enLigne);
+  const url = urlAbsolue(`/blog/${article.slug}`, locale);
+
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: article.titre,
+      description: description(article),
+      image: couvertureAffichable(article.image_cover)
+        ? {
+            "@type": "ImageObject",
+            url: new URL(article.image_cover, SITE.url).toString(),
+            width: article.image_cover_largeur ?? undefined,
+            height: article.image_cover_hauteur ?? undefined,
+          }
+        : undefined,
+      datePublished: article.published_at,
+      dateModified: dateModification(article),
+      inLanguage: inLanguage(locale),
+      articleSection: article.categorie ? t(`categories.${article.categorie}`) : undefined,
+      author: { "@type": "Person", name: auteur },
+      publisher: {
+        "@type": "Organization",
+        name: SITE.name,
+        url: SITE.url,
+        logo: { "@type": "ImageObject", url: `${SITE.url}/icon.svg` },
+      },
+      mainEntityOfPage: url,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: t("filAriane.accueil"), item: urlAbsolue("/", locale) },
+        { "@type": "ListItem", position: 2, name: t("filAriane.blog"), item: urlAbsolue("/blog", locale) },
+        { "@type": "ListItem", position: 3, name: article.titre, item: url },
+      ],
+    },
+    ...(article.faq.length > 0
+      ? [
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: article.faq.map((q) => ({
+              "@type": "Question",
+              name: q.question,
+              acceptedAnswer: { "@type": "Answer", text: q.answer },
+            })),
+          },
+        ]
+      : []),
+  ];
 
   return (
-    <article className="mx-auto max-w-3xl px-4 py-10 sm:py-14">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+    <>
+      <article className="mx-auto max-w-[720px] px-4 py-10 sm:py-14">
+        <script
+          type="application/ld+json"
+          // « < » échappé : une FAQ saisie dans l'admin ne peut pas fermer la balise.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+        />
 
-      <Link
-        href="/blog"
-        className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft className="size-4" /> {t("tous")}
-      </Link>
+        <nav className="text-sm text-muted-foreground">
+          <Link href="/" className="hover:text-foreground">
+            {t("filAriane.accueil")}
+          </Link>{" "}
+          ›{" "}
+          <Link href="/blog" className="hover:text-foreground">
+            {t("filAriane.blog")}
+          </Link>
+        </nav>
 
-      <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
-        {article.titre}
-      </h1>
-      {article.published_at && (
-        <p className="mt-3 text-sm text-muted-foreground">
-          {t("publie", {
-            date: new Date(article.published_at),
-            agent: SITE.agent.name,
-          })}
-        </p>
-      )}
+        <ArticleCorps article={article} locale={locale} slugsEnLigne={slugsEnLigne} />
 
-      {article.image_cover && (
-        <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-xl">
-          <Image
-            src={article.image_cover}
-            alt={article.titre}
-            fill
-            priority
-            sizes="(max-width: 768px) 100vw, 768px"
-            className="object-cover"
-          />
-        </div>
-      )}
+        {!ctaDansCorps && (
+          <Card className="mt-12 border-primary/30 bg-primary/5">
+            <CardContent className="flex flex-col items-start gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-lg font-semibold">{t("cta.titre")}</p>
+                <p className="text-sm text-muted-foreground">{t("cta.texte")}</p>
+              </div>
+              <Button render={<Link href="/estimation" />}>
+                {t("cta.bouton")} <ArrowRight className="size-4" />
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+      </article>
 
-      <div className="mt-8">
-        <ArticleContent contenu={article.contenu} />
-      </div>
-
-      <Card className="mt-12 border-primary/30 bg-primary/5">
-        <CardContent className="flex flex-col items-start gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-lg font-semibold">{t("cta.titre")}</p>
-            <p className="text-sm text-muted-foreground">{t("cta.texte")}</p>
+      {lies.length > 0 && (
+        <section className="border-t bg-muted/40">
+          <div className="mx-auto max-w-6xl px-4 py-12">
+            <h2 className="text-2xl font-bold">{t("aLireAussi")}</h2>
+            <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {lies.map((a) => (
+                <CarteArticle key={a.slug} article={a} locale={locale} titreNiveau="h3" />
+              ))}
+            </div>
           </div>
-          <Button render={<Link href="/estimation" />}>
-            {t("cta.bouton")} <ArrowRight className="size-4" />
-          </Button>
-        </CardContent>
-      </Card>
-    </article>
+        </section>
+      )}
+    </>
   );
 }
