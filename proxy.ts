@@ -40,10 +40,12 @@ async function protegerAdmin(request: NextRequest) {
     }
   );
 
-  // IMPORTANT : getUser() valide le JWT auprès de Supabase (pas getSession()).
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Signature du jeton (ES256) vérifiée localement avec la clé publique du
+  // projet, en cache 10 min : pas d'aller-retour vers Supabase à chaque
+  // requête admin. Un jeton expiré est rafraîchi au passage (cookies
+  // réécrits via setAll). Jamais getSession() seul : il ne vérifie rien.
+  const { data: jeton } = await supabase.auth.getClaims();
+  const user = jeton?.claims ?? null;
 
   const { pathname } = request.nextUrl;
   const isLoginPage = pathname === "/admin/login";

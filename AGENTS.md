@@ -161,7 +161,12 @@ Vitest · pnpm. Déploiement Vercel.
 
 ## Sécurité (16/10/2026)
 - Admin (19/10/2026) : chaque action serveur commence par `requireAdmin()` (session
-  Supabase + rôle `profiles`) ; `proxy.ts` redirige /admin vers /admin/login. Aucune
+  Supabase + rôle `profiles`) ; `proxy.ts` redirige /admin vers /admin/login.
+  Depuis le 20/10 : jeton vérifié localement par `getClaims()` (ES256, JWKS en cache
+  10 min dans le module auth-js ; jamais `getSession()` seul) et rôle en cache 5 min
+  (`unstable_cache`, tag `profiles`) → zéro aller-retour d'auth sur instance chaude.
+  Caches client/images : `experimental.staleTimes.dynamic` 30 s, `images.minimumCacheTTL`
+  31 j (noms de fichiers uniques). Aucune
   requête SQL construite par concaténation (supabase-js / RPC ; scripts en `$1`).
   Uploads : taille ≤ 4 Mo, décodage par sharp (fichier non-image refusé), toujours
   ré-encodé en WebP (métadonnées et charges utiles supprimées), noms slugifiés sous

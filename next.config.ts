@@ -7,6 +7,9 @@ const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
 
 const nextConfig: NextConfig = {
   experimental: {
+    // Cache client des pages dynamiques (admin) : retour/avance instantanés
+    // pendant 30 s ; une action qui revalide la page passe outre.
+    staleTimes: { dynamic: 30 },
     serverActions: {
       // Envoi d'images depuis l'admin (1 Mo par défaut). Le navigateur réduit
       // les photos avant l'envoi ; Vercel plafonne de toute façon à 4,5 Mo.
@@ -14,6 +17,9 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
+    // Les images du blog ont des noms uniques (suffixe aléatoire) : chaque
+    // variante optimisée peut être conservée longtemps (quota Vercel).
+    minimumCacheTTL: 2678400, // 31 jours
     remotePatterns: [
       {
         protocol: "https",
