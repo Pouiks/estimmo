@@ -1,5 +1,6 @@
 import {
   BoutonSupprimerNonUtilises,
+  BoutonSynchroniser,
   CarteMedia,
   EnvoiMedias,
   type MediaCarte,
@@ -12,17 +13,18 @@ export const metadata = { title: "Médias", robots: { index: false } };
 export default async function MediasPage() {
   await requireAdmin();
 
-  // Les fichiers déposés dans Storage sans passer par l'admin (ou avant la
-  // bibliothèque) sont enregistrés au passage ; une panne de Storage ne
-  // bloque pas la page.
+  // Bibliothèque vide (première utilisation) : reprise des fichiers déjà dans
+  // Storage. Ensuite, le bouton « Synchroniser » suffit (listing Storage lent).
+  let medias = await listerMedias();
   let avertissement: string | null = null;
-  try {
-    await synchroniserStorage();
-  } catch (err) {
-    avertissement = `Synchronisation avec Storage impossible : ${(err as Error).message}`;
+  if (medias.length === 0) {
+    try {
+      medias = await synchroniserStorage([]);
+    } catch (err) {
+      avertissement = `Synchronisation avec Storage impossible : ${(err as Error).message}`;
+    }
   }
-
-  const [medias, usages] = await Promise.all([listerMedias(), usagesParUrl()]);
+  const usages = await usagesParUrl(medias);
   const dateFmt = new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeZone: "Europe/Paris" });
   const poids = medias.reduce((s, m) => s + m.taille, 0);
   const cartes: MediaCarte[] = medias.map((m) => ({
@@ -52,7 +54,10 @@ export default async function MediasPage() {
             d&apos;un emplacement pioche dedans.
           </p>
         </div>
-        <BoutonSupprimerNonUtilises nombre={nonUtilisees} />
+        <div className="flex flex-wrap gap-2">
+          <BoutonSynchroniser />
+          <BoutonSupprimerNonUtilises nombre={nonUtilisees} />
+        </div>
       </div>
 
       {avertissement && (

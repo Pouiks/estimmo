@@ -2,8 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Check, Copy, Loader2, Save, Trash2, Upload } from "lucide-react";
+import { Check, Copy, Loader2, RefreshCw, Save, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,11 +13,14 @@ import {
   modifierTextesMedia,
   supprimerMediaAction,
   supprimerMediasNonUtilises,
+  synchroniserMedias,
 } from "@/app/admin/(protected)/medias/actions";
 
-/** Zone d'envoi de la bibliothèque (plusieurs fichiers à la fois). */
+/**
+ * Zone d'envoi de la bibliothèque (plusieurs fichiers à la fois). Les actions
+ * appellent revalidatePath("/admin/medias") : la page se met à jour seule.
+ */
 export function EnvoiMedias() {
-  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [pending, startTransition] = useTransition();
   const [survol, setSurvol] = useState(false);
@@ -39,7 +41,6 @@ export function EnvoiMedias() {
           toast.error(`${f.name} : envoi impossible`);
         }
       }
-      router.refresh();
     });
   }
 
@@ -105,7 +106,6 @@ const FORMATS: Record<string, string> = {
 
 /** Vignette de la bibliothèque : alt et légende modifiables, URL, suppression. */
 export function CarteMedia({ media, date }: { media: MediaCarte; date: string }) {
-  const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [alt, setAlt] = useState(media.alt);
   const [legende, setLegende] = useState(media.legende ?? "");
@@ -115,10 +115,8 @@ export function CarteMedia({ media, date }: { media: MediaCarte; date: string })
   function lancer(action: () => Promise<{ ok: boolean; message: string }>) {
     startTransition(async () => {
       const r = await action();
-      if (r.ok) {
-        toast.success(r.message);
-        router.refresh();
-      } else toast.error(r.message);
+      if (r.ok) toast.success(r.message);
+      else toast.error(r.message);
     });
   }
 
@@ -209,7 +207,6 @@ export function CarteMedia({ media, date }: { media: MediaCarte; date: string })
 }
 
 export function BoutonSupprimerNonUtilises({ nombre }: { nombre: number }) {
-  const router = useRouter();
   const [pending, startTransition] = useTransition();
   if (nombre === 0) return null;
   return (
@@ -223,12 +220,34 @@ export function BoutonSupprimerNonUtilises({ nombre }: { nombre: number }) {
           const r = await supprimerMediasNonUtilises();
           if (r.ok) toast.success(r.message);
           else toast.error(r.message);
-          router.refresh();
         });
       }}
     >
       {pending ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
       Supprimer les {nombre} non utilisée(s)
+    </Button>
+  );
+}
+
+/** Reprise des fichiers déposés directement dans Storage (hors admin). */
+export function BoutonSynchroniser() {
+  const [pending, startTransition] = useTransition();
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      disabled={pending}
+      title="Enregistre dans la bibliothèque les fichiers déposés directement dans Supabase Storage"
+      onClick={() =>
+        startTransition(async () => {
+          const r = await synchroniserMedias();
+          if (r.ok) toast.success(r.message);
+          else toast.error(r.message);
+        })
+      }
+    >
+      {pending ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
+      Synchroniser avec Storage
     </Button>
   );
 }

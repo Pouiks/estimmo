@@ -68,7 +68,7 @@ export async function optimiserImage(
 
   let resultat: { donnees: Buffer; qualite: number } | null = null;
   for (const qualite of QUALITES) {
-    const donnees = await base.clone().webp({ quality: qualite, effort: 5 }).toBuffer();
+    const donnees = await base.clone().webp({ quality: qualite, effort: 4 }).toBuffer();
     resultat = { donnees, qualite };
     if (donnees.length <= poidsMax) break;
   }

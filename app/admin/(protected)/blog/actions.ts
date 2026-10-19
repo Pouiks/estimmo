@@ -62,7 +62,6 @@ export async function saveArticle(input: unknown): Promise<SaveArticleResult> {
   };
 
   let id = article.id;
-  const ancienSlug = id ? await slugActuel(id) : null;
   if (id) {
     const { error } = await supabase.from("articles").update(row).eq("id", id);
     if (error) {
@@ -95,7 +94,7 @@ export async function saveArticle(input: unknown): Promise<SaveArticleResult> {
       .is("published_at", null);
   }
 
-  await apresChangement(id, ancienSlug);
+  await apresChangement(id);
 
   return {
     ok: true,
@@ -107,17 +106,10 @@ export async function saveArticle(input: unknown): Promise<SaveArticleResult> {
 export async function deleteArticle(id: string): Promise<SaveArticleResult> {
   await requireAdmin();
 
-  const supabase = createAdminClient();
-  const { data: article } = await supabase
-    .from("articles")
-    .select("slug")
-    .eq("id", id)
-    .maybeSingle();
-
-  const { error } = await supabase.from("articles").delete().eq("id", id);
+  const { error } = await createAdminClient().from("articles").delete().eq("id", id);
   if (error) return { ok: false, message: error.message };
 
-  await revaliderBlog(article?.slug ? [article.slug] : []);
+  await revaliderBlog();
   revalidatePath("/admin/blog");
   return { ok: true, message: "Article supprimé" };
 }
@@ -158,21 +150,12 @@ function nomBaseDepuisFichier(nom: string): string {
 // Publication et articles éditoriaux (HTML importé depuis content/blog)
 // ----------------------------------------------------------------------------
 
-async function slugActuel(id: string): Promise<string | null> {
-  const { data } = await createAdminClient()
-    .from("articles")
-    .select("slug")
-    .eq("id", id)
-    .maybeSingle();
-  return (data?.slug as string | undefined) ?? null;
-}
-
 /**
  * Après toute modification : note si l'article est désormais en ligne (le
  * cron n'aura rien à faire) et rafraîchit tout le blog public, car les liens
  * internes et les « À lire aussi » des autres articles en dépendent.
  */
-async function apresChangement(id: string, ancienSlug?: string | null) {
+async function apresChangement(id: string) {
   const supabase = createAdminClient();
   const { data } = await supabase
     .from("articles")
@@ -188,7 +171,7 @@ async function apresChangement(id: string, ancienSlug?: string | null) {
     .update({ diffuse_le: enLigne ? new Date().toISOString() : null })
     .eq("id", id);
 
-  await revaliderBlog(ancienSlug ? [ancienSlug] : []);
+  await revaliderBlog();
   revalidatePath("/admin/blog");
 }
 
@@ -292,7 +275,6 @@ export async function saveArticleEditorial(input: unknown): Promise<SaveArticleR
     return { ok: false, message: "Un article ne peut pas se citer dans « À lire aussi »" };
   }
 
-  const ancienSlug = await slugActuel(a.id);
   const { error } = await createAdminClient()
     .from("articles")
     .update({
@@ -318,7 +300,7 @@ export async function saveArticleEditorial(input: unknown): Promise<SaveArticleR
     };
   }
 
-  await apresChangement(a.id, ancienSlug !== a.slug ? ancienSlug : null);
+  await apresChangement(a.id);
   revalidatePath(`/admin/blog/${a.id}`);
   return { ok: true, message: "Article enregistré", id: a.id };
 }
@@ -404,7 +386,8 @@ async function affecterEmplacement(
     .update({ visuels: nouveaux })
     .eq("id", articleId);
   if (error) throw new Error(error.message);
-  await apresChangement(articleId);
+  // Le statut de publication ne change pas : seul le site est à rafraîchir.
+  await revaliderBlog();
   revalidatePath(`/admin/blog/${articleId}`);
   revalidatePath("/admin/medias");
 }
@@ -548,7 +531,7 @@ export async function modifierTexteVisuel(
   const { error } = await createAdminClient().from("articles").update(maj).eq("id", articleId);
   if (error) return { ok: false, message: error.message };
 
-  await apresChangement(articleId);
+  await revaliderBlog();
   revalidatePath(`/admin/blog/${articleId}`);
   return { ok: true, message: "Textes enregistrés" };
 }

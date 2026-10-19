@@ -9,6 +9,7 @@ import {
   mediaParId,
   modifierMedia,
   supprimerMedia,
+  synchroniserStorage,
   usagesParUrl,
 } from "@/lib/blog/medias";
 import { revaliderBlog } from "@/lib/blog/publication";
@@ -100,7 +101,8 @@ export async function supprimerMediaAction(id: string): Promise<ResultatMedia> {
 /** Supprime toutes les images qu'aucun article n'utilise. */
 export async function supprimerMediasNonUtilises(): Promise<ResultatMedia> {
   await requireAdmin();
-  const [medias, usages] = await Promise.all([listerMedias(), usagesParUrl()]);
+  const medias = await listerMedias();
+  const usages = await usagesParUrl(medias);
   const orphelins = medias.filter((m) => !usages.has(m.url));
   let supprimes = 0;
   for (const m of orphelins) {
@@ -116,4 +118,22 @@ export async function supprimerMediasNonUtilises(): Promise<ResultatMedia> {
     ok: true,
     message: supprimes === 0 ? "Aucune image inutilisée" : `${supprimes} image(s) supprimée(s)`,
   };
+}
+
+/** Reprend dans la bibliothèque les fichiers déposés directement dans Storage. */
+export async function synchroniserMedias(): Promise<ResultatMedia> {
+  await requireAdmin();
+  try {
+    const ajoutes = await synchroniserStorage(await listerMedias());
+    revalidatePath("/admin/medias");
+    return {
+      ok: true,
+      message:
+        ajoutes.length === 0
+          ? "Bibliothèque déjà à jour"
+          : `${ajoutes.length} fichier(s) repris depuis Storage`,
+    };
+  } catch (err) {
+    return { ok: false, message: `Synchronisation impossible : ${(err as Error).message}` };
+  }
 }

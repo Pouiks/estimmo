@@ -130,18 +130,32 @@ export async function creerMedia(params: {
         );
   const dossier = params.cible.mode === "recadrer" ? "visuels" : "bibliotheque";
   const chemin = `${dossier}/${params.nomBase}-${suffixeUnique()}.webp`;
-  await deposerFichier(chemin, image.donnees);
-  const media = await insererMedia({
-    chemin,
-    alt: params.alt ?? "",
-    legende: params.legende ?? null,
-    largeur: image.largeur,
-    hauteur: image.hauteur,
-    taille: image.donnees.length,
-    format: formatPour(image.largeur, image.hauteur),
-    prompt: params.prompt ?? null,
-    parent_id: params.parentId ?? null,
-  });
+  // L'URL publique se déduit du chemin : dépôt et insertion en parallèle.
+  let media: Media;
+  try {
+    [media] = await Promise.all([
+      insererMedia({
+        chemin,
+        alt: params.alt ?? "",
+        legende: params.legende ?? null,
+        largeur: image.largeur,
+        hauteur: image.hauteur,
+        taille: image.donnees.length,
+        format: formatPour(image.largeur, image.hauteur),
+        prompt: params.prompt ?? null,
+        parent_id: params.parentId ?? null,
+      }),
+      deposerFichier(chemin, image.donnees),
+    ]);
+  } catch (err) {
+    // Jamais de ligne sans fichier ni de fichier sans ligne.
+    const supabase = createAdminClient();
+    await Promise.allSettled([
+      supabase.from("medias").delete().eq("chemin", chemin),
+      supabase.storage.from(BUCKET).remove([chemin]),
+    ]);
+    throw err;
+  }
   return { media, agrandie: image.agrandie };
 }
 
@@ -180,11 +194,10 @@ export interface UsageMedia {
 }
 
 /** Articles qui utilisent chaque url (emplacement, couverture, corps HTML ou contenu TipTap). */
-export async function usagesParUrl(): Promise<Map<string, UsageMedia[]>> {
+export async function usagesParUrl(medias: Media[]): Promise<Map<string, UsageMedia[]>> {
   const { data } = await createAdminClient()
     .from("articles")
     .select("id, titre, image_cover, visuels, contenu_html, contenu");
-  const medias = await listerMedias();
   const usages = new Map<string, UsageMedia[]>();
   for (const a of data ?? []) {
     const texte = JSON.stringify([a.image_cover, a.visuels, a.contenu_html, a.contenu]);
@@ -217,43 +230,53 @@ export async function libererEmplacements(url: string): Promise<string[]> {
 /**
  * Enregistre dans la table les fichiers du bucket qui n'y sont pas encore
  * (envois antérieurs à la bibliothèque, dépôts manuels). Dimensions lues
- * depuis le fichier. Renvoie le nombre de fichiers ajoutés.
+ * depuis le fichier. Renvoie les médias ajoutés.
  */
-export async function synchroniserStorage(): Promise<number> {
+export async function synchroniserStorage(existants: Media[]): Promise<Media[]> {
   const storage = createAdminClient().storage.from(BUCKET);
-  const connus = new Set((await listerMedias()).map((m) => m.chemin));
-  let ajoutes = 0;
+  const connus = new Set(existants.map((m) => m.chemin));
 
-  // Un niveau de sous-dossier est accepté (ancien rangement visuels/<slug>/).
-  const dossiers = [...DOSSIERS];
-  for (const dossier of dossiers) {
+  type Entree = { dossier: string; nom: string; taille: number; estDossier: boolean };
+  const lister = async (dossier: string): Promise<Entree[]> => {
     const { data, error } = await storage.list(dossier, { limit: 1000 });
     if (error) throw new Error(error.message);
-    for (const entree of data ?? []) {
-      // Un dossier n'a pas d'id dans l'API Storage ; .emptyFolderPlaceholder = marqueur.
-      if (entree.id === null) {
-        if (DOSSIERS.includes(dossier)) dossiers.push(`${dossier}/${entree.name}`);
-        continue;
-      }
-      if (entree.name.startsWith(".")) continue;
-      const chemin = `${dossier}/${entree.name}`;
-      if (connus.has(chemin)) continue;
-      const { default: sharp } = await import("sharp");
-      const meta = await sharp(await telecharger(chemin)).metadata();
-      if (!meta.width || !meta.height) continue;
+    // Un dossier n'a pas d'id dans l'API Storage ; .emptyFolderPlaceholder = marqueur.
+    return (data ?? [])
+      .filter((e) => !e.name.startsWith("."))
+      .map((e) => ({
+        dossier,
+        nom: e.name,
+        taille: Number(e.metadata?.size ?? 0),
+        estDossier: e.id === null,
+      }));
+  };
+
+  // Dossiers en parallèle, puis un niveau de sous-dossiers (ancien rangement visuels/<slug>/).
+  const racine = (await Promise.all(DOSSIERS.map(lister))).flat();
+  const sousDossiers = racine.filter((e) => e.estDossier).map((e) => `${e.dossier}/${e.nom}`);
+  const profondeur = (await Promise.all(sousDossiers.map(lister))).flat();
+  const fichiers = [...racine, ...profondeur].filter((e) => !e.estDossier);
+
+  const ajoutes: Media[] = [];
+  for (const f of fichiers) {
+    const chemin = `${f.dossier}/${f.nom}`;
+    if (connus.has(chemin)) continue;
+    const { default: sharp } = await import("sharp");
+    const meta = await sharp(await telecharger(chemin)).metadata();
+    if (!meta.width || !meta.height) continue;
+    ajoutes.push(
       await insererMedia({
         chemin,
         alt: "",
         legende: null,
         largeur: meta.width,
         hauteur: meta.height,
-        taille: Number(entree.metadata?.size ?? 0),
+        taille: f.taille,
         format: formatPour(meta.width, meta.height),
         prompt: null,
         parent_id: null,
-      });
-      ajoutes++;
-    }
+      })
+    );
   }
   return ajoutes;
 }

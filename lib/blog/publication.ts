@@ -1,6 +1,5 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
-import { revaliderSite } from "@/lib/i18n/revalidate";
 import type { Locale } from "@/lib/i18n/routing";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Categorie } from "./categories";
@@ -75,16 +74,14 @@ export async function articleEnLigne(slug: string, locale: Locale): Promise<Arti
 }
 
 /**
- * Rafraîchit tout le blog public : liste, chaque article (liens internes et
- * « À lire aussi » dépendent de ce qui est en ligne) et le sitemap.
- * En route handler, la régénération se fait à la visite suivante : appeler
- * cette fonction pour 30 articles ne coûte rien.
+ * Rafraîchit tout le blog public : liste, chaque article (liens internes,
+ * « À lire aussi » et couvertures dépendent des autres articles) et le
+ * sitemap. Par motif de route (structure des fichiers, toutes langues) :
+ * aucune requête ; chaque page est régénérée à sa prochaine visite (ISR).
  */
-export async function revaliderBlog(slugsEnPlus: string[] = []): Promise<void> {
-  const { data } = await createAdminClient().from("articles").select("slug");
-  const slugs = new Set([...(data ?? []).map((a) => a.slug as string), ...slugsEnPlus]);
-  revaliderSite("/blog");
-  for (const slug of slugs) revaliderSite(`/blog/${slug}`);
+export async function revaliderBlog(): Promise<void> {
+  revalidatePath("/[locale]/blog", "page");
+  revalidatePath("/[locale]/blog/[slug]", "page");
   revalidatePath("/sitemaps/pages.xml");
 }
 

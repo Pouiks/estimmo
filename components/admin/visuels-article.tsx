@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import {
   Check,
   Copy,
@@ -53,7 +52,6 @@ const POSITIONS: [Position, string, string][] = [
 ];
 
 function Emplacement({ articleId, e }: { articleId: string; e: EmplacementVisuel }) {
-  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [pending, startTransition] = useTransition();
   // Photo choisie et son URL d'aperçu locale (blob:), libérée au remplacement
@@ -81,7 +79,10 @@ function Emplacement({ articleId, e }: { articleId: string; e: EmplacementVisuel
     setFichier(f);
   }
 
-  /** Exécute une action serveur et rafraîchit la page si elle réussit. */
+  /**
+   * Exécute une action serveur. Pas de router.refresh() : l'action appelle
+   * revalidatePath sur cette page, Next renvoie déjà la page à jour.
+   */
   function lancer(action: () => Promise<{ ok: boolean; message: string }>, apres?: () => void) {
     startTransition(async () => {
       try {
@@ -89,7 +90,6 @@ function Emplacement({ articleId, e }: { articleId: string; e: EmplacementVisuel
         if (!r.ok) return void toast.error(r.message);
         toast.success(r.message);
         apres?.();
-        router.refresh();
       } catch {
         toast.error("Action impossible : image trop lourde ou connexion interrompue");
       }

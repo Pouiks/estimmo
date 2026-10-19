@@ -137,6 +137,12 @@ Vitest · pnpm. Déploiement Vercel.
   `serverActions.bodySizeLimit` = 4 Mo (Vercel plafonne à 4,5 Mo). Fichiers :
   `visuels/<slug>-<nom>-<id>.webp`, `bibliotheque/`, `articles/` (ancien éditeur).
   Prompts de génération : `content/blog/prompts-images.md` et `aiPrompt` du JSON.
+- **Réactivité admin** : `revaliderBlog()` revalide par motif de route
+  (`/[locale]/blog`, `/[locale]/blog/[slug]`, sitemap) sans requête ni boucle ; une
+  action qui appelle `revalidatePath` sur la page courante la rafraîchit déjà → pas de
+  `router.refresh()` en plus (double rendu) ; dépôt Storage et insertion `medias` en
+  parallèle ; la page Médias ne relit Storage que si la table est vide ou via le
+  bouton « Synchroniser » (un listing Storage ≈ 1 s).
 - **Éditeur du corps** (`components/admin/editeur-corps.tsx`) : mode visuel (TipTap,
   rendu identique au site via `.article-corps`) ou HTML brut, bascule libre. Nœuds sur
   mesure `components/admin/tiptap-editorial.ts` (aside.a-retenir, div.cta-estimation,
@@ -169,6 +175,9 @@ Vitest · pnpm. Déploiement Vercel.
 - Le formulaire d'estimation est intégré au hero de la landing (`#estimation`) ; /estimation reste pour les liens entrants
 
 ## Contraintes déploiement
+- Fonctions Vercel en **`dub1`** (vercel.json `regions`) : Supabase est en eu-west-1.
+  Par défaut elles tournaient à iad1 (Virginie) et chaque requête base/Storage
+  traversait l'Atlantique (~100 ms × 10 par action admin). Ne pas retirer.
 - Plan Vercel **Pro** → cron toutes les 5 min autorisé (vercel.json = `*/5 * * * *`).
   NB : le plan Hobby (gratuit) limite les crons à 1×/jour et ferait échouer le
   déploiement avec ce schedule ; en cas de retour en gratuit, repasser en quotidien
