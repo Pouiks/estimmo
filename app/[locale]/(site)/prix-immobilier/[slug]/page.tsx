@@ -4,6 +4,7 @@ import { getFormatter, getTranslations } from "next-intl/server";
 import { ArrowRight, Building2, Home, LineChart, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { JsonLd } from "@/components/site/json-ld";
 import { SITE } from "@/lib/config";
 import { Link } from "@/lib/i18n/navigation";
 import { DEFAULT_LOCALE } from "@/lib/i18n/routing";
@@ -21,6 +22,7 @@ import {
   getTopCommunes,
 } from "@/lib/seo/communes";
 import { hrefDepartement, nomDepartement } from "@/lib/seo/departements";
+import { jsonLdFilAriane } from "@/lib/seo/json-ld";
 import {
   evolutionTexte,
   faqCommune,
@@ -149,55 +151,18 @@ export default async function CommunePage({ params }: Props) {
   };
 
   // Reflète le fil d'Ariane visible en haut de page.
-  const jsonLdBreadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: t("filAriane.accueil"),
-        item: urlAbsolue("/", locale),
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: t("filAriane.prix"),
-        item: urlAbsolue("/prix-immobilier", locale),
-      },
-      ...(departement
-        ? [
-            {
-              "@type": "ListItem",
-              position: 3,
-              name: departement,
-              item: urlAbsolue(hrefDepartement(stats.departement), locale),
-            },
-          ]
-        : []),
-      {
-        "@type": "ListItem",
-        position: departement ? 4 : 3,
-        name: nom,
-        item: url,
-      },
-    ],
-  };
+  const jsonLdBreadcrumb = jsonLdFilAriane([
+    { nom: t("filAriane.accueil"), url: urlAbsolue("/", locale) },
+    { nom: t("filAriane.prix"), url: urlAbsolue("/prix-immobilier", locale) },
+    ...(departement
+      ? [{ nom: departement, url: urlAbsolue(hrefDepartement(stats.departement), locale) }]
+      : []),
+    { nom, url },
+  ]);
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdDataset) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
-      />
+      <JsonLd data={[jsonLdDataset, jsonLdFaq, jsonLdBreadcrumb]} />
 
       <div className="mx-auto max-w-4xl px-4 py-10 sm:py-14">
         <nav className="text-sm text-muted-foreground">

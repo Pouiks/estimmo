@@ -178,6 +178,7 @@ Vitest · pnpm. Déploiement Vercel.
 - `CRON_SECRET` obligatoire en prod (jetons de rappel) ; comparaisons Bearer en temps constant
 - `shadcn` est une devDependency (CLI) : ne pas le remettre en dependencies (il tire 20+ CVE inutiles)
 - Le formulaire d'estimation est intégré au hero de la landing (`#estimation`) ; /estimation reste pour les liens entrants
+- JSON-LD (21/10/2026) : toujours via `<JsonLd data={…}>` (`components/site/json-ld.tsx`), qui échappe « < » (`serialiserJsonLd`, `lib/seo/json-ld.ts`) : une surcharge de traduction ou une FAQ saisie dans l'admin ne peut pas fermer la balise. Jamais de `JSON.stringify` direct dans un `<script>`. Fils d'Ariane : `jsonLdFilAriane([...])`, toujours le reflet du `<nav>` visible (landing, /blog, /prix-immobilier, baromètre, départements, communes, articles)
 
 ## Contraintes déploiement
 - Fonctions Vercel en **`dub1`** (vercel.json `regions`) : Supabase est en eu-west-1.

@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { getFormatter, getTranslations } from "next-intl/server";
+import { JsonLd } from "@/components/site/json-ld";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/lib/i18n/navigation";
-import { alternatesPour, openGraphPour } from "@/lib/i18n/seo";
+import { alternatesPour, openGraphPour, urlAbsolue } from "@/lib/i18n/seo";
 import { localeDeParams } from "@/lib/i18n/server";
 import { getDepartementsResume, getTopCommunes } from "@/lib/seo/communes";
 import { hrefDepartement, nomDepartement } from "@/lib/seo/departements";
+import { jsonLdFilAriane } from "@/lib/seo/json-ld";
 
 export const revalidate = 86400;
 
@@ -39,9 +41,24 @@ export default async function PrixImmobilierIndexPage({ params }: Props) {
     getFormatter({ locale }),
   ]);
 
+  // Reflète le fil d'Ariane visible en haut de page.
+  const jsonLdBreadcrumb = jsonLdFilAriane([
+    { nom: t("filAriane.accueil"), url: urlAbsolue("/", locale) },
+    { nom: t("filAriane.prix"), url: urlAbsolue("/prix-immobilier", locale) },
+  ]);
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:py-14">
-      <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+      <JsonLd data={jsonLdBreadcrumb} />
+
+      <nav className="text-sm text-muted-foreground">
+        <Link href="/" className="hover:text-foreground">
+          {t("filAriane.accueil")}
+        </Link>{" "}
+        › <span className="text-foreground">{t("filAriane.prix")}</span>
+      </nav>
+
+      <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
         {t("h1")}
       </h1>
       <p className="mt-4 text-lg text-muted-foreground">{t("intro")}</p>

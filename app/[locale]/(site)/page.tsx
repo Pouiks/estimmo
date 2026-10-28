@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { EstimationForm } from "@/components/estimation/estimation-form";
 import { TunnelProvider } from "@/components/estimation/tunnel-provider";
+import { JsonLd } from "@/components/site/json-ld";
 import { SITE } from "@/lib/config";
 import { alternatesPour, inLanguage, openGraphPour } from "@/lib/i18n/seo";
 import { localeDeParams } from "@/lib/i18n/server";
@@ -100,14 +101,7 @@ export default async function HomePage({ params }: Props) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdAgent) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }}
-      />
+      <JsonLd data={[jsonLdAgent, jsonLdFaq]} />
 
       {/* Hero : le tunnel d'estimation est le premier élément du DOM.
           Mobile : formulaire seul en haut, texte SEO/GEO compact dessous.

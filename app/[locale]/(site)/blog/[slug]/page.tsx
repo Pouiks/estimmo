@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
 import { ArticleCorps } from "@/components/blog/article-corps";
 import { CarteArticle } from "@/components/blog/carte-article";
+import { JsonLd } from "@/components/site/json-ld";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { texteDepuisHtml } from "@/lib/blog/html";
@@ -25,6 +26,7 @@ import {
   urlAbsolue,
 } from "@/lib/i18n/seo";
 import { localeDeParams } from "@/lib/i18n/server";
+import { jsonLdFilAriane } from "@/lib/seo/json-ld";
 
 // + revalidation on-demand : publication depuis l'admin, et cron quotidien
 // quand un article programmé passe sa date (liens internes, « À lire aussi »).
@@ -174,15 +176,11 @@ export default async function ArticlePage({ params }: Props) {
       },
       mainEntityOfPage: url,
     },
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: t("filAriane.accueil"), item: urlAbsolue("/", locale) },
-        { "@type": "ListItem", position: 2, name: t("filAriane.blog"), item: urlAbsolue("/blog", locale) },
-        { "@type": "ListItem", position: 3, name: article.titre, item: url },
-      ],
-    },
+    jsonLdFilAriane([
+      { nom: t("filAriane.accueil"), url: urlAbsolue("/", locale) },
+      { nom: t("filAriane.blog"), url: urlAbsolue("/blog", locale) },
+      { nom: article.titre, url },
+    ]),
     ...(article.faq.length > 0
       ? [
           {
@@ -201,11 +199,7 @@ export default async function ArticlePage({ params }: Props) {
   return (
     <>
       <article className="mx-auto max-w-[720px] px-4 py-10 sm:py-14">
-        <script
-          type="application/ld+json"
-          // « < » échappé : une FAQ saisie dans l'admin ne peut pas fermer la balise.
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
-        />
+        <JsonLd data={jsonLd} />
 
         <nav className="text-sm text-muted-foreground">
           <Link href="/" className="hover:text-foreground">

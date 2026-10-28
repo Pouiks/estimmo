@@ -3,6 +3,10 @@
     "titre": "Property prices by town - price per m² in France",
     "description": "Check property prices per m² for more than 30,000 French towns: median flat and house prices from actual sales (DVF) and ANIL rents."
   },
+  "filAriane": {
+    "accueil": "Home",
+    "prix": "Property prices"
+  },
   "h1": "Property prices in France, town by town",
   "intro": "Median prices per m² calculated from sales actually recorded by the French State (DVF database) and ANIL reference rents, for more than 30,000 towns. Pick a town or value your property directly.",
   "estimer": "Value my property for free",

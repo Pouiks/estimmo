@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getFormatter, getTranslations } from "next-intl/server";
+import { JsonLd } from "@/components/site/json-ld";
 import { Button } from "@/components/ui/button";
 import { Link, permanentRedirect } from "@/lib/i18n/navigation";
 import { alternatesPour, openGraphPour, urlAbsolue } from "@/lib/i18n/seo";
@@ -16,6 +17,7 @@ import {
   nomDepartement,
   slugDepartement,
 } from "@/lib/seo/departements";
+import { jsonLdFilAriane } from "@/lib/seo/json-ld";
 
 /** ISR quotidien, comme les pages communes. */
 export const revalidate = 86400;
@@ -84,37 +86,15 @@ export default async function DepartementPage({ params }: Props) {
   const annee = String(new Date().getFullYear());
   const euro = (n: number) => format.number(n, "currency");
 
-  const jsonLdBreadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: t("filAriane.accueil"),
-        item: urlAbsolue("/", locale),
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: t("filAriane.prix"),
-        item: urlAbsolue("/prix-immobilier", locale),
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: nom,
-        item: urlAbsolue(hrefDepartement(code), locale),
-      },
-    ],
-  };
+  const jsonLdBreadcrumb = jsonLdFilAriane([
+    { nom: t("filAriane.accueil"), url: urlAbsolue("/", locale) },
+    { nom: t("filAriane.prix"), url: urlAbsolue("/prix-immobilier", locale) },
+    { nom, url: urlAbsolue(hrefDepartement(code), locale) },
+  ]);
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
-      />
+      <JsonLd data={jsonLdBreadcrumb} />
 
       <div className="mx-auto max-w-4xl px-4 py-10 sm:py-14">
         <nav className="text-sm text-muted-foreground">

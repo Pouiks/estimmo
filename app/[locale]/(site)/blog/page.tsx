@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { CarteArticle } from "@/components/blog/carte-article";
 import { FiltreCategories } from "@/components/blog/filtre-categories";
+import { JsonLd } from "@/components/site/json-ld";
 import { CATEGORIES } from "@/lib/blog/categories";
 import { articlesEnLigne } from "@/lib/blog/publication";
 import { SITE } from "@/lib/config";
-import { alternatesPour, openGraphPour } from "@/lib/i18n/seo";
+import { Link } from "@/lib/i18n/navigation";
+import { alternatesPour, openGraphPour, urlAbsolue } from "@/lib/i18n/seo";
 import { localeDeParams } from "@/lib/i18n/server";
+import { jsonLdFilAriane } from "@/lib/seo/json-ld";
 
 // + revalidation on-demand à la publication (admin) et au passage de la date
 // d'un article programmé (cron /api/cron/blog)
@@ -37,9 +40,24 @@ export default async function BlogPage({ params }: Props) {
   // Seules les catégories qui ont déjà un article en ligne sont proposées.
   const presentes = CATEGORIES.filter((c) => articles.some((a) => a.categorie === c));
 
+  // Reflète le fil d'Ariane visible en haut de page.
+  const jsonLdBreadcrumb = jsonLdFilAriane([
+    { nom: t("filAriane.accueil"), url: urlAbsolue("/", locale) },
+    { nom: t("filAriane.blog"), url: urlAbsolue("/blog", locale) },
+  ]);
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:py-14">
-      <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+      <JsonLd data={jsonLdBreadcrumb} />
+
+      <nav className="text-sm text-muted-foreground">
+        <Link href="/" className="hover:text-foreground">
+          {t("filAriane.accueil")}
+        </Link>{" "}
+        › <span className="text-foreground">{t("filAriane.blog")}</span>
+      </nav>
+
+      <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
         {t("h1", { marque: SITE.name })}
       </h1>
       <p className="mt-3 text-lg text-muted-foreground">{t("intro")}</p>

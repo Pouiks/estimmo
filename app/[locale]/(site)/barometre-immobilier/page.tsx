@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { JsonLd } from "@/components/site/json-ld";
 import { SITE } from "@/lib/config";
 import { Link } from "@/lib/i18n/navigation";
 import type { Locale } from "@/lib/i18n/routing";
@@ -29,6 +30,7 @@ import {
   urlAbsolue,
 } from "@/lib/i18n/seo";
 import { localeDeParams } from "@/lib/i18n/server";
+import { jsonLdFilAriane } from "@/lib/seo/json-ld";
 import {
   getGrandsMarches,
   getKpisBarometre,
@@ -234,6 +236,12 @@ export default async function BarometrePage({ params }: Props) {
     spatialCoverage: { "@type": "Country", name: "France" },
   };
 
+  // Reflète le fil d'Ariane visible en haut de page.
+  const jsonLdBreadcrumb = jsonLdFilAriane([
+    { nom: t("filAriane.accueil"), url: urlAbsolue("/", locale) },
+    { nom: t("filAriane.barometre"), url: urlAbsolue("/barometre-immobilier", locale) },
+  ]);
+
   const sections = [
     { cle: "hausses", icon: ArrowUpRight, lignes: hausses, colonne: "evolution" as const },
     { cle: "baisses", icon: ArrowDownRight, lignes: baisses, colonne: "evolution" as const },
@@ -243,10 +251,7 @@ export default async function BarometrePage({ params }: Props) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={[jsonLd, jsonLdBreadcrumb]} />
 
       <div className="mx-auto max-w-5xl px-4 py-10 sm:py-14">
         <nav className="text-sm text-muted-foreground">
