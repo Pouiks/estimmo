@@ -9,6 +9,11 @@
   },
   "h1": "Prix immobilier en France, commune par commune",
   "intro": "Prix médians au m² calculés à partir des ventes réellement enregistrées par l'État (base DVF) et loyers de référence ANIL, pour plus de 30 000 communes. Sélectionnez une ville ou estimez directement votre bien.",
+  "recherche": {
+    "label": "Trouver une commune",
+    "placeholder": "Nom de la commune ou code postal",
+    "aucun": "Aucune commune trouvée"
+  },
   "estimer": "Estimer mon bien gratuitement",
   "barometre": "Voir le baromètre des prix",
   "actifs": "Les marchés les plus actifs",

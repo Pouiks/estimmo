@@ -8,6 +8,7 @@ describe("slugify", () => {
     );
     expect(slugify("  Côte-d'Or !! ")).toBe("cote-d-or");
     expect(slugify("Nice 06000")).toBe("nice-06000");
+    expect(slugify("Villiers-en-Désœuvre")).toBe("villiers-en-desoeuvre");
     expect(slugify("")).toBe("");
   });
 });

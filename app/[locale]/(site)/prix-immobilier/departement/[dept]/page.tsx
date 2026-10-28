@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { JsonLd } from "@/components/site/json-ld";
+import { RechercheCommune } from "@/components/site/recherche-commune";
 import { Button } from "@/components/ui/button";
 import { Link, permanentRedirect } from "@/lib/i18n/navigation";
 import { alternatesPour, openGraphPour, urlAbsolue } from "@/lib/i18n/seo";
@@ -120,6 +121,16 @@ export default async function DepartementPage({ params }: Props) {
             ventes: infos?.nb_ventes_12m ?? 0,
           })}
         </p>
+
+        <RechercheCommune
+          className="mt-8 max-w-xl"
+          departement={code}
+          libelles={{
+            label: t("recherche.label"),
+            placeholder: t("recherche.placeholder"),
+            aucun: t("recherche.aucun"),
+          }}
+        />
 
         <div className="mt-6">
           <Button size="lg" render={<Link href="/#estimation" />}>

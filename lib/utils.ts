@@ -5,9 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-/** "Prix de l'immobilier à Saint-Étienne" → "prix-de-l-immobilier-a-saint-etienne" */
+/** "Prix de l'immobilier à Saint-Étienne" → "prix-de-l-immobilier-a-saint-etienne" ; ligatures comme unaccent (SQL) : œ → oe */
 export function slugify(texte: string): string {
   return texte
+    .replace(/[œŒ]/g, "oe")
+    .replace(/[æÆ]/g, "ae")
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .toLowerCase()

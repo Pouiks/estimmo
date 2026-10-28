@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { JsonLd } from "@/components/site/json-ld";
+import { RechercheCommune } from "@/components/site/recherche-commune";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/lib/i18n/navigation";
 import { alternatesPour, openGraphPour, urlAbsolue } from "@/lib/i18n/seo";
@@ -62,6 +63,15 @@ export default async function PrixImmobilierIndexPage({ params }: Props) {
         {t("h1")}
       </h1>
       <p className="mt-4 text-lg text-muted-foreground">{t("intro")}</p>
+
+      <RechercheCommune
+        className="mt-8 max-w-xl"
+        libelles={{
+          label: t("recherche.label"),
+          placeholder: t("recherche.placeholder"),
+          aucun: t("recherche.aucun"),
+        }}
+      />
 
       <div className="mt-6 flex flex-wrap gap-3">
         <Button size="lg" render={<Link href="/estimation" />}>

@@ -10,6 +10,11 @@
   },
   "h1": "Property prices in {paris, select, true {} other {the}} {nom} ({code}) in {annee}",
   "intro": "{communes, plural, one {# town tracked} other {# towns tracked}}{ventes, plural, =0 {} other {, # sales analysed over the last 12 months of published data}}. Median prices per m² from sales actually recorded by the French State (DVF database) and ANIL reference rents.",
+  "recherche": {
+    "label": "Find a town in this department",
+    "placeholder": "Town name or postcode",
+    "aucun": "No town found in this department"
+  },
   "cta": "Value my property for free",
   "parCommune": "Price per m² by town",
   "prixAppart": "{prix}/m²",

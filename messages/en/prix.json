@@ -9,6 +9,11 @@
   },
   "h1": "Property prices in France, town by town",
   "intro": "Median prices per m² calculated from sales actually recorded by the French State (DVF database) and ANIL reference rents, for more than 30,000 towns. Pick a town or value your property directly.",
+  "recherche": {
+    "label": "Find a town",
+    "placeholder": "Town name or postcode",
+    "aucun": "No town found"
+  },
   "estimer": "Value my property for free",
   "barometre": "See the price barometer",
   "actifs": "The most active markets",

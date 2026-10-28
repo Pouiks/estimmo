@@ -1,5 +1,10 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  RECHERCHE_MAX_RESULTATS,
+  analyserRecherche,
+  motifsRecherche,
+} from "./recherche";
 
 export interface CommuneStats {
   code_insee: string;
@@ -104,6 +109,49 @@ export async function getCommunesByDepartement(
     if (data.length < pageSize) break;
   }
   return all;
+}
+
+export type CommuneTrouvee = Pick<
+  CommuneStats,
+  "slug" | "nom_commune" | "code_postal" | "departement" | "nb_ventes_12m"
+>;
+
+/**
+ * Recherche de commune par début de nom ou de code postal (saisie libre),
+ * éventuellement limitée à un département. Les marchés les plus actifs
+ * d'abord ; les correspondances en début de nom avant celles en milieu de nom.
+ */
+export async function rechercherCommunes(
+  saisie: string,
+  departement?: string
+): Promise<CommuneTrouvee[]> {
+  const recherche = analyserRecherche(saisie);
+  if (!recherche) return [];
+
+  const supabase = createAdminClient();
+  const requete = (motif: string) => {
+    let q = supabase
+      .from("communes_stats")
+      .select("slug, nom_commune, code_postal, departement, nb_ventes_12m")
+      .like(recherche.champ, motif);
+    if (departement) q = q.eq("departement", departement);
+    return q
+      .order("nb_ventes_12m", { ascending: false })
+      .order("nom_commune")
+      .limit(RECHERCHE_MAX_RESULTATS);
+  };
+
+  const reponses = await Promise.all(motifsRecherche(recherche).map(requete));
+  const vus = new Set<string>();
+  const communes: CommuneTrouvee[] = [];
+  for (const { data } of reponses) {
+    for (const c of (data ?? []) as CommuneTrouvee[]) {
+      if (vus.has(c.slug)) continue;
+      vus.add(c.slug);
+      communes.push(c);
+    }
+  }
+  return communes.slice(0, RECHERCHE_MAX_RESULTATS);
 }
 
 export interface DepartementResume {

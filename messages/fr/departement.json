@@ -10,6 +10,11 @@
   },
   "h1": "Prix immobilier {paris, select, true {à} other {dans le}} {nom} ({code}) en {annee}",
   "intro": "{communes, plural, one {# commune suivie} other {# communes suivies}}{ventes, plural, =0 {} other {, # ventes analysées sur les 12 derniers mois de données publiées}}. Prix médians au m² issus des ventes réellement enregistrées par l'État (base DVF) et loyers de référence ANIL.",
+  "recherche": {
+    "label": "Trouver une commune du département",
+    "placeholder": "Nom de la commune ou code postal",
+    "aucun": "Aucune commune trouvée dans ce département"
+  },
   "cta": "Estimer mon bien gratuitement",
   "parCommune": "Prix au m² par commune",
   "prixAppart": "{prix}/m²",
