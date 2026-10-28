@@ -17,14 +17,18 @@ export const formats = {
     /** +3,2 / -1,4 (évolution en points de %, signe explicite) */
     evolution: { maximumFractionDigits: 1, signDisplay: "exceptZero" },
   },
+  // Toujours par composants (jamais dateStyle) : dans un message ICU
+  // ({date, date, short}), intl-messageformat fusionne nos formats avec ses
+  // formats par defaut « short »/« long » (composants) et Intl refuse le
+  // melange dateStyle + composants (FORMATTING_ERROR « Invalid option »).
   dateTime: {
     /** 18 octobre 2026 / 18 October 2026 */
-    long: { dateStyle: "long" },
+    long: { day: "numeric", month: "long", year: "numeric" },
     /** 18 octobre / 18 October */
     dayMonth: { day: "numeric", month: "long" },
     /** octobre 2026 / October 2026 */
     monthYear: { month: "long", year: "numeric" },
     /** 18/10/2026 */
-    short: { dateStyle: "short" },
+    short: { day: "2-digit", month: "2-digit", year: "numeric" },
   },
 } satisfies Formats;

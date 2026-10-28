@@ -1,4 +1,4 @@
-import { createFormatter } from "next-intl";
+import { createFormatter, createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 import { formats } from "./formats";
 
@@ -34,5 +34,18 @@ describe("formats partagés", () => {
     expect(fr.dateTime(d, "long")).toBe("18 octobre 2026");
     expect(en.dateTime(d, "long")).toBe("October 18, 2026");
     expect(fr.dateTime(d, "monthYear")).toBe("octobre 2026");
+  });
+});
+
+describe("formats dans les messages ICU", () => {
+  it("accepte {date, date, short} et {date, date, long} sans collision avec les formats par defaut", () => {
+    const d = new Date("2026-10-18T12:00:00Z");
+    const t = createTranslator({
+      locale: "fr",
+      formats,
+      timeZone: "Europe/Paris",
+      messages: { maj: "mis a jour le {date, date, short} ({date, date, long})" },
+    });
+    expect(t("maj", { date: d })).toBe("mis a jour le 18/10/2026 (18 octobre 2026)");
   });
 });
