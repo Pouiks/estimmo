@@ -1,12 +1,22 @@
 import { getTranslations } from "next-intl/server";
 import { LocaleSwitcher } from "@/components/site/locale-switcher";
+import { MenuMobile } from "@/components/site/menu-mobile";
+import { buttonVariants } from "@/components/ui/button";
 import { SITE } from "@/lib/config";
 import { Link } from "@/lib/i18n/navigation";
+import { cn } from "@/lib/utils";
 
 export default async function SiteLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const t = await getTranslations();
+
+  // Mêmes destinations que le pied de page (hors pages légales).
+  const liens = [
+    { href: "/prix-immobilier", libelle: t("nav.prixCourt") },
+    { href: "/barometre-immobilier", libelle: t("nav.barometreCourt") },
+    { href: "/blog", libelle: t("nav.blog") },
+  ];
 
   return (
     <>
@@ -15,12 +25,27 @@ export default async function SiteLayout({
           <Link href="/" className="text-xl font-bold tracking-tight">
             ESTI<span className="text-primary">MMO</span>
           </Link>
-          <nav className="flex items-center gap-4 sm:gap-6">
+          <nav
+            aria-label={t("nav.principale")}
+            className="flex items-center gap-3 sm:gap-5"
+          >
+            <ul className="hidden items-center gap-5 md:flex">
+              {liens.map((lien) => (
+                <li key={lien.href}>
+                  <Link
+                    href={lien.href}
+                    className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {lien.libelle}
+                  </Link>
+                </li>
+              ))}
+            </ul>
             <Link
-              href="/blog"
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              href="/estimation"
+              className={cn(buttonVariants({ size: "sm" }), "hidden sm:inline-flex")}
             >
-              {t("nav.blog")}
+              {t("nav.estimer")}
             </Link>
             <LocaleSwitcher
               ariaLabel={t("nav.langue")}
@@ -28,6 +53,10 @@ export default async function SiteLayout({
                 fr: t("common.langues.fr"),
                 en: t("common.langues.en"),
               }}
+            />
+            <MenuMobile
+              ariaLabel={t("nav.menu")}
+              liens={[{ href: "/estimation", libelle: t("nav.estimer") }, ...liens]}
             />
           </nav>
         </div>

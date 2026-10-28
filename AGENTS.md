@@ -200,5 +200,6 @@ Vitest · pnpm. Déploiement Vercel.
 - Clé Resend (RESEND_API_KEY) + EMAIL_FROM sur domaine vérifié (sinon simulation console)
 - URL + clé du webhook CRM du propriétaire
 - Repo GitHub (secrets SUPABASE_DB_URL, CRON_SECRET, var SITE_URL) + déploiement Vercel
+- Relancer `pnpm import:loyers` (28/10/2026 : décodage Windows-1252 des CSV ANIL) : corrige les 325 communes sans vente DVF dont le nom et le slug contiennent U+FFFD (ex. `Tr�con` → `trecon-51582`) ; les anciens slugs cassés passent en 404, sitemap et pages département rafraîchis sous 24 h (ISR)
 - Purger les leads de test : delete from leads (cascade crm_sync_queue)
 - Search Console : `/sitemap.xml` est désormais un index de sitemaps (pages.xml, communes-N.xml) - vérifier qu'il est bien relu après déploiement

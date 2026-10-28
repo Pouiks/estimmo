@@ -4,6 +4,8 @@
  * Source : data.gouv.fr - indicateurs de loyers d'annonce par commune
  * (données Groupe SeLoger + leboncoin, publication annuelle par l'ANIL).
  * Couverture : toute la France hors Mayotte.
+ * Fichiers encodés en Windows-1252 (é, œ…) : décodés explicitement, sinon
+ * les accents deviennent U+FFFD dans communes_ref et dans les slugs.
  *
  * Mention légale obligatoire à chaque affichage d'un loyer :
  * « Estimations ANIL, à partir des données du Groupe SeLoger et de leboncoin »
@@ -54,6 +56,7 @@ async function importResource(
 ) {
   const stream = await fetchCsvStream(RESOURCES[key], {
     csv: { delimiter: ";" },
+    encoding: "windows-1252",
   });
   if (!stream) throw new Error(`Ressource introuvable : ${RESOURCES[key]}`);
 
@@ -79,12 +82,17 @@ async function writeToDb(client: Client, communes: Map<string, CommuneLoyers>) {
   const entries = [...communes.entries()];
 
   // Le référentiel communes ne doit pas écraser les données DVF (qui portent
-  // le code postal) : insertion uniquement des communes manquantes.
+  // le code postal) : insertion des communes manquantes, et mise à jour du nom
+  // des seules communes connues par l'ANIL (sans code postal) - leur slug
+  // dérive de ce nom.
   for (const batch of chunk(entries, 5_000)) {
     await client.query(
       `insert into communes_ref (code_insee, nom_commune, code_departement)
        select * from unnest($1::text[], $2::text[], $3::text[])
-       on conflict (code_insee) do nothing`,
+       on conflict (code_insee) do update
+         set nom_commune = excluded.nom_commune
+         where communes_ref.code_postal is null
+           and communes_ref.nom_commune is distinct from excluded.nom_commune`,
       [
         batch.map(([insee]) => insee),
         batch.map(([, c]) => c.nom),

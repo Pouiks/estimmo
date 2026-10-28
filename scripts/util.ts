@@ -1,5 +1,5 @@
 /** Utilitaires partagés par les scripts d'ingestion (hors runtime Vercel). */
-import { Readable } from "node:stream";
+import { Readable, Transform } from "node:stream";
 import { createGunzip } from "node:zlib";
 import { parse, type Options as CsvOptions } from "csv-parse";
 import { Client } from "pg";
@@ -25,7 +25,15 @@ export function getDbClient(): Client {
  */
 export async function fetchCsvStream(
   url: string,
-  options: { gzip?: boolean; csv?: CsvOptions } = {}
+  options: {
+    gzip?: boolean;
+    csv?: CsvOptions;
+    /**
+     * Encodage du fichier source (UTF-8 par défaut). Les CSV de l'ANIL sont
+     * en Windows-1252 : lus en UTF-8, chaque accent devient U+FFFD (« Tr�con »).
+     */
+    encoding?: "utf-8" | "windows-1252";
+  } = {}
 ): Promise<AsyncIterable<Record<string, string>> | null> {
   const res = await fetch(url, { redirect: "follow" });
   if (res.status === 404) return null;
@@ -37,10 +45,27 @@ export async function fetchCsvStream(
     res.body as import("node:stream/web").ReadableStream
   );
   if (options.gzip) stream = stream.pipe(createGunzip());
+  if (options.encoding && options.encoding !== "utf-8") {
+    stream = stream.pipe(transcoder(options.encoding));
+  }
 
   return stream.pipe(
     parse({ columns: true, bom: true, ...options.csv })
   ) as AsyncIterable<Record<string, string>>;
+}
+
+/** Transcode un flux d'octets (ex. Windows-1252) en UTF-8, chunk par chunk. */
+function transcoder(encoding: string): Transform {
+  const decoder = new TextDecoder(encoding);
+  return new Transform({
+    transform(chunk: Buffer, _encoding, callback) {
+      callback(null, decoder.decode(chunk, { stream: true }));
+    },
+    flush(callback) {
+      const reste = decoder.decode();
+      callback(null, reste.length > 0 ? reste : undefined);
+    },
+  });
 }
 
 export function chunk<T>(items: T[], size: number): T[][] {
