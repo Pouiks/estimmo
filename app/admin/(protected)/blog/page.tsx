@@ -38,6 +38,7 @@ interface Ligne {
   titre: string;
   statut: "brouillon" | "publie";
   lang: string | null;
+  traduction_de: string | null;
   categorie: string | null;
   published_at: string | null;
   contenu_html: string | null;
@@ -52,7 +53,7 @@ export default async function AdminBlogPage() {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("articles")
-    .select("id, slug, titre, statut, lang, categorie, published_at, contenu_html, image_cover, images, visuels")
+    .select("id, slug, titre, statut, lang, traduction_de, categorie, published_at, contenu_html, image_cover, images, visuels")
     .order("published_at", { ascending: false, nullsFirst: true });
 
   if (error) throw new Error(error.message);
@@ -120,6 +121,9 @@ export default async function AdminBlogPage() {
                   : [];
                 const manquants = visuels.filter((src) => !resoudreImage(src, article.visuels)).length;
                 const chemin = `${article.lang === "en" ? "/en" : ""}/blog/${article.slug}`;
+                const versionLiee = articles.find(
+                  (x) => x.id === article.traduction_de || x.traduction_de === article.id
+                );
                 return (
                   <TableRow key={article.id}>
                     <TableCell className="max-w-md whitespace-normal">
@@ -135,6 +139,15 @@ export default async function AdminBlogPage() {
                         </span>
                         {article.categorie && <span>{CATEGORIES[article.categorie]}</span>}
                         <span>{chemin}</span>
+                        {versionLiee && (
+                          <Link
+                            href={`/admin/blog/${versionLiee.id}`}
+                            className="hover:underline"
+                            title={versionLiee.titre}
+                          >
+                            ↔ version {versionLiee.lang === "en" ? "anglaise" : "française"}
+                          </Link>
+                        )}
                         {manquants > 0 && (
                           <span
                             className="flex items-center gap-1 text-amber-700"

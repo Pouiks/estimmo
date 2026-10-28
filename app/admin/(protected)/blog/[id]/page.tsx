@@ -41,7 +41,7 @@ export default async function EditArticlePage({
   const { data: article } = await supabase
     .from("articles")
     .select(
-      "id, slug, titre, meta_title, meta_description, extrait, categorie, auteur, temps_lecture, contenu, contenu_html, image_cover, image_cover_alt, image_cover_largeur, image_cover_hauteur, image_cover_prompt, visuels, faq, articles_lies, mot_cle_principal, mots_cles_secondaires, images, statut, lang, published_at"
+      "id, slug, titre, meta_title, meta_description, extrait, categorie, auteur, temps_lecture, contenu, contenu_html, image_cover, image_cover_alt, image_cover_largeur, image_cover_hauteur, image_cover_prompt, visuels, faq, articles_lies, mot_cle_principal, mots_cles_secondaires, images, statut, lang, traduction_de, published_at"
     )
     .eq("id", id)
     .maybeSingle();
@@ -59,11 +59,24 @@ export default async function EditArticlePage({
   }
 
   // Article éditorial (HTML importé depuis content/blog)
-  const { data: autres } = await supabase
-    .from("articles")
-    .select("slug, titre")
-    .neq("id", id)
-    .order("titre");
+  const lang: "fr" | "en" = article.lang === "en" ? "en" : "fr";
+  const [{ data: autres }, { data: liee }, { data: francais }] = await Promise.all([
+    // « À lire aussi » : articles de la même langue
+    supabase.from("articles").select("slug, titre").eq("lang", lang).neq("id", id).order("titre"),
+    // Version liée : l'original français de cette traduction, ou la version anglaise de cet original
+    supabase
+      .from("articles")
+      .select("id, titre, lang, statut")
+      .or(
+        article.traduction_de
+          ? `id.eq.${article.traduction_de},traduction_de.eq.${id}`
+          : `traduction_de.eq.${id}`
+      )
+      .limit(1)
+      .maybeSingle(),
+    // Originaux possibles pour une version anglaise
+    supabase.from("articles").select("id, titre").eq("lang", "fr").neq("id", id).order("titre"),
+  ]);
 
   const visuels = (article.visuels ?? {}) as Visuels;
   const etat = (cle: string): Pick<EmplacementVisuel, "url" | "source"> =>
@@ -111,6 +124,8 @@ export default async function EditArticlePage({
       ? versChampParis(new Date(article.published_at))
       : versChampParis(new Date()),
     statut: article.statut,
+    lang,
+    traductionDe: article.traduction_de ?? null,
     contenuHtml: article.contenu_html,
     faq: article.faq ?? [],
     articlesLies: article.articles_lies ?? [],
@@ -141,6 +156,8 @@ export default async function EditArticlePage({
       <ArticleEditorialEditor
         article={data}
         autresArticles={(autres ?? []) as { slug: string; titre: string }[]}
+        versionLiee={(liee ?? null) as { id: string; titre: string; lang: string; statut: string } | null}
+        articlesFrancais={(francais ?? []) as { id: string; titre: string }[]}
         motsCles={[article.mot_cle_principal, ...(article.mots_cles_secondaires ?? [])].filter(Boolean)}
         imagesResolues={Object.fromEntries(
           emplacements.flatMap((e) => (e.url ? [[e.cle, e.url]] : []))

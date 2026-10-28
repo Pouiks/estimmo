@@ -91,8 +91,14 @@ Vitest · pnpm. Déploiement Vercel.
   `/sitemaps/pages.xml` + `/sitemaps/communes-N.xml` (une entrée par langue, 20 000
   communes par fichier) ; pages noindex exclues. Admin (`app/admin`) hors `[locale]`, FR.
 - **Données** : `leads.locale` (email prospect dans sa langue, notification agent en FR),
-  `articles.lang` (un article n'existe que dans sa langue ; `/en/blog/<slug-fr>` → 404 ;
-  choix dans l'éditeur admin). Migration `20261018120000_i18n_locale.sql`.
+  `articles.lang` + `articles.traduction_de` (28/10/2026) : une version anglaise est un
+  article `en` relié à son original `fr` (bouton « Créer la version anglaise » de l'éditeur
+  admin = copie en brouillon à traduire, slug suffixé `-en` ; `lib/blog/traductions.ts`).
+  Les deux versions se déclarent en hreflang (page + sitemap) ; `/en/blog/<slug-fr>`
+  redirige vers la version anglaise si elle est en ligne, sinon vers `/en/blog` ; les liens
+  internes et « À lire aussi » copiés du français sont traduits au rendu quand la version
+  anglaise de la cible est en ligne. Migrations `20261018120000_i18n_locale.sql`,
+  `20261028120000_articles_traduction.sql`.
 - **Surcharges admin** (`/admin/traductions`, table `traductions`) : la conseillère peut
   reformuler n'importe quelle clé par langue (ton, SEO). Les JSON restent la source
   embarquée ; `lib/i18n/request.ts` fusionne les surcharges (`appliquerSurcharges`,
@@ -178,6 +184,12 @@ Vitest · pnpm. Déploiement Vercel.
 - `CRON_SECRET` obligatoire en prod (jetons de rappel) ; comparaisons Bearer en temps constant
 - `shadcn` est une devDependency (CLI) : ne pas le remettre en dependencies (il tire 20+ CVE inutiles)
 - Le formulaire d'estimation est intégré au hero de la landing (`#estimation`) ; /estimation reste pour les liens entrants
+- Partage social (28/10/2026) : `openGraphPour` fournit toujours une image : celle de la page
+  (couverture d'article) sinon `/og.png?t=…&s=…&l=…` (`app/og.png/route.tsx`, ImageResponse
+  1200×630, marque + titre + sous-titre, cache CDN 1 an, 60 req/min par IP ; le point dans
+  le chemin l'exclut du proxy i18n). Layout : `twitter.card = summary_large_image`
+  (Twitter/X reprend les balises og:*), `viewport.themeColor` (couleur des aperçus Discord).
+  Communes : sous-titre = description (prix au m²). Instagram ne génère pas d'aperçu de lien.
 - JSON-LD (21/10/2026) : toujours via `<JsonLd data={…}>` (`components/site/json-ld.tsx`), qui échappe « < » (`serialiserJsonLd`, `lib/seo/json-ld.ts`) : une surcharge de traduction ou une FAQ saisie dans l'admin ne peut pas fermer la balise. Jamais de `JSON.stringify` direct dans un `<script>`. Fils d'Ariane : `jsonLdFilAriane([...])`, toujours le reflet du `<nav>` visible (landing, /blog, /prix-immobilier, baromètre, départements, communes, articles)
 
 ## Contraintes déploiement

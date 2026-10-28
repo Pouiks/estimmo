@@ -8,6 +8,7 @@ import { creerMedia, listerMedias, mediaParId, recadrerMedia } from "@/lib/blog/
 import { POSITIONS } from "@/lib/blog/optimisation";
 import { depuisChampParis } from "@/lib/blog/planning";
 import { revaliderBlog } from "@/lib/blog/publication";
+import { slugTraduction } from "@/lib/blog/traductions";
 import { requireAdmin } from "@/lib/supabase/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { slugify } from "@/lib/utils";
@@ -248,6 +249,10 @@ const articleEditorialSchema = z.object({
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/, "Date de publication invalide"),
   statut: z.enum(["brouillon", "publie"]),
+  /** Langue : l'article n'apparaît que sur /blog (fr) ou /en/blog (en). */
+  lang: z.enum(["fr", "en"]),
+  /** Version anglaise : l'article français d'origine (hreflang, bascule FR/EN). */
+  traductionDe: z.uuid().nullable(),
   contenuHtml: z.string().min(200, "Contenu trop court"),
   faq: z.array(
     z.object({
@@ -275,11 +280,28 @@ export async function saveArticleEditorial(input: unknown): Promise<SaveArticleR
     return { ok: false, message: "Un article ne peut pas se citer dans « À lire aussi »" };
   }
 
+  const traductionDe = a.lang === "en" ? a.traductionDe : null;
+  if (traductionDe === a.id) {
+    return { ok: false, message: "Un article ne peut pas être sa propre traduction" };
+  }
+  if (traductionDe) {
+    const { data: original } = await createAdminClient()
+      .from("articles")
+      .select("lang")
+      .eq("id", traductionDe)
+      .maybeSingle();
+    if (!original || original.lang !== "fr") {
+      return { ok: false, message: "L'article d'origine doit être un article français" };
+    }
+  }
+
   const { error } = await createAdminClient()
     .from("articles")
     .update({
       titre: a.titre,
       slug: a.slug,
+      lang: a.lang,
+      traduction_de: traductionDe,
       meta_title: a.metaTitle,
       meta_description: a.metaDescription,
       extrait: a.extrait,
@@ -293,16 +315,84 @@ export async function saveArticleEditorial(input: unknown): Promise<SaveArticleR
       articles_lies: a.articlesLies,
     })
     .eq("id", a.id);
-  if (error) {
-    return {
-      ok: false,
-      message: error.code === "23505" ? "Ce slug existe déjà" : error.message,
-    };
-  }
+  if (error) return { ok: false, message: messageDoublon(error) };
 
   await apresChangement(a.id);
   revalidatePath(`/admin/blog/${a.id}`);
   return { ok: true, message: "Article enregistré", id: a.id };
+}
+
+function messageDoublon(error: { code?: string; message: string }): string {
+  if (error.code !== "23505") return error.message;
+  return error.message.includes("traduction")
+    ? "Cet article français a déjà une version anglaise"
+    : "Ce slug existe déjà";
+}
+
+/** Colonnes copiées telles quelles dans la version anglaise (à traduire ensuite). */
+const COLONNES_COPIEES = [
+  "titre", "meta_title", "meta_description", "extrait", "categorie", "auteur",
+  "temps_lecture", "contenu", "contenu_html", "image_cover", "image_cover_alt",
+  "image_cover_largeur", "image_cover_hauteur", "image_cover_prompt", "visuels",
+  "faq", "articles_lies", "mot_cle_principal", "mots_cles_secondaires",
+  "points_cles", "images", "published_at",
+] as const;
+
+/**
+ * Crée la version anglaise d'un article français : copie intégrale en
+ * brouillon (textes, HTML, FAQ, images et emplacements partagés), reliée par
+ * traduction_de, slug suffixé « -en ». Le contenu reste à traduire dans
+ * l'éditeur ; les liens internes et « À lire aussi » copiés sont traduits
+ * automatiquement à l'affichage quand la version anglaise de la cible est
+ * en ligne.
+ */
+export async function creerTraduction(id: string): Promise<SaveArticleResult> {
+  await requireAdmin();
+  if (!z.uuid().safeParse(id).success) return { ok: false, message: "Article inconnu" };
+
+  const supabase = createAdminClient();
+  const { data: source } = await supabase
+    .from("articles")
+    .select(["slug", "lang", ...COLONNES_COPIEES].join(", "))
+    .eq("id", id)
+    .maybeSingle();
+  if (!source) return { ok: false, message: "Article introuvable" };
+  const original = source as unknown as Record<string, unknown>;
+  if (original.lang !== "fr") {
+    return { ok: false, message: "Seul un article français peut recevoir une version anglaise" };
+  }
+  if (!original.contenu_html) {
+    return { ok: false, message: "Réservé aux articles éditoriaux (corps HTML)" };
+  }
+
+  const { data: existante } = await supabase
+    .from("articles")
+    .select("id")
+    .eq("traduction_de", id)
+    .maybeSingle();
+  if (existante) {
+    return { ok: true, message: "La version anglaise existe déjà", id: existante.id as string };
+  }
+
+  const copie = Object.fromEntries(COLONNES_COPIEES.map((c) => [c, original[c] ?? null]));
+  const { data, error } = await supabase
+    .from("articles")
+    .insert({
+      ...copie,
+      slug: slugTraduction(original.slug as string, "en"),
+      lang: "en",
+      statut: "brouillon",
+      traduction_de: id,
+      diffuse_le: null,
+    })
+    .select("id")
+    .single();
+  if (error || !data) {
+    return { ok: false, message: error ? messageDoublon(error) : "Erreur" };
+  }
+
+  revalidatePath("/admin/blog");
+  return { ok: true, message: "Version anglaise créée en brouillon : à traduire", id: data.id as string };
 }
 
 // ----------------------------------------------------------------------------

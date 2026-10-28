@@ -4,6 +4,7 @@ import {
   COMMUNES_PAR_SITEMAP,
   alternatesSitemap,
   entreeMonolingue,
+  entreeTraduite,
   entreesBilingues,
   nombreTranchesCommunes,
   nomsFichiersSitemap,
@@ -132,5 +133,22 @@ describe("sitemapXml", () => {
     const res = reponseXml("<x/>");
     expect(res.headers.get("content-type")).toContain("application/xml");
     expect(await res.text()).toBe("<x/>");
+  });
+});
+
+describe("entreeTraduite", () => {
+  it("relie un article et sa version anglaise par hreflang, x-default sur le français", () => {
+    const chemins = { fr: "/blog/frais-de-notaire", en: "/blog/notary-fees" };
+    expect(entreeTraduite(chemins, "en", { priority: 0.6 })).toEqual({
+      url: `${SITE.url}/en/blog/notary-fees`,
+      alternates: {
+        languages: {
+          fr: `${SITE.url}/blog/frais-de-notaire`,
+          en: `${SITE.url}/en/blog/notary-fees`,
+          "x-default": `${SITE.url}/blog/frais-de-notaire`,
+        },
+      },
+      priority: 0.6,
+    });
   });
 });

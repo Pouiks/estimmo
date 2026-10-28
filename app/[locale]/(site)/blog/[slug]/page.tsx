@@ -12,15 +12,22 @@ import { resoudreImage } from "@/lib/blog/images";
 import {
   articleEnLigne,
   articlesEnLigne,
+  versionsEnLigne,
   type ArticleCarte,
   type ArticleComplet,
 } from "@/lib/blog/publication";
 import { extraireTexte } from "@/lib/blog/render";
+import {
+  cheminDeRepli,
+  cheminsParLangue,
+  correspondances,
+} from "@/lib/blog/traductions";
 import { SITE } from "@/lib/config";
-import { Link } from "@/lib/i18n/navigation";
+import { Link, redirect } from "@/lib/i18n/navigation";
 import { estLocale } from "@/lib/i18n/routing";
 import {
-  cheminLocalise,
+  alternatesPourChemins,
+  imageOgPour,
   inLanguage,
   openGraphPour,
   urlAbsolue,
@@ -67,8 +74,9 @@ function dateModification(article: ArticleComplet): string {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const [{ slug }, locale] = await Promise.all([params, localeDeParams(params)]);
-  const [article, t] = await Promise.all([
+  const [article, versions, t] = await Promise.all([
     articleEnLigne(slug, locale),
+    versionsEnLigne(),
     getTranslations({ locale, namespace: "blog" }),
   ]);
   if (!article) return { title: t("introuvable") };
@@ -86,7 +94,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           alt: article.image_cover_alt ?? article.titre,
         },
       ]
-    : undefined;
+    : imageOgPour({ locale, title: titre });
 
   return {
     // Gabarit « %s | ESTIMMO » seulement si le titre reste sous ~60 caractères.
@@ -95,8 +103,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         ? titre
         : { absolute: titre },
     description: desc,
-    // Pas d'alternates hreflang : l'article n'existe que dans sa langue.
-    alternates: { canonical: cheminLocalise(chemin, locale) },
+    // hreflang vers la version traduite si elle est en ligne, sinon canonique seule.
+    alternates: alternatesPourChemins(cheminsParLangue(article, locale, versions), locale),
     authors: [{ name: article.auteur ?? SITE.agent.name }],
     openGraph: {
       ...openGraphPour({ locale, cheminFr: chemin, title: titre, description: desc }),
@@ -107,7 +115,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: image,
     },
     twitter: {
-      card: image ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title: titre,
       description: desc,
       images: image,
@@ -115,11 +123,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-/** « À lire aussi » : les articles liés en ligne, complétés par la même catégorie. */
-function articlesLies(article: ArticleComplet, enLigne: ArticleCarte[]): ArticleCarte[] {
+/**
+ * « À lire aussi » : les articles liés en ligne (ou leur version dans la
+ * langue de la page, pour un article copié depuis l'original), complétés par
+ * la même catégorie.
+ */
+function articlesLies(
+  article: ArticleComplet,
+  enLigne: ArticleCarte[],
+  traduits: Map<string, string>
+): ArticleCarte[] {
   const parSlug = new Map(enLigne.map((a) => [a.slug, a]));
   const choisis = article.articles_lies
-    .map((s) => parSlug.get(s))
+    .map((s) => parSlug.get(s) ?? parSlug.get(traduits.get(s) ?? ""))
     .filter((a): a is ArticleCarte => !!a && a.slug !== article.slug);
   const complements = [
     ...enLigne.filter((a) => a.categorie && a.categorie === article.categorie),
@@ -134,18 +150,26 @@ function articlesLies(article: ArticleComplet, enLigne: ArticleCarte[]): Article
 
 export default async function ArticlePage({ params }: Props) {
   const [{ slug }, locale] = await Promise.all([params, localeDeParams(params)]);
-  const [article, enLigne, t] = await Promise.all([
+  const [article, enLigne, versions, t] = await Promise.all([
     articleEnLigne(slug, locale),
     articlesEnLigne(locale),
+    versionsEnLigne(),
     getTranslations({ locale, namespace: "blog" }),
   ]);
-  if (!article) notFound();
+  if (!article) {
+    // Article d'une autre langue (bascule FR/EN) : sa version dans cette
+    // langue si elle est en ligne, sinon la liste du blog ; inconnu → 404.
+    const repli = cheminDeRepli(slug, locale, versions);
+    if (repli) redirect({ href: repli, locale });
+    notFound();
+  }
 
   const slugsEnLigne = new Set(enLigne.map((a) => a.slug));
+  const traduits = correspondances(versions, locale);
   // Les articles éditoriaux portent déjà leur appel à l'action en fin de corps.
   const ctaDansCorps = !!article.contenu_html?.includes('class="cta-estimation"');
   const auteur = article.auteur ?? SITE.agent.name;
-  const lies = articlesLies(article, enLigne);
+  const lies = articlesLies(article, enLigne, traduits);
   const url = urlAbsolue(`/blog/${article.slug}`, locale);
   const cover = resoudreImage(article.image_cover, article.visuels);
 
@@ -211,7 +235,12 @@ export default async function ArticlePage({ params }: Props) {
           </Link>
         </nav>
 
-        <ArticleCorps article={article} locale={locale} slugsEnLigne={slugsEnLigne} />
+        <ArticleCorps
+          article={article}
+          locale={locale}
+          slugsEnLigne={slugsEnLigne}
+          correspondances={traduits}
+        />
 
         {!ctaDansCorps && (
           <Card className="mt-12 border-primary/30 bg-primary/5">

@@ -6,6 +6,7 @@ import type { ArticleComplet } from "@/lib/blog/publication";
 import { ArticleContent } from "@/lib/blog/render";
 import { SITE } from "@/lib/config";
 import type { Locale } from "@/lib/i18n/routing";
+import { cheminLocalise } from "@/lib/i18n/seo";
 
 /**
  * Catégorie, titre, ligne d'auteur, couverture, corps et FAQ d'un article.
@@ -16,11 +17,14 @@ export async function ArticleCorps({
   article,
   locale,
   slugsEnLigne,
+  correspondances,
 }: {
   article: ArticleComplet;
   locale: Locale;
   /** Articles en ligne : les liens vers les autres restent du texte simple. */
   slugsEnLigne: Set<string>;
+  /** Slug d'une autre langue → slug de sa version dans `locale` (liens d'un corps copié). */
+  correspondances?: Map<string, string>;
 }) {
   const [t, format] = await Promise.all([
     getTranslations({ locale, namespace: "blog" }),
@@ -29,6 +33,8 @@ export async function ArticleCorps({
   const corpsHtml = article.contenu_html
     ? preparerHtml(article.contenu_html, {
         articleEnLigne: (s) => slugsEnLigne.has(s),
+        traduireSlug: (s) => correspondances?.get(s),
+        cheminArticle: (s) => cheminLocalise(`/blog/${s}`, locale),
         resoudreImage: (src) => resoudreImage(src, article.visuels),
       })
     : null;

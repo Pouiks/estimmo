@@ -80,7 +80,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     alternates: alternatesPour(chemin, locale),
-    openGraph: openGraphPour({ locale, cheminFr: chemin, title, description }),
+    openGraph: openGraphPour({
+      locale,
+      cheminFr: chemin,
+      title,
+      description,
+      sousTitre: description,
+    }),
   };
 }
 

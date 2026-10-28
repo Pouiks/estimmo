@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import type { Categorie } from "./categories";
 import type { Visuels } from "./images";
 import type { TiptapNode } from "./render";
+import type { ArticleVersion } from "./traductions";
 
 /**
  * Un article est EN LIGNE quand statut = 'publie' ET published_at <= maintenant.
@@ -29,7 +30,8 @@ export interface ArticleCarte {
   published_at: string;
 }
 
-export interface ArticleComplet extends ArticleCarte {
+export interface ArticleComplet extends ArticleCarte, ArticleVersion {
+  lang: Locale;
   meta_title: string | null;
   auteur: string | null;
   image_cover_largeur: number | null;
@@ -41,7 +43,7 @@ export interface ArticleComplet extends ArticleCarte {
 
 const CHAMPS_CARTE =
   "slug, titre, extrait, meta_description, contenu, contenu_html, categorie, temps_lecture, image_cover, image_cover_alt, visuels, published_at";
-const CHAMPS_COMPLETS = `${CHAMPS_CARTE}, meta_title, auteur, image_cover_largeur, image_cover_hauteur, faq, articles_lies, updated_at`;
+const CHAMPS_COMPLETS = `${CHAMPS_CARTE}, id, lang, traduction_de, meta_title, auteur, image_cover_largeur, image_cover_hauteur, faq, articles_lies, updated_at`;
 
 function enLigne(locale: Locale) {
   return createAdminClient()
@@ -60,7 +62,20 @@ export async function articlesEnLigne(locale: Locale, limite = 200): Promise<Art
   return (data ?? []) as ArticleCarte[];
 }
 
-/** Article en ligne (sinon null → 404). Un article n'existe que dans sa langue. */
+/**
+ * Versions (id, slug, langue, lien de traduction) de tous les articles en
+ * ligne, toutes langues : hreflang, bascule de langue, liens traduits.
+ */
+export async function versionsEnLigne(): Promise<ArticleVersion[]> {
+  const { data } = await createAdminClient()
+    .from("articles")
+    .select("id, slug, lang, traduction_de")
+    .eq("statut", "publie")
+    .lte("published_at", new Date().toISOString());
+  return (data ?? []) as ArticleVersion[];
+}
+
+/** Article en ligne dans cette langue (sinon null : traduction ou 404, voir cheminDeRepli). */
 export async function articleEnLigne(slug: string, locale: Locale): Promise<ArticleComplet | null> {
   const { data } = await createAdminClient()
     .from("articles")

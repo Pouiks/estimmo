@@ -77,6 +77,19 @@ describe("preparerHtml", () => {
     expect(preparerHtml(html, { ...tout, articleEnLigne: (s) => s === "en-ligne" })).toBe(html);
   });
 
+  it("traduit un lien vers l'original français en lien vers sa version anglaise", () => {
+    const html =
+      '<p><a href="/blog/frais-de-notaire#calcul" class="x">guide</a> <a href="/blog/sans-version">autre</a></p>';
+    expect(
+      preparerHtml(html, {
+        ...tout,
+        articleEnLigne: (s) => s === "notary-fees",
+        traduireSlug: (s) => (s === "frais-de-notaire" ? "notary-fees" : undefined),
+        cheminArticle: (s) => `/en/blog/${s}`,
+      })
+    ).toBe('<p><a href="/en/blog/notary-fees#calcul" class="x">guide</a> autre</p>');
+  });
+
   it("transforme en texte simple un lien vers un article programmé (pas de 404)", () => {
     const html = '<p>Voir <a href="/blog/futur">notre guide <strong>complet</strong></a>.</p>';
     expect(preparerHtml(html, { ...tout, articleEnLigne: () => false })).toBe(

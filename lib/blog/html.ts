@@ -86,6 +86,13 @@ export interface OptionsRendu {
   /** Un lien vers /blog/<slug> n'est gardé que si l'article est en ligne. */
   articleEnLigne: (slug: string) => boolean;
   /**
+   * Slug d'un article d'une autre langue → slug de sa version dans la langue
+   * de la page (corps copié depuis l'original lors d'une traduction).
+   */
+  traduireSlug?: (slug: string) => string | undefined;
+  /** Chemin public d'un article dans la langue de la page (« /en/blog/<slug> »). */
+  cheminArticle?: (slug: string) => string;
+  /**
    * URL à afficher pour un chemin d'image du corps (Storage, public/) ;
    * null = pas encore livrée → aplat neutre.
    */
@@ -97,15 +104,22 @@ export interface OptionsRendu {
  *  - un lien vers un article programmé (pas encore en ligne) devient du texte
  *    simple, sans quoi il mènerait à une 404 ; il redevient un lien quand sa
  *    cible est publiée (le cron revalide tous les articles) ;
+ *  - un lien vers l'original français, dans une version traduite, pointe vers
+ *    la traduction de sa cible quand elle est en ligne (sinon texte simple) ;
  *  - le chemin logique d'une image est remplacé par son URL (Storage ou
  *    public/) ; une image pas encore livrée devient un bloc neutre aux bonnes
  *    proportions (pas d'image cassée ni de décalage de mise en page).
  */
 export function preparerHtml(html: string, options: OptionsRendu): string {
   const avecLiens = html.replace(
-    /<a\s+href="\/blog\/([a-z0-9-]+)\/?(?:#[^"]*)?"[^>]*>([\s\S]*?)<\/a>/g,
-    (lien, slug: string, texte: string) =>
-      options.articleEnLigne(slug) ? lien : texte
+    /<a\s+href="\/blog\/([a-z0-9-]+)\/?(#[^"]*)?"([^>]*)>([\s\S]*?)<\/a>/g,
+    (lien, slug: string, ancre: string | undefined, attributs: string, texte: string) => {
+      const cible = options.articleEnLigne(slug) ? slug : options.traduireSlug?.(slug);
+      if (!cible || !options.articleEnLigne(cible)) return texte;
+      if (cible === slug && !options.cheminArticle) return lien;
+      const chemin = options.cheminArticle?.(cible) ?? `/blog/${cible}`;
+      return `<a href="${chemin}${ancre ?? ""}"${attributs}>${texte}</a>`;
+    }
   );
 
   return avecLiens.replace(/<img\b[^>]*>/g, (balise) => {

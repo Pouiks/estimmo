@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Languages, Loader2, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { EditeurCorps } from "@/components/admin/editeur-corps";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import {
+  creerTraduction,
   saveArticleEditorial,
   type ArticleEditorialInput,
 } from "@/app/admin/(protected)/blog/actions";
@@ -42,17 +44,25 @@ function Compteur({ valeur, max }: { valeur: string; max: number }) {
 export function ArticleEditorialEditor({
   article,
   autresArticles,
+  versionLiee,
+  articlesFrancais,
   motsCles,
   imagesResolues,
 }: {
   article: ArticleEditorialData;
+  /** « À lire aussi » : articles de la même langue. */
   autresArticles: { slug: string; titre: string }[];
+  /** L'autre version de cet article (original français ou version anglaise). */
+  versionLiee: { id: string; titre: string; lang: string; statut: string } | null;
+  /** Originaux possibles pour une version anglaise. */
+  articlesFrancais: { id: string; titre: string }[];
   motsCles: string[];
   /** Chemin logique → URL affichable des images (aperçu dans l'éditeur visuel). */
   imagesResolues: Record<string, string>;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [creation, startCreation] = useTransition();
   const [a, setA] = useState(article);
   const maj = <K extends keyof ArticleEditorialData>(cle: K, valeur: ArticleEditorialData[K]) =>
     setA((prev) => ({ ...prev, [cle]: valeur }));
@@ -66,6 +76,16 @@ export function ArticleEditorialEditor({
       if (result.ok) {
         toast.success(result.message);
         router.refresh();
+      } else toast.error(result.message);
+    });
+  }
+
+  function creerVersionAnglaise() {
+    startCreation(async () => {
+      const result = await creerTraduction(a.id);
+      if (result.ok && result.id) {
+        toast.success(result.message);
+        router.push(`/admin/blog/${result.id}`);
       } else toast.error(result.message);
     });
   }
@@ -182,6 +202,69 @@ export function ArticleEditorialEditor({
             {pending && <Loader2 className="size-4 animate-spin" />}
             Enregistrer
           </Button>
+        </div>
+
+        <div className="space-y-4 rounded-xl border p-4">
+          <div className="space-y-2">
+            <Label htmlFor="lang">Langue</Label>
+            <select
+              id="lang"
+              className={classeSelect}
+              value={a.lang}
+              onChange={(e) => maj("lang", e.target.value as "fr" | "en")}
+            >
+              <option value="fr">Français (/blog)</option>
+              <option value="en">Anglais (/en/blog)</option>
+            </select>
+          </div>
+          {a.lang === "en" ? (
+            <div className="space-y-2">
+              <Label htmlFor="traductionDe">Version anglaise de</Label>
+              <select
+                id="traductionDe"
+                className={classeSelect}
+                value={a.traductionDe ?? ""}
+                onChange={(e) => maj("traductionDe", e.target.value || null)}
+              >
+                <option value="">- (article indépendant)</option>
+                {articlesFrancais.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.titre}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-muted-foreground">
+                Relie les deux versions : hreflang pour Google, bascule FR/EN sur le
+                site, liens internes et « À lire aussi » traduits automatiquement.
+              </p>
+            </div>
+          ) : versionLiee ? (
+            <p className="text-sm">
+              Version anglaise :{" "}
+              <Link href={`/admin/blog/${versionLiee.id}`} className="font-medium hover:underline">
+                {versionLiee.titre}
+              </Link>{" "}
+              <span className="text-muted-foreground">
+                ({versionLiee.statut === "publie" ? "publiée" : "brouillon"})
+              </span>
+            </p>
+          ) : (
+            <div className="space-y-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                disabled={creation}
+                onClick={creerVersionAnglaise}
+              >
+                {creation ? <Loader2 className="size-4 animate-spin" /> : <Languages className="size-4" />}
+                Créer la version anglaise
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                Copie l&apos;article en brouillon sous /en/blog, à traduire ensuite.
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="space-y-4 rounded-xl border p-4">
