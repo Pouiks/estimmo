@@ -234,6 +234,9 @@ export function ResultatEstimation({
   const high = vente ? est.fourchetteHaute : est.loyerHaut;
   const perM2 = vente ? est.prixM2Ajuste : est.loyerM2Zone;
   const fourchetteLarge = vente && est.fourchettePct >= 9;
+  // Palier département : aucune vente comparable à moins de 3 km ni dans la
+  // commune, l'estimation repose sur les ventes les plus proches du département.
+  const eloigne = vente && est.palier === "departement";
   const confiance = vente
     ? tl(`confiance.${est.confiance}`)
     : tl("confiance.indicative");
@@ -340,6 +343,25 @@ export function ResultatEstimation({
         <StatCard label={t("stats.confiance")} value={confiance} />
         <StatCard label={t("stats.source")} value={vente ? "DVF" : "ANIL"} />
       </div>
+
+      {eloigne && (
+        <div
+          style={{
+            margin: "0 0 22px",
+            padding: "12px 16px",
+            borderRadius: 12,
+            background: C.cardBg,
+            border: `1px solid ${C.borderSoft}`,
+            fontSize: 13,
+            color: C.muted,
+            lineHeight: 1.6,
+            textAlign: "left",
+          }}
+        >
+          <b style={{ color: C.label }}>{t("eloigne.titre")}</b>{" "}
+          {t("eloigne.texte", { agent: SITE.agent.name })}
+        </div>
+      )}
 
       {fourchetteLarge && (
         <div

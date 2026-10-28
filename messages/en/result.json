@@ -24,6 +24,10 @@
     "titre": "Why a ±{pct}% range?",
     "texte": "The {n} comparable sales in your area are heterogeneous (condition, floor, fittings). This is exactly what an on-site appraisal settles: {agent} offers it to you, with no obligation."
   },
+  "eloigne": {
+    "titre": "Few recent sales around your address.",
+    "texte": "This estimate relies on the closest sales of similar properties in your department: it gives an order of magnitude, not a local market price. {agent} offers a free, no-obligation on-site appraisal to refine it."
+  },
   "sourceVente": "Based on {n, plural, one {# comparable sale} other {# comparable sales}}. {dvf}.",
   "sourceLocation": "{anil}.",
   "carte": {

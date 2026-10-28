@@ -24,6 +24,10 @@
     "titre": "Pourquoi cette fourchette de ±{pct} % ?",
     "texte": "Les {n} ventes comparables de votre secteur sont hétérogènes (état, étage, prestations). C'est exactement ce qu'un avis de valeur sur place permet de trancher : {agent} vous l'offre, sans engagement."
   },
+  "eloigne": {
+    "titre": "Peu de ventes récentes autour de votre adresse.",
+    "texte": "Cette estimation s'appuie sur les ventes de biens similaires les plus proches dans votre département : elle donne un ordre de grandeur, pas un prix de marché local. {agent} vous propose un avis de valeur sur place, gratuit et sans engagement, pour l'affiner."
+  },
   "sourceVente": "Basé sur {n, plural, one {# vente comparable} other {# ventes comparables}}. {dvf}.",
   "sourceLocation": "{anil}.",
   "carte": {
