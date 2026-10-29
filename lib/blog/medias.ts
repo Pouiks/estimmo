@@ -193,14 +193,14 @@ export interface UsageMedia {
   titre: string;
 }
 
-/** Articles qui utilisent chaque url (emplacement, couverture, corps HTML ou contenu TipTap). */
+/** Articles qui utilisent chaque url (emplacement, couverture, corps HTML fr/en ou contenu TipTap). */
 export async function usagesParUrl(medias: Media[]): Promise<Map<string, UsageMedia[]>> {
   const { data } = await createAdminClient()
     .from("articles")
-    .select("id, titre, image_cover, visuels, contenu_html, contenu");
+    .select("id, titre, image_cover, visuels, contenu_html, contenu, traductions");
   const usages = new Map<string, UsageMedia[]>();
   for (const a of data ?? []) {
-    const texte = JSON.stringify([a.image_cover, a.visuels, a.contenu_html, a.contenu]);
+    const texte = JSON.stringify([a.image_cover, a.visuels, a.contenu_html, a.contenu, a.traductions]);
     for (const m of medias) {
       if (texte.includes(m.url)) {
         usages.set(m.url, [...(usages.get(m.url) ?? []), { id: a.id, titre: a.titre }]);

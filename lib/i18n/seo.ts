@@ -11,33 +11,21 @@ export function cheminLocalise(cheminFr: string, locale: Locale): string {
 /**
  * Canonique + hreflang pour une page indexable. Les URLs sont relatives,
  * résolues par metadataBase. x-default pointe sur la version française.
+ * `langues` : langues où la page existe (article sans version anglaise publiée :
+ * `["fr"]`) ; une seule langue → canonique sans hreflang.
  */
 export function alternatesPour(
   cheminFr: string,
-  locale: Locale
+  locale: Locale,
+  langues: readonly Locale[] = LOCALES
 ): NonNullable<Metadata["alternates"]> {
+  const canonical = cheminLocalise(cheminFr, locale);
+  if (langues.length < 2) return { canonical };
   const languages: Record<string, string> = {};
-  for (const l of LOCALES) languages[l] = cheminLocalise(cheminFr, l);
+  for (const l of LOCALES) {
+    if (langues.includes(l)) languages[l] = cheminLocalise(cheminFr, l);
+  }
   languages["x-default"] = cheminLocalise(cheminFr, DEFAULT_LOCALE);
-  return { canonical: cheminLocalise(cheminFr, locale), languages };
-}
-
-/**
- * Canonique + hreflang d'une page dont le chemin diffère selon la langue
- * (article traduit : /blog/slug-fr ↔ /en/blog/slug-en). Seules les langues
- * fournies sont déclarées ; une seule langue → canonique sans hreflang.
- */
-export function alternatesPourChemins(
-  chemins: Partial<Record<Locale, string>>,
-  locale: Locale
-): NonNullable<Metadata["alternates"]> {
-  const canonical = cheminLocalise(chemins[locale] ?? "/", locale);
-  const presentes = LOCALES.filter((l) => chemins[l]);
-  if (presentes.length < 2) return { canonical };
-  const languages: Record<string, string> = {};
-  for (const l of presentes) languages[l] = cheminLocalise(chemins[l]!, l);
-  const defaut = chemins[DEFAULT_LOCALE] ? DEFAULT_LOCALE : locale;
-  languages["x-default"] = cheminLocalise(chemins[defaut]!, defaut);
   return { canonical, languages };
 }
 

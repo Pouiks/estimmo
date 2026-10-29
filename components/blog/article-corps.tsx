@@ -11,29 +11,28 @@ import { cheminLocalise } from "@/lib/i18n/seo";
 /**
  * Catégorie, titre, ligne d'auteur, couverture, corps et FAQ d'un article.
  * Partagé par la page publique et l'aperçu de l'admin (hors [locale] : aucun
- * lien localisé ici, locale toujours explicite).
+ * lien localisé ici, locale toujours explicite). Les champs de `article` sont
+ * déjà dans sa `langue` effective ; si elle diffère de la page (repli
+ * français sur /en), le contenu est marqué `lang` pour les lecteurs d'écran.
  */
 export async function ArticleCorps({
   article,
   locale,
   slugsEnLigne,
-  correspondances,
 }: {
   article: ArticleComplet;
   locale: Locale;
   /** Articles en ligne : les liens vers les autres restent du texte simple. */
   slugsEnLigne: Set<string>;
-  /** Slug d'une autre langue → slug de sa version dans `locale` (liens d'un corps copié). */
-  correspondances?: Map<string, string>;
 }) {
   const [t, format] = await Promise.all([
     getTranslations({ locale, namespace: "blog" }),
     getFormatter({ locale }),
   ]);
+  const lang = article.langue !== locale ? article.langue : undefined;
   const corpsHtml = article.contenu_html
     ? preparerHtml(article.contenu_html, {
         articleEnLigne: (s) => slugsEnLigne.has(s),
-        traduireSlug: (s) => correspondances?.get(s),
         cheminArticle: (s) => cheminLocalise(`/blog/${s}`, locale),
         resoudreImage: (src) => resoudreImage(src, article.visuels),
       })
@@ -46,7 +45,7 @@ export async function ArticleCorps({
           {t(`categories.${article.categorie}`)}
         </p>
       )}
-      <h1 className="mt-2 text-3xl leading-tight font-bold tracking-tight sm:text-4xl">
+      <h1 lang={lang} className="mt-2 text-3xl leading-tight font-bold tracking-tight sm:text-4xl">
         {article.titre}
       </h1>
       <p className="mt-4 text-sm text-muted-foreground">
@@ -77,11 +76,12 @@ export async function ArticleCorps({
 
       {corpsHtml ? (
         <div
+          lang={lang}
           className="article-corps mt-8"
           dangerouslySetInnerHTML={{ __html: corpsHtml }}
         />
       ) : (
-        <div className="mt-8">
+        <div lang={lang} className="mt-8">
           <ArticleContent contenu={article.contenu} />
         </div>
       )}
@@ -89,7 +89,7 @@ export async function ArticleCorps({
       {article.faq.length > 0 && (
         <section className="article-faq mt-12">
           <h2 className="text-2xl font-bold">{t("faq")}</h2>
-          <div className="mt-4">
+          <div lang={lang} className="mt-4">
             {article.faq.map((q) => (
               <details key={q.question}>
                 <summary>{q.question}</summary>

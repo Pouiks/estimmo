@@ -8,7 +8,7 @@ import { creerMedia, listerMedias, mediaParId, recadrerMedia } from "@/lib/blog/
 import { POSITIONS } from "@/lib/blog/optimisation";
 import { depuisChampParis } from "@/lib/blog/planning";
 import { revaliderBlog } from "@/lib/blog/publication";
-import { slugTraduction } from "@/lib/blog/traductions";
+import { inputVersVersion } from "@/lib/blog/traductions";
 import { requireAdmin } from "@/lib/supabase/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { slugify } from "@/lib/utils";
@@ -25,8 +25,6 @@ const articleSchema = z.object({
   contenu: z.string().min(2), // JSON TipTap sérialisé
   imageCover: z.string().nullable(),
   statut: z.enum(["brouillon", "publie"]),
-  /** Langue de l'article : il n'apparaît que sur /blog (fr) ou /en/blog (en). */
-  lang: z.enum(["fr", "en"]).default("fr"),
 });
 
 export interface SaveArticleResult {
@@ -59,7 +57,6 @@ export async function saveArticle(input: unknown): Promise<SaveArticleResult> {
     contenu,
     image_cover: article.imageCover,
     statut: article.statut,
-    lang: article.lang,
   };
 
   let id = article.id;
@@ -231,6 +228,52 @@ const slugSchema = z
   .trim()
   .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "Slug invalide (minuscules, chiffres, tirets)");
 
+const faqSchema = z.array(
+  z.object({
+    question: z.string().trim().min(5, "Question trop courte"),
+    answer: z.string().trim().min(10, "Réponse trop courte"),
+  })
+);
+
+/**
+ * Version traduite (onglet English). En brouillon, les champs sont libres :
+ * on traduit petit à petit sans rien exposer. Publiée, elle répond aux mêmes
+ * exigences que le français.
+ */
+const versionSchema = z
+  .object({
+    statut: z.enum(["brouillon", "publie"]),
+    titre: z.string().trim().max(200, "Titre anglais : 200 caractères maximum"),
+    metaTitle: z.string().trim().max(65, "Meta title anglais : 65 caractères maximum"),
+    metaDescription: z.string().trim().max(165, "Meta description anglaise : 165 caractères maximum"),
+    extrait: z.string().trim().max(300, "Extrait anglais : 300 caractères maximum"),
+    imageCoverAlt: z.string().trim().max(200, "Texte alternatif anglais : 200 caractères maximum"),
+    contenuHtml: z.string(),
+    faq: z.array(z.object({ question: z.string().trim(), answer: z.string().trim() })),
+  })
+  .superRefine((v, ctx) => {
+    if (v.statut !== "publie") return;
+    const minimums: [champ: keyof typeof v, min: number, message: string][] = [
+      ["titre", 10, "Titre anglais trop court"],
+      ["metaTitle", 10, "Meta title anglais trop court"],
+      ["metaDescription", 50, "Meta description anglaise trop courte"],
+      ["extrait", 20, "Extrait anglais trop court"],
+      ["imageCoverAlt", 5, "Texte alternatif anglais de la couverture trop court"],
+      ["contenuHtml", 200, "Contenu anglais trop court"],
+    ];
+    for (const [champ, min, message] of minimums) {
+      if ((v[champ] as string).length < min) ctx.addIssue({ code: "custom", message, path: [champ] });
+    }
+    v.faq.forEach((q, i) => {
+      if (q.question.length < 5) {
+        ctx.addIssue({ code: "custom", message: "Question anglaise trop courte", path: ["faq", i, "question"] });
+      }
+      if (q.answer.length < 10) {
+        ctx.addIssue({ code: "custom", message: "Réponse anglaise trop courte", path: ["faq", i, "answer"] });
+      }
+    });
+  });
+
 const articleEditorialSchema = z.object({
   id: z.uuid(),
   titre: z.string().trim().min(10, "Titre trop court"),
@@ -249,18 +292,11 @@ const articleEditorialSchema = z.object({
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/, "Date de publication invalide"),
   statut: z.enum(["brouillon", "publie"]),
-  /** Langue : l'article n'apparaît que sur /blog (fr) ou /en/blog (en). */
-  lang: z.enum(["fr", "en"]),
-  /** Version anglaise : l'article français d'origine (hreflang, bascule FR/EN). */
-  traductionDe: z.uuid().nullable(),
   contenuHtml: z.string().min(200, "Contenu trop court"),
-  faq: z.array(
-    z.object({
-      question: z.string().trim().min(5, "Question trop courte"),
-      answer: z.string().trim().min(10, "Réponse trop courte"),
-    })
-  ),
+  faq: faqSchema,
   articlesLies: z.array(slugSchema).max(6),
+  /** Versions traduites (clé = locale) ; `en` absente = article en français seulement. */
+  traductions: z.object({ en: versionSchema.optional() }),
 });
 
 export type ArticleEditorialInput = z.input<typeof articleEditorialSchema>;
@@ -279,20 +315,10 @@ export async function saveArticleEditorial(input: unknown): Promise<SaveArticleR
   if (a.articlesLies.includes(a.slug)) {
     return { ok: false, message: "Un article ne peut pas se citer dans « À lire aussi »" };
   }
-
-  const traductionDe = a.lang === "en" ? a.traductionDe : null;
-  if (traductionDe === a.id) {
-    return { ok: false, message: "Un article ne peut pas être sa propre traduction" };
-  }
-  if (traductionDe) {
-    const { data: original } = await createAdminClient()
-      .from("articles")
-      .select("lang")
-      .eq("id", traductionDe)
-      .maybeSingle();
-    if (!original || original.lang !== "fr") {
-      return { ok: false, message: "L'article d'origine doit être un article français" };
-    }
+  const en = a.traductions.en;
+  if (en) {
+    const problemesEn = problemesHtml(en.contenuHtml);
+    if (problemesEn.length > 0) return { ok: false, message: `Contenu anglais refusé : ${problemesEn[0]}` };
   }
 
   const { error } = await createAdminClient()
@@ -300,8 +326,6 @@ export async function saveArticleEditorial(input: unknown): Promise<SaveArticleR
     .update({
       titre: a.titre,
       slug: a.slug,
-      lang: a.lang,
-      traduction_de: traductionDe,
       meta_title: a.metaTitle,
       meta_description: a.metaDescription,
       extrait: a.extrait,
@@ -313,86 +337,17 @@ export async function saveArticleEditorial(input: unknown): Promise<SaveArticleR
       contenu_html: a.contenuHtml,
       faq: a.faq,
       articles_lies: a.articlesLies,
+      // Même slug dans toutes les langues : la version anglaise vit dans l'article.
+      traductions: en ? { en: inputVersVersion(en) } : {},
     })
     .eq("id", a.id);
-  if (error) return { ok: false, message: messageDoublon(error) };
+  if (error) {
+    return { ok: false, message: error.code === "23505" ? "Ce slug existe déjà" : error.message };
+  }
 
   await apresChangement(a.id);
   revalidatePath(`/admin/blog/${a.id}`);
   return { ok: true, message: "Article enregistré", id: a.id };
-}
-
-function messageDoublon(error: { code?: string; message: string }): string {
-  if (error.code !== "23505") return error.message;
-  return error.message.includes("traduction")
-    ? "Cet article français a déjà une version anglaise"
-    : "Ce slug existe déjà";
-}
-
-/** Colonnes copiées telles quelles dans la version anglaise (à traduire ensuite). */
-const COLONNES_COPIEES = [
-  "titre", "meta_title", "meta_description", "extrait", "categorie", "auteur",
-  "temps_lecture", "contenu", "contenu_html", "image_cover", "image_cover_alt",
-  "image_cover_largeur", "image_cover_hauteur", "image_cover_prompt", "visuels",
-  "faq", "articles_lies", "mot_cle_principal", "mots_cles_secondaires",
-  "points_cles", "images", "published_at",
-] as const;
-
-/**
- * Crée la version anglaise d'un article français : copie intégrale en
- * brouillon (textes, HTML, FAQ, images et emplacements partagés), reliée par
- * traduction_de, slug suffixé « -en ». Le contenu reste à traduire dans
- * l'éditeur ; les liens internes et « À lire aussi » copiés sont traduits
- * automatiquement à l'affichage quand la version anglaise de la cible est
- * en ligne.
- */
-export async function creerTraduction(id: string): Promise<SaveArticleResult> {
-  await requireAdmin();
-  if (!z.uuid().safeParse(id).success) return { ok: false, message: "Article inconnu" };
-
-  const supabase = createAdminClient();
-  const { data: source } = await supabase
-    .from("articles")
-    .select(["slug", "lang", ...COLONNES_COPIEES].join(", "))
-    .eq("id", id)
-    .maybeSingle();
-  if (!source) return { ok: false, message: "Article introuvable" };
-  const original = source as unknown as Record<string, unknown>;
-  if (original.lang !== "fr") {
-    return { ok: false, message: "Seul un article français peut recevoir une version anglaise" };
-  }
-  if (!original.contenu_html) {
-    return { ok: false, message: "Réservé aux articles éditoriaux (corps HTML)" };
-  }
-
-  const { data: existante } = await supabase
-    .from("articles")
-    .select("id")
-    .eq("traduction_de", id)
-    .maybeSingle();
-  if (existante) {
-    return { ok: true, message: "La version anglaise existe déjà", id: existante.id as string };
-  }
-
-  const copie = Object.fromEntries(COLONNES_COPIEES.map((c) => [c, original[c] ?? null]));
-  const { data, error } = await supabase
-    .from("articles")
-    .insert({
-      ...copie,
-      slug: slugTraduction(original.slug as string, "en"),
-      lang: "en",
-      statut: "brouillon",
-      traduction_de: id,
-      diffuse_le: null,
-    })
-    .select("id")
-    .single();
-  if (error || !data) {
-    return { ok: false, message: error ? messageDoublon(error) : "Erreur" };
-  }
-
-  revalidatePath("/admin/blog");
-  return { ok: true, message: "Version anglaise créée en brouillon : à traduire", id: data.id as string };
 }
 
 // ----------------------------------------------------------------------------

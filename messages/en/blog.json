@@ -8,6 +8,8 @@
   "vide": "The first articles are coming soon.",
   "videCategorie": "No articles in this category yet: check back soon.",
   "introuvable": "Article not found",
+  "seulementFrancais": "This article is only available in French for now.",
+  "lireEnFrancais": "Read it in French",
   "filtrer": "Filter articles by category",
   "categories": {
     "toutes": "All articles",

@@ -4,7 +4,6 @@ import {
   COMMUNES_PAR_SITEMAP,
   alternatesSitemap,
   entreeMonolingue,
-  entreeTraduite,
   entreesBilingues,
   nombreTranchesCommunes,
   nomsFichiersSitemap,
@@ -49,9 +48,9 @@ describe("entreesBilingues", () => {
 });
 
 describe("entreeMonolingue", () => {
-  it("article anglais sous /en, sans alternates", () => {
-    const e = entreeMonolingue("/blog/my-post", "en", { priority: 0.6 });
-    expect(e.url).toBe(`${base}/en/blog/my-post`);
+  it("article sans version anglaise : URL française seule, sans alternates", () => {
+    const e = entreeMonolingue("/blog/mon-article", "fr", { priority: 0.6 });
+    expect(e.url).toBe(`${base}/blog/mon-article`);
     expect(e.alternates).toBeUndefined();
   });
 });
@@ -136,19 +135,3 @@ describe("sitemapXml", () => {
   });
 });
 
-describe("entreeTraduite", () => {
-  it("relie un article et sa version anglaise par hreflang, x-default sur le français", () => {
-    const chemins = { fr: "/blog/frais-de-notaire", en: "/blog/notary-fees" };
-    expect(entreeTraduite(chemins, "en", { priority: 0.6 })).toEqual({
-      url: `${SITE.url}/en/blog/notary-fees`,
-      alternates: {
-        languages: {
-          fr: `${SITE.url}/blog/frais-de-notaire`,
-          en: `${SITE.url}/en/blog/notary-fees`,
-          "x-default": `${SITE.url}/blog/frais-de-notaire`,
-        },
-      },
-      priority: 0.6,
-    });
-  });
-});

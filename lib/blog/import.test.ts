@@ -57,7 +57,6 @@ describe("versLigne", () => {
     const ligne = versLigne(articles[0]);
     expect(ligne).toMatchObject({
       slug: "criteres-valeur-bien-immobilier",
-      lang: "fr",
       categorie: "estimation",
       auteur: "Carenza Brown",
       image_cover: "/images/blog/criteres-valeur-bien-immobilier/cover.webp",

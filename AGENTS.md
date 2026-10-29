@@ -58,6 +58,7 @@ Vitest · pnpm. Déploiement Vercel.
 - [x] Phase 7 - SEO : ~35 k pages communes ISR, sitemap 34 923 URLs, JSON-LD Dataset+FAQ
 - [x] Phase 8 - Lighthouse prod : landing Perf 95/SEO 100 ; commune Perf 96/SEO 100
 - [x] 18/10/2026 - i18n fr/en complet (next-intl) : site, tunnel, SEO, emails, blog ; 170+ tests Vitest
+- [x] 29/10/2026 - Blog : versions FR/EN dans un même article (onglets admin, `articles.traductions`) ; 274 tests
 
 ## i18n (18/10/2026) - next-intl 4, fr par défaut / en
 - **URLs** : français sans préfixe (URLs historiques inchangées), anglais sous `/en/...`,
@@ -90,15 +91,28 @@ Vitest · pnpm. Déploiement Vercel.
   variantes anti-duplicate conservées). Sitemaps : `/sitemap.xml` = index →
   `/sitemaps/pages.xml` + `/sitemaps/communes-N.xml` (une entrée par langue, 20 000
   communes par fichier) ; pages noindex exclues. Admin (`app/admin`) hors `[locale]`, FR.
-- **Données** : `leads.locale` (email prospect dans sa langue, notification agent en FR),
-  `articles.lang` + `articles.traduction_de` (28/10/2026) : une version anglaise est un
-  article `en` relié à son original `fr` (bouton « Créer la version anglaise » de l'éditeur
-  admin = copie en brouillon à traduire, slug suffixé `-en` ; `lib/blog/traductions.ts`).
-  Les deux versions se déclarent en hreflang (page + sitemap) ; `/en/blog/<slug-fr>`
-  redirige vers la version anglaise si elle est en ligne, sinon vers `/en/blog` ; les liens
-  internes et « À lire aussi » copiés du français sont traduits au rendu quand la version
-  anglaise de la cible est en ligne. Migrations `20261018120000_i18n_locale.sql`,
-  `20261028120000_articles_traduction.sql`.
+- **Données** : `leads.locale` (email prospect dans sa langue, notification agent en FR) ;
+  `articles.traductions` jsonb (29/10/2026) : un article porte sa version française dans
+  ses colonnes et ses traductions par locale (`{ en: { titre, meta_title, meta_description,
+  extrait, contenu_html, faq, image_cover_alt, statut } }`), **même slug dans les deux
+  langues** (`/blog/x` ↔ `/en/blog/x`) ; tout le reste (images, date, statut, catégorie,
+  « À lire aussi ») est commun. Version EN visible = article en ligne ET
+  `traductions.en.statut = 'publie'`. Sans version EN publiée, `/en/blog/x` affiche le
+  français avec un bandeau (`components/blog/bandeau-langue.tsx`), `noindex`, ni canonical
+  ni hreflang ; **jamais de `redirect` vers `/blog/x`** (le proxy renverrait un cookie
+  `NEXT_LOCALE=en` vers `/en/…` en boucle), le lien du bandeau est le `Link` next-intl
+  `locale="fr"` qui synchronise le cookie. Hreflang fr/en (page + sitemap) seulement si
+  les deux versions sont en ligne. Fonctions pures : `lib/blog/traductions.ts`
+  (`versionPour`, `languesEnLigne`, `traductionDepuis`…) ; requêtes :
+  `lib/blog/publication.ts` (`articlesEnLigne(locale)` filtre en mémoire, `slugsEnLigne()`).
+  Admin : onglets Français / English dans l'éditeur (`components/ui/tabs.tsx`, Base UI,
+  `keepMounted` pour garder les deux TipTap), statut propre à la version EN, « Partir du
+  texte français », aperçu `?lang=en` ; l'import JSON et le panneau Images ne touchent
+  jamais `traductions`. Migrations `20261018120000_i18n_locale.sql`,
+  `20261029120000_articles_traductions_integrees.sql` (ajoute `traductions`, fusionne
+  l'ancien modèle `lang` + `traduction_de` du 28/10 en conservant ses colonnes pour la
+  prod encore déployée) puis `20261029130000_articles_traductions_nettoyage.sql` (supprime
+  `lang`/`traduction_de`, appliquée après le déploiement du nouveau code).
 - **Surcharges admin** (`/admin/traductions`, table `traductions`) : la conseillère peut
   reformuler n'importe quelle clé par langue (ton, SEO). Les JSON restent la source
   embarquée ; `lib/i18n/request.ts` fusionne les surcharges (`appliquerSurcharges`,

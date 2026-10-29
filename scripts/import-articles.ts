@@ -35,8 +35,9 @@ const { values: opts } = parseArgs({
   },
 });
 
+// Jamais `traductions` ni `visuels` : gérés depuis l'admin, l'import ne les touche pas.
 const COLONNES_CONTENU = [
-  "lang", "titre", "meta_title", "meta_description", "extrait", "categorie",
+  "titre", "meta_title", "meta_description", "extrait", "categorie",
   "auteur", "temps_lecture", "contenu_html", "image_cover", "image_cover_alt",
   "image_cover_largeur", "image_cover_hauteur", "image_cover_prompt", "faq", "articles_lies",
   "mot_cle_principal", "mots_cles_secondaires", "points_cles", "images",

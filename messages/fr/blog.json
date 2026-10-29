@@ -8,6 +8,8 @@
   "vide": "Les premiers articles arrivent bientôt.",
   "videCategorie": "Pas encore d'article dans cette catégorie : revenez bientôt.",
   "introuvable": "Article introuvable",
+  "seulementFrancais": "Cet article n'est disponible qu'en français pour le moment.",
+  "lireEnFrancais": "Lire la version française",
   "filtrer": "Filtrer les articles par catégorie",
   "categories": {
     "toutes": "Tous les articles",

@@ -1,96 +1,173 @@
-import { LOCALES, type Locale } from "@/lib/i18n/routing";
+import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/lib/i18n/routing";
 
 /**
  * Versions linguistiques d'un article (fonctions pures, testées).
- * Une version anglaise est un article `lang = 'en'` dont `traduction_de`
- * désigne l'original français. Les deux versions se déclarent mutuellement
- * (hreflang, sitemap), et un visiteur qui change de langue sur un article
- * est envoyé vers l'autre version si elle est en ligne.
+ *
+ * Un article porte sa version française dans ses colonnes et ses traductions
+ * dans `traductions` (jsonb, clé = locale). Même slug dans toutes les langues :
+ * /blog/<slug> en français, /en/blog/<slug> en anglais. Une traduction n'est
+ * visible que si l'article est en ligne ET si elle est elle-même publiée ;
+ * sans version anglaise publiée, la page anglaise affiche le français (repli).
  */
 
-/** Champs nécessaires pour apparier les versions d'un article. */
-export interface ArticleVersion {
-  id: string;
-  slug: string;
-  lang: string | null;
-  /** Article original dont celui-ci est la traduction. */
-  traduction_de: string | null;
+export type StatutVersion = "brouillon" | "publie";
+/** Locales qui ont une traduction (le français est la langue des colonnes). */
+export type LocaleTraduite = Exclude<Locale, "fr">;
+
+export interface Faq {
+  question: string;
+  answer: string;
 }
 
-function langue(article: ArticleVersion): string {
-  return article.lang ?? "fr";
+/** Champs d'un article qui diffèrent selon la langue (colonnes françaises). */
+export interface ChampsTraduisibles {
+  titre: string;
+  meta_title: string | null;
+  meta_description: string | null;
+  extrait: string | null;
+  contenu_html: string | null;
+  faq: Faq[];
+  image_cover_alt: string | null;
 }
 
-/** Slug proposé pour la traduction d'un article : « <slug>-en ». */
-export function slugTraduction(slug: string, locale: Locale): string {
-  const suffixe = `-${locale}`;
-  return slug.endsWith(suffixe) ? slug : `${slug}${suffixe}`;
+export const CHAMPS_TRADUISIBLES = [
+  "titre",
+  "meta_title",
+  "meta_description",
+  "extrait",
+  "contenu_html",
+  "faq",
+  "image_cover_alt",
+] as const satisfies readonly (keyof ChampsTraduisibles)[];
+
+/** Forme stockée d'une traduction (jsonb, snake_case). */
+export interface VersionTraduite extends Partial<ChampsTraduisibles> {
+  statut: StatutVersion;
 }
 
-/**
- * Version de `article` dans la langue `locale`, parmi `articles` : son
- * original ou la traduction qui le cite. null si elle n'y figure pas (ou si
- * l'article est déjà dans cette langue).
- */
-export function versionDans<T extends ArticleVersion>(
-  article: ArticleVersion,
+export type Traductions = Partial<Record<LocaleTraduite, VersionTraduite>>;
+
+export interface AvecTraductions {
+  traductions: Traductions | null;
+}
+
+export interface OptionsVersion {
+  /** Inclure les traductions en brouillon (aperçu admin). */
+  brouillons?: boolean;
+}
+
+/** Traduction applicable dans `locale` (publiée, ou brouillon si demandé) ; null en français. */
+export function traductionPour(
+  article: AvecTraductions,
   locale: Locale,
-  articles: T[]
-): T | null {
-  if (langue(article) === locale) return null;
-  return (
-    articles.find(
-      (a) =>
-        langue(a) === locale &&
-        a.id !== article.id &&
-        (a.id === article.traduction_de || a.traduction_de === article.id)
-    ) ?? null
-  );
+  options: OptionsVersion = {}
+): VersionTraduite | null {
+  if (locale === DEFAULT_LOCALE) return null;
+  const version = article.traductions?.[locale as LocaleTraduite];
+  if (!version) return null;
+  return options.brouillons || version.statut === "publie" ? version : null;
 }
 
+/** L'article existe-t-il dans cette langue (français toujours, sinon traduction publiée) ? */
+export function versionEnLigne(article: AvecTraductions, locale: Locale): boolean {
+  return locale === DEFAULT_LOCALE || traductionPour(article, locale) !== null;
+}
+
+/** Langues dans lesquelles l'article est publié : hreflang, sitemap. */
+export function languesEnLigne(article: AvecTraductions): Locale[] {
+  return LOCALES.filter((l) => versionEnLigne(article, l));
+}
+
+export type Version<T> = Omit<T, "traductions"> & {
+  /** Langue effective du contenu renvoyé (fr si la traduction demandée n'existe pas). */
+  langue: Locale;
+  /** Langues dans lesquelles l'article est publié. */
+  langues: Locale[];
+};
+
 /**
- * Slug (autre langue) → slug (langue `locale`) pour tous les couples présents.
- * Sert à traduire les liens internes et les « À lire aussi » d'un article
- * copié depuis sa version française.
+ * Article tel qu'il s'affiche dans `locale` : les champs traduisibles présents
+ * sur l'article sont remplacés par leur traduction. Un champ traduit vide
+ * retombe sur le français, sauf la FAQ (une FAQ anglaise vide = pas de FAQ,
+ * plutôt qu'une FAQ française sur une page anglaise).
  */
-export function correspondances(articles: ArticleVersion[], locale: Locale): Map<string, string> {
-  const map = new Map<string, string>();
-  for (const a of articles) {
-    if (langue(a) === locale) continue;
-    const version = versionDans(a, locale, articles);
-    if (version) map.set(a.slug, version.slug);
+export function versionPour<T extends Partial<ChampsTraduisibles> & AvecTraductions>(
+  article: T,
+  locale: Locale,
+  options: OptionsVersion = {}
+): Version<T> {
+  const { traductions: _ignorees, ...reste } = article;
+  void _ignorees;
+  const version = traductionPour(article, locale, options);
+  const resultat = {
+    ...reste,
+    langue: version ? locale : DEFAULT_LOCALE,
+    langues: languesEnLigne(article),
+  } as Version<T>;
+  if (!version) return resultat;
+
+  const cible = resultat as Record<string, unknown>;
+  for (const champ of CHAMPS_TRADUISIBLES) {
+    if (!(champ in article)) continue;
+    const valeur = version[champ];
+    if (champ === "faq") cible[champ] = valeur ?? [];
+    else if (valeur != null && valeur !== "") cible[champ] = valeur;
   }
-  return map;
+  return resultat;
 }
 
-/** Chemin public (sans préfixe de langue) de l'article dans chaque langue où il existe. */
-export function cheminsParLangue(
-  article: ArticleVersion,
-  locale: Locale,
-  articles: ArticleVersion[]
-): Partial<Record<Locale, string>> {
-  const chemins: Partial<Record<Locale, string>> = { [locale]: `/blog/${article.slug}` };
-  for (const l of LOCALES) {
-    if (l === locale) continue;
-    const version = versionDans(article, l, articles);
-    if (version) chemins[l] = `/blog/${version.slug}`;
-  }
-  return chemins;
+/** Forme éditée dans l'admin (camelCase, jamais null : champs vides = ""). */
+export interface VersionInput {
+  statut: StatutVersion;
+  titre: string;
+  metaTitle: string;
+  metaDescription: string;
+  extrait: string;
+  contenuHtml: string;
+  faq: Faq[];
+  imageCoverAlt: string;
 }
 
-/**
- * Où envoyer un visiteur qui demande /blog/<slug> dans une langue où cet
- * article n'existe pas : sa version dans cette langue si elle est en ligne,
- * sinon la liste du blog. null si le slug ne désigne aucun article en ligne
- * (404). `articles` = versions en ligne, toutes langues.
- */
-export function cheminDeRepli(
-  slug: string,
-  locale: Locale,
-  articles: ArticleVersion[]
-): string | null {
-  const article = articles.find((a) => a.slug === slug);
-  if (!article || langue(article) === locale) return null;
-  const version = versionDans(article, locale, articles);
-  return version ? `/blog/${version.slug}` : "/blog";
+/** Point de départ d'une traduction : copie du français, en brouillon, à traduire. */
+export function traductionDepuis(fr: ChampsTraduisibles): VersionInput {
+  return {
+    statut: "brouillon",
+    titre: fr.titre,
+    metaTitle: fr.meta_title ?? fr.titre,
+    metaDescription: fr.meta_description ?? "",
+    extrait: fr.extrait ?? "",
+    contenuHtml: fr.contenu_html ?? "",
+    faq: fr.faq.map((q) => ({ ...q })),
+    imageCoverAlt: fr.image_cover_alt ?? "",
+  };
+}
+
+/** Traduction stockée → formulaire (les champs absents s'affichent vides). */
+export function versionVersInput(version: VersionTraduite): VersionInput {
+  return {
+    statut: version.statut,
+    titre: version.titre ?? "",
+    metaTitle: version.meta_title ?? "",
+    metaDescription: version.meta_description ?? "",
+    extrait: version.extrait ?? "",
+    contenuHtml: version.contenu_html ?? "",
+    faq: version.faq ?? [],
+    imageCoverAlt: version.image_cover_alt ?? "",
+  };
+}
+
+const ouNull = (valeur: string): string | null => valeur.trim() || null;
+
+/** Formulaire → traduction stockée (champs vides enregistrés en null). */
+export function inputVersVersion(input: VersionInput): VersionTraduite {
+  return {
+    statut: input.statut,
+    titre: input.titre.trim(),
+    meta_title: ouNull(input.metaTitle),
+    meta_description: ouNull(input.metaDescription),
+    extrait: ouNull(input.extrait),
+    contenu_html: ouNull(input.contenuHtml),
+    faq: input.faq,
+    image_cover_alt: ouNull(input.imageCoverAlt),
+  };
 }

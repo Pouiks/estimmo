@@ -13,8 +13,10 @@ import {
 import { DeleteArticleButton } from "@/components/admin/delete-article-button";
 import { PublicationArticleButton } from "@/components/admin/publication-article-button";
 import { resoudreImage, type Visuels } from "@/lib/blog/images";
+import type { StatutVersion } from "@/lib/blog/traductions";
 import { requireAdmin } from "@/lib/supabase/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { cn } from "@/lib/utils";
 
 export const metadata = { title: "Blog", robots: { index: false } };
 
@@ -37,8 +39,8 @@ interface Ligne {
   slug: string;
   titre: string;
   statut: "brouillon" | "publie";
-  lang: string | null;
-  traduction_de: string | null;
+  /** Statut de la version anglaise (traductions.en.statut), null sans version. */
+  en_statut: StatutVersion | null;
   categorie: string | null;
   published_at: string | null;
   contenu_html: string | null;
@@ -53,7 +55,7 @@ export default async function AdminBlogPage() {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("articles")
-    .select("id, slug, titre, statut, lang, traduction_de, categorie, published_at, contenu_html, image_cover, images, visuels")
+    .select("id, slug, titre, statut, categorie, published_at, contenu_html, image_cover, images, visuels, en_statut:traductions->en->>statut")
     .order("published_at", { ascending: false, nullsFirst: true });
 
   if (error) throw new Error(error.message);
@@ -120,10 +122,8 @@ export default async function AdminBlogPage() {
                   ? [article.image_cover, ...article.images.map((i) => i.src)].filter(Boolean)
                   : [];
                 const manquants = visuels.filter((src) => !resoudreImage(src, article.visuels)).length;
-                const chemin = `${article.lang === "en" ? "/en" : ""}/blog/${article.slug}`;
-                const versionLiee = articles.find(
-                  (x) => x.id === article.traduction_de || x.traduction_de === article.id
-                );
+                const chemin = `/blog/${article.slug}`;
+                const enEnLigne = e === "en-ligne" && article.en_statut === "publie";
                 return (
                   <TableRow key={article.id}>
                     <TableCell className="max-w-md whitespace-normal">
@@ -134,19 +134,24 @@ export default async function AdminBlogPage() {
                         {article.titre}
                       </Link>
                       <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
-                        <span className="rounded border px-1 font-mono uppercase">
-                          {article.lang ?? "fr"}
-                        </span>
                         {article.categorie && <span>{CATEGORIES[article.categorie]}</span>}
                         <span>{chemin}</span>
-                        {versionLiee && (
-                          <Link
-                            href={`/admin/blog/${versionLiee.id}`}
-                            className="hover:underline"
-                            title={versionLiee.titre}
+                        {article.en_statut && (
+                          <span
+                            className={cn(
+                              "rounded border px-1 font-mono",
+                              article.en_statut === "publie"
+                                ? "border-green-300 text-green-800"
+                                : "border-amber-300 text-amber-800"
+                            )}
+                            title={
+                              article.en_statut === "publie"
+                                ? "Version anglaise publiée (/en/blog)"
+                                : "Version anglaise en brouillon"
+                            }
                           >
-                            ↔ version {versionLiee.lang === "en" ? "anglaise" : "française"}
-                          </Link>
+                            EN {article.en_statut === "publie" ? "publiée" : "brouillon"}
+                          </span>
                         )}
                         {manquants > 0 && (
                           <span
@@ -182,14 +187,27 @@ export default async function AdminBlogPage() {
                     <TableCell>
                       <div className="flex items-center gap-1">
                         {e === "en-ligne" ? (
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            render={<a href={chemin} target="_blank" rel="noreferrer" />}
-                            aria-label="Voir sur le site"
-                          >
-                            <ExternalLink className="size-4" />
-                          </Button>
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="icon-sm"
+                              render={<a href={chemin} target="_blank" rel="noreferrer" />}
+                              aria-label="Voir sur le site"
+                            >
+                              <ExternalLink className="size-4" />
+                            </Button>
+                            {enEnLigne && (
+                              <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                className="text-xs font-mono"
+                                render={<a href={`/en${chemin}`} target="_blank" rel="noreferrer" />}
+                                aria-label="Voir la version anglaise"
+                              >
+                                EN
+                              </Button>
+                            )}
+                          </>
                         ) : (
                           article.contenu_html && (
                             <Button

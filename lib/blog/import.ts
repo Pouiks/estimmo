@@ -109,7 +109,6 @@ export function controlerArticles(brut: unknown): ResultatControle {
 export function versLigne(a: ArticleSource) {
   return {
     slug: a.slug,
-    lang: "fr" as const,
     titre: a.title,
     meta_title: a.metaTitle,
     meta_description: a.metaDescription,

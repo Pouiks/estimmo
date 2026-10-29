@@ -40,34 +40,13 @@ export function entreesBilingues(cheminFr: string, extra: Extra): EntreeSitemap[
   }));
 }
 
-/** Entrée d'une page n'existant que dans une langue (article de blog). */
+/** Entrée d'une page n'existant que dans une langue (article sans version anglaise publiée). */
 export function entreeMonolingue(
   cheminFr: string,
   locale: Locale,
   extra: Extra
 ): EntreeSitemap {
   return { url: urlAbsolue(cheminFr, locale), ...extra };
-}
-
-/**
- * Entrée d'une page traduite dont le chemin diffère par langue (article et
- * sa version anglaise) : alternates limités aux langues fournies.
- */
-export function entreeTraduite(
-  chemins: Partial<Record<Locale, string>>,
-  locale: Locale,
-  extra: Extra
-): EntreeSitemap {
-  const chemin = chemins[locale];
-  if (!chemin) throw new Error(`entreeTraduite : aucun chemin pour ${locale}`);
-  const languages: Record<string, string> = {};
-  for (const l of LOCALES) {
-    const c = chemins[l];
-    if (c) languages[l] = urlAbsolue(c, l);
-  }
-  const defaut = chemins[DEFAULT_LOCALE] ? DEFAULT_LOCALE : locale;
-  languages["x-default"] = urlAbsolue(chemins[defaut]!, defaut);
-  return { url: urlAbsolue(chemin, locale), alternates: { languages }, ...extra };
 }
 
 /** Nombre de fichiers « communes » pour n communes (au moins 1). */

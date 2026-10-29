@@ -1,13 +1,11 @@
 import "server-only";
 import { imagesPubliees, type Visuels } from "@/lib/blog/images";
-import { cheminsParLangue, type ArticleVersion } from "@/lib/blog/traductions";
-import { estLocale } from "@/lib/i18n/routing";
+import { languesEnLigne, type AvecTraductions } from "@/lib/blog/traductions";
 import { getAllCommuneSlugs, getDepartementsResume } from "@/lib/seo/communes";
 import { hrefDepartement, nomDepartement } from "@/lib/seo/departements";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   entreeMonolingue,
-  entreeTraduite,
   entreesBilingues,
   trancheCommunes,
   type EntreeSitemap,
@@ -23,7 +21,7 @@ export async function sitemapPagesFixes(): Promise<EntreeSitemap[]> {
     getDepartementsResume().catch(() => []),
     createAdminClient()
       .from("articles")
-      .select("id, slug, published_at, updated_at, lang, traduction_de, image_cover, visuels, contenu_html")
+      .select("slug, published_at, updated_at, image_cover, visuels, contenu_html, traductions")
       .eq("statut", "publie")
       // Les articles programmés (date future) restent hors sitemap.
       .lte("published_at", new Date().toISOString())
@@ -48,17 +46,17 @@ export async function sitemapPagesFixes(): Promise<EntreeSitemap[]> {
       })
     );
 
-  // Un article et sa version anglaise se déclarent mutuellement (hreflang) ;
-  // un article sans traduction n'a pas d'alternate.
-  const lignes = (articles.data ?? []) as (ArticleVersion & {
+  // Même slug dans les deux langues : un article dont la version anglaise est
+  // en ligne a deux entrées (hreflang mutuels) ; sinon son URL française seule.
+  const lignes = (articles.data ?? []) as (AvecTraductions & {
+    slug: string;
     published_at: string;
     updated_at: string;
     image_cover: string | null;
     visuels: Visuels | null;
     contenu_html: string | null;
   })[];
-  const pagesArticles = lignes.map((a) => {
-    const locale = estLocale(a.lang) ? a.lang : "fr";
+  const pagesArticles = lignes.flatMap((a) => {
     const extra = {
       // Dernière modification éditoriale, jamais avant la publication.
       lastModified: new Date(a.updated_at > a.published_at ? a.updated_at : a.published_at),
@@ -67,10 +65,10 @@ export async function sitemapPagesFixes(): Promise<EntreeSitemap[]> {
       // Couverture et images du corps réellement affichées (Google Images).
       images: imagesPubliees(a),
     };
-    const chemins = cheminsParLangue(a, locale, lignes);
-    return Object.keys(chemins).length > 1
-      ? entreeTraduite(chemins, locale, extra)
-      : entreeMonolingue(`/blog/${a.slug}`, locale, extra);
+    const chemin = `/blog/${a.slug}`;
+    return languesEnLigne(a).length > 1
+      ? entreesBilingues(chemin, extra)
+      : [entreeMonolingue(chemin, "fr", extra)];
   });
 
   return [...statiques, ...pagesDepartements, ...pagesArticles];

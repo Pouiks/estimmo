@@ -1,11 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  alternatesPour,
-  alternatesPourChemins,
-  cheminLocalise,
-  inLanguage,
-  ogLocale,
-} from "./seo";
+import { alternatesPour, cheminLocalise, inLanguage, ogLocale } from "./seo";
 
 describe("cheminLocalise", () => {
   it("laisse le français sans préfixe", () => {
@@ -58,22 +52,21 @@ describe("urlAbsolue", () => {
   });
 });
 
-describe("alternatesPourChemins", () => {
-  it("déclare chaque version avec son propre chemin, x-default sur le français", () => {
-    const chemins = { fr: "/blog/frais-de-notaire", en: "/blog/notary-fees" };
-    expect(alternatesPourChemins(chemins, "en")).toEqual({
-      canonical: "/en/blog/notary-fees",
+describe("alternatesPour (langues limitées)", () => {
+  it("déclare les deux langues d'un article traduit, même slug, x-default sur le français", () => {
+    expect(alternatesPour("/blog/frais-de-notaire", "en", ["fr", "en"])).toEqual({
+      canonical: "/en/blog/frais-de-notaire",
       languages: {
         fr: "/blog/frais-de-notaire",
-        en: "/en/blog/notary-fees",
+        en: "/en/blog/frais-de-notaire",
         "x-default": "/blog/frais-de-notaire",
       },
     });
   });
 
-  it("se limite à la canonique quand l'article n'existe que dans sa langue", () => {
-    expect(alternatesPourChemins({ en: "/blog/english-only" }, "en")).toEqual({
-      canonical: "/en/blog/english-only",
+  it("se limite à la canonique quand l'article n'existe qu'en français", () => {
+    expect(alternatesPour("/blog/frais-de-notaire", "fr", ["fr"])).toEqual({
+      canonical: "/blog/frais-de-notaire",
     });
   });
 });

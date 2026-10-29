@@ -5,16 +5,26 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import type { Categorie } from "./categories";
 import type { Visuels } from "./images";
 import type { TiptapNode } from "./render";
-import type { ArticleVersion } from "./traductions";
+import {
+  versionEnLigne,
+  versionPour,
+  type AvecTraductions,
+  type Faq,
+  type Version,
+} from "./traductions";
 
 /**
  * Un article est EN LIGNE quand statut = 'publie' ET published_at <= maintenant.
  * statut 'publie' + date future = programmé : invisible (liste, page, sitemap,
  * liens internes) jusqu'à sa date. Le cron /api/cron/blog rafraîchit ensuite
  * le cache ISR des pages concernées.
+ *
+ * Sa version anglaise n'est visible que si l'article est en ligne ET si
+ * `traductions.en.statut = 'publie'` (voir lib/blog/traductions.ts).
  */
 
-export interface ArticleCarte {
+/** Ligne lue en base pour une carte (colonnes françaises + traductions). */
+export interface LigneCarte extends AvecTraductions {
   slug: string;
   titre: string;
   extrait: string | null;
@@ -30,62 +40,61 @@ export interface ArticleCarte {
   published_at: string;
 }
 
-export interface ArticleComplet extends ArticleCarte, ArticleVersion {
-  lang: Locale;
+/** Ligne complète (page d'un article, aperçu admin). */
+export interface LigneComplete extends LigneCarte {
+  id: string;
   meta_title: string | null;
   auteur: string | null;
   image_cover_largeur: number | null;
   image_cover_hauteur: number | null;
-  faq: { question: string; answer: string }[];
+  faq: Faq[];
   articles_lies: string[];
   updated_at: string;
 }
 
-const CHAMPS_CARTE =
-  "slug, titre, extrait, meta_description, contenu, contenu_html, categorie, temps_lecture, image_cover, image_cover_alt, visuels, published_at";
-const CHAMPS_COMPLETS = `${CHAMPS_CARTE}, id, lang, traduction_de, meta_title, auteur, image_cover_largeur, image_cover_hauteur, faq, articles_lies, updated_at`;
+/**
+ * Article tel qu'il s'affiche dans une langue : champs déjà traduits,
+ * `langue` effective (fr en repli) et `langues` publiées (hreflang).
+ */
+export type ArticleCarte = Version<LigneCarte>;
+export type ArticleComplet = Version<LigneComplete>;
 
-function enLigne(locale: Locale) {
+const CHAMPS_CARTE =
+  "slug, titre, extrait, meta_description, contenu, contenu_html, categorie, temps_lecture, image_cover, image_cover_alt, visuels, published_at, traductions";
+export const CHAMPS_COMPLETS = `${CHAMPS_CARTE}, id, meta_title, auteur, image_cover_largeur, image_cover_hauteur, faq, articles_lies, updated_at`;
+
+function enLigne(champs: string) {
   return createAdminClient()
     .from("articles")
-    .select(CHAMPS_CARTE)
+    .select(champs)
     .eq("statut", "publie")
-    .eq("lang", locale)
     .lte("published_at", new Date().toISOString());
 }
 
-/** Articles en ligne d'une langue, du plus récent au plus ancien. */
+/** Articles en ligne dans cette langue, du plus récent au plus ancien (cartes déjà traduites). */
 export async function articlesEnLigne(locale: Locale, limite = 200): Promise<ArticleCarte[]> {
-  const { data } = await enLigne(locale)
+  const { data } = await enLigne(CHAMPS_CARTE)
     .order("published_at", { ascending: false })
     .limit(limite);
-  return (data ?? []) as ArticleCarte[];
+  return ((data ?? []) as unknown as LigneCarte[])
+    .filter((ligne) => versionEnLigne(ligne, locale))
+    .map((ligne) => versionPour(ligne, locale));
+}
+
+/** Slugs de tous les articles en ligne : un lien interne vers un autre slug devient du texte. */
+export async function slugsEnLigne(): Promise<Set<string>> {
+  const { data } = await enLigne("slug");
+  return new Set(((data ?? []) as unknown as { slug: string }[]).map((l) => l.slug));
 }
 
 /**
- * Versions (id, slug, langue, lien de traduction) de tous les articles en
- * ligne, toutes langues : hreflang, bascule de langue, liens traduits.
+ * Article en ligne, dans la langue demandée si sa version y est publiée,
+ * sinon en français (`langue` = "fr" : la page l'affiche en repli, hors index).
+ * null = aucun article en ligne sous ce slug (404).
  */
-export async function versionsEnLigne(): Promise<ArticleVersion[]> {
-  const { data } = await createAdminClient()
-    .from("articles")
-    .select("id, slug, lang, traduction_de")
-    .eq("statut", "publie")
-    .lte("published_at", new Date().toISOString());
-  return (data ?? []) as ArticleVersion[];
-}
-
-/** Article en ligne dans cette langue (sinon null : traduction ou 404, voir cheminDeRepli). */
 export async function articleEnLigne(slug: string, locale: Locale): Promise<ArticleComplet | null> {
-  const { data } = await createAdminClient()
-    .from("articles")
-    .select(CHAMPS_COMPLETS)
-    .eq("slug", slug)
-    .eq("statut", "publie")
-    .eq("lang", locale)
-    .lte("published_at", new Date().toISOString())
-    .maybeSingle();
-  return (data as ArticleComplet | null) ?? null;
+  const { data } = await enLigne(CHAMPS_COMPLETS).eq("slug", slug).maybeSingle();
+  return data ? versionPour(data as unknown as LigneComplete, locale) : null;
 }
 
 /**
