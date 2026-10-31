@@ -9,23 +9,34 @@ export function cheminLocalise(cheminFr: string, locale: Locale): string {
 }
 
 /**
+ * Chemin non préfixé d'une page : le même dans toutes les langues (string),
+ * ou un chemin par langue (article dont le slug anglais diffère du français).
+ */
+export type Chemins = string | Record<Locale, string>;
+
+/** Chemin non préfixé de la page dans `locale`. */
+export function cheminDe(chemins: Chemins, locale: Locale): string {
+  return typeof chemins === "string" ? chemins : chemins[locale];
+}
+
+/**
  * Canonique + hreflang pour une page indexable. Les URLs sont relatives,
  * résolues par metadataBase. x-default pointe sur la version française.
  * `langues` : langues où la page existe (article sans version anglaise publiée :
  * `["fr"]`) ; une seule langue → canonique sans hreflang.
  */
 export function alternatesPour(
-  cheminFr: string,
+  chemins: Chemins,
   locale: Locale,
   langues: readonly Locale[] = LOCALES
 ): NonNullable<Metadata["alternates"]> {
-  const canonical = cheminLocalise(cheminFr, locale);
+  const canonical = cheminLocalise(cheminDe(chemins, locale), locale);
   if (langues.length < 2) return { canonical };
   const languages: Record<string, string> = {};
   for (const l of LOCALES) {
-    if (langues.includes(l)) languages[l] = cheminLocalise(cheminFr, l);
+    if (langues.includes(l)) languages[l] = cheminLocalise(cheminDe(chemins, l), l);
   }
-  languages["x-default"] = cheminLocalise(cheminFr, DEFAULT_LOCALE);
+  languages["x-default"] = cheminLocalise(cheminDe(chemins, DEFAULT_LOCALE), DEFAULT_LOCALE);
   return { canonical, languages };
 }
 

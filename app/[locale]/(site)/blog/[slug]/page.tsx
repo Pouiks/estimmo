@@ -18,9 +18,10 @@ import {
   type ArticleComplet,
 } from "@/lib/blog/publication";
 import { extraireTexte } from "@/lib/blog/render";
+import { cheminsBlog } from "@/lib/blog/traductions";
 import { SITE } from "@/lib/config";
-import { Link } from "@/lib/i18n/navigation";
-import { estLocale } from "@/lib/i18n/routing";
+import { Link, permanentRedirect } from "@/lib/i18n/navigation";
+import { estLocale, type Locale } from "@/lib/i18n/routing";
 import {
   alternatesPour,
   imageOgPour,
@@ -42,8 +43,9 @@ type Props = { params: Promise<{ locale: string; slug: string }> };
 const TITRE_MAX = 60;
 
 /**
- * Chaque langue ne prérend que les articles publiés dans cette langue ; la
- * page de repli (français sous /en) se rend à la demande.
+ * Chaque langue ne prérend que les articles publiés dans cette langue, sous
+ * leur slug public dans cette langue ; la page de repli (français sous /en)
+ * et les redirections d'anciens slugs se rendent à la demande.
  */
 export async function generateStaticParams({
   params,
@@ -52,7 +54,7 @@ export async function generateStaticParams({
 }) {
   if (!estLocale(params.locale)) return [];
   const articles = await articlesEnLigne(params.locale);
-  return articles.map((a) => ({ slug: a.slug }));
+  return articles.map((a) => ({ slug: a.slugs[params.locale as Locale] }));
 }
 
 function description(article: ArticleCarte): string {
@@ -78,13 +80,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     getTranslations({ locale, namespace: "blog" }),
   ]);
   if (!article) return { title: t("introuvable") };
+  // Slug d'une autre langue : la page redirige vers l'URL publique, rien à décrire.
+  if (article.slugs[locale] !== slug) return {};
 
   // Pas de version dans cette langue : le français est servi en repli, hors
   // index (ni canonique vers une autre URL ni hreflang : signaux contradictoires).
   const repli = article.langue !== locale;
   const titre = article.meta_title ?? article.titre;
   const desc = description(article);
-  const chemin = `/blog/${slug}`;
+  const chemins = cheminsBlog(article.slugs);
   const cover = resoudreImage(article.image_cover, article.visuels);
   const image = cover
     ? [
@@ -106,11 +110,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: desc,
     ...(repli
       ? { robots: { index: false, follow: true } }
-      : // hreflang vers la version anglaise si elle est en ligne, sinon canonique seule.
-        { alternates: alternatesPour(chemin, locale, article.langues) }),
+      : // hreflang vers la version anglaise si elle est en ligne (sur son propre slug), sinon canonique seule.
+        { alternates: alternatesPour(chemins, locale, article.langues) }),
     authors: [{ name: article.auteur ?? SITE.agent.name }],
     openGraph: {
-      ...openGraphPour({ locale: article.langue, cheminFr: chemin, title: titre, description: desc }),
+      ...openGraphPour({
+        locale: article.langue,
+        cheminFr: chemins[article.langue],
+        title: titre,
+        description: desc,
+      }),
       type: "article",
       publishedTime: article.published_at,
       modifiedTime: dateModification(article),
@@ -155,13 +164,19 @@ export default async function ArticlePage({ params }: Props) {
     getTranslations({ locale, namespace: "blog" }),
   ]);
   if (!article) notFound();
+  // URL portant le slug d'une autre langue (ancienne URL anglaise /en/blog/<slug fr>
+  // après l'ajout d'un slug anglais, ou /blog/<slug en> via le sélecteur de langue) :
+  // 308 vers l'URL publique de cette langue. On reste dans la même locale, donc
+  // aucun risque de boucle avec le cookie du proxy.
+  const slugPublic = article.slugs[locale];
+  if (slugPublic !== slug) permanentRedirect({ href: `/blog/${slugPublic}`, locale });
 
   const repli = article.langue !== locale;
   // Les articles éditoriaux portent déjà leur appel à l'action en fin de corps.
   const ctaDansCorps = !!article.contenu_html?.includes('class="cta-estimation"');
   const auteur = article.auteur ?? SITE.agent.name;
   const lies = articlesLies(article, enLigne);
-  const url = urlAbsolue(`/blog/${article.slug}`, locale);
+  const url = urlAbsolue(`/blog/${slugPublic}`, locale);
   const cover = resoudreImage(article.image_cover, article.visuels);
 
   const jsonLd = [

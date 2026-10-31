@@ -223,10 +223,9 @@ export async function changerPublication(
   };
 }
 
-const slugSchema = z
-  .string()
-  .trim()
-  .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "Slug invalide (minuscules, chiffres, tirets)");
+const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+const slugSchema = z.string().trim().regex(SLUG, "Slug invalide (minuscules, chiffres, tirets)");
 
 const faqSchema = z.array(
   z.object({
@@ -238,11 +237,15 @@ const faqSchema = z.array(
 /**
  * Version traduite (onglet English). En brouillon, les champs sont libres :
  * on traduit petit à petit sans rien exposer. Publiée, elle répond aux mêmes
- * exigences que le français.
+ * exigences que le français. Son slug est facultatif (vide = slug français).
  */
 const versionSchema = z
   .object({
     statut: z.enum(["brouillon", "publie"]),
+    slug: z
+      .string()
+      .trim()
+      .refine((v) => v === "" || SLUG.test(v), "Slug anglais invalide (minuscules, chiffres, tirets)"),
     titre: z.string().trim().max(200, "Titre anglais : 200 caractères maximum"),
     metaTitle: z.string().trim().max(65, "Meta title anglais : 65 caractères maximum"),
     metaDescription: z.string().trim().max(165, "Meta description anglaise : 165 caractères maximum"),
@@ -275,7 +278,8 @@ const versionSchema = z
   });
 
 const articleEditorialSchema = z.object({
-  id: z.uuid(),
+  /** Absent = création (page « Nouvel article »). */
+  id: z.uuid().optional(),
   titre: z.string().trim().min(10, "Titre trop court"),
   slug: slugSchema,
   metaTitle: z.string().trim().min(10, "Meta title trop court").max(65, "Meta title : 65 caractères maximum"),
@@ -301,6 +305,42 @@ const articleEditorialSchema = z.object({
 
 export type ArticleEditorialInput = z.input<typeof articleEditorialSchema>;
 
+/**
+ * Tous les slugs publics (français et traduits) de tous les articles partagent
+ * le même espace : /blog/x et /en/blog/x ne peuvent pas désigner deux articles
+ * différents. Renvoie le message d'erreur si l'un des `slugs` est déjà pris
+ * par un autre article (l'index unique en base reste le filet de sécurité).
+ */
+async function slugDejaPris(id: string | undefined, slugs: string[]): Promise<string | null> {
+  const supabase = createAdminClient();
+  const requete = (colonne: string) => {
+    const q = supabase.from("articles").select("slug, en_slug:traductions->en->>slug").in(colonne, slugs);
+    return id ? q.neq("id", id) : q;
+  };
+  const [francais, anglais] = await Promise.all([requete("slug"), requete("traductions->en->>slug")]);
+  const erreur = francais.error ?? anglais.error;
+  if (erreur) throw new Error(erreur.message);
+
+  for (const ligne of [...(francais.data ?? []), ...(anglais.data ?? [])] as { slug: string; en_slug: string | null }[]) {
+    for (const s of slugs) {
+      if (ligne.slug === s) return `Le slug « ${s} » est déjà celui d'un autre article`;
+      if (ligne.en_slug === s) return `Le slug « ${s} » est déjà le slug anglais d'un autre article`;
+    }
+  }
+  return null;
+}
+
+/** Message des violations d'unicité (slug français ou anglais). */
+function messageSlugEnDouble(error: { code?: string; message: string }): string {
+  if (error.code !== "23505") return error.message;
+  return error.message.includes("traductions_en_slug") ? "Ce slug anglais existe déjà" : "Ce slug existe déjà";
+}
+
+/**
+ * Enregistre un article éditorial (toutes ses langues) ; sans `id`, le crée.
+ * Un nouvel article naît avec un emplacement de couverture au format du blog
+ * (/images/blog/<slug>/cover.webp, 1200×630), à remplir depuis la section Images.
+ */
 export async function saveArticleEditorial(input: unknown): Promise<SaveArticleResult> {
   await requireAdmin();
 
@@ -319,35 +359,54 @@ export async function saveArticleEditorial(input: unknown): Promise<SaveArticleR
   if (en) {
     const problemesEn = problemesHtml(en.contenuHtml);
     if (problemesEn.length > 0) return { ok: false, message: `Contenu anglais refusé : ${problemesEn[0]}` };
+    // Un slug anglais identique au français n'est pas un slug propre.
+    if (en.slug === a.slug) en.slug = "";
+  }
+  const conflit = await slugDejaPris(a.id, en?.slug ? [a.slug, en.slug] : [a.slug]);
+  if (conflit) return { ok: false, message: conflit };
+
+  const colonnes = {
+    titre: a.titre,
+    slug: a.slug,
+    meta_title: a.metaTitle,
+    meta_description: a.metaDescription,
+    extrait: a.extrait,
+    categorie: a.categorie,
+    auteur: a.auteur,
+    temps_lecture: a.tempsLecture,
+    published_at: depuisChampParis(a.publishedAt).toISOString(),
+    statut: a.statut,
+    contenu_html: a.contenuHtml,
+    faq: a.faq,
+    articles_lies: a.articlesLies,
+    // La version anglaise vit dans l'article (textes, statut et slug propres).
+    traductions: en ? { en: inputVersVersion(en) } : {},
+  };
+
+  const supabase = createAdminClient();
+  let id = a.id;
+  if (id) {
+    const { error } = await supabase.from("articles").update(colonnes).eq("id", id);
+    if (error) return { ok: false, message: messageSlugEnDouble(error) };
+  } else {
+    const { data, error } = await supabase
+      .from("articles")
+      .insert({
+        ...colonnes,
+        image_cover: `/images/blog/${a.slug}/cover.webp`,
+        image_cover_largeur: 1200,
+        image_cover_hauteur: 630,
+        image_cover_alt: a.titre,
+      })
+      .select("id")
+      .single();
+    if (error || !data) return { ok: false, message: error ? messageSlugEnDouble(error) : "Erreur" };
+    id = data.id as string;
   }
 
-  const { error } = await createAdminClient()
-    .from("articles")
-    .update({
-      titre: a.titre,
-      slug: a.slug,
-      meta_title: a.metaTitle,
-      meta_description: a.metaDescription,
-      extrait: a.extrait,
-      categorie: a.categorie,
-      auteur: a.auteur,
-      temps_lecture: a.tempsLecture,
-      published_at: depuisChampParis(a.publishedAt).toISOString(),
-      statut: a.statut,
-      contenu_html: a.contenuHtml,
-      faq: a.faq,
-      articles_lies: a.articlesLies,
-      // Même slug dans toutes les langues : la version anglaise vit dans l'article.
-      traductions: en ? { en: inputVersVersion(en) } : {},
-    })
-    .eq("id", a.id);
-  if (error) {
-    return { ok: false, message: error.code === "23505" ? "Ce slug existe déjà" : error.message };
-  }
-
-  await apresChangement(a.id);
-  revalidatePath(`/admin/blog/${a.id}`);
-  return { ok: true, message: "Article enregistré", id: a.id };
+  await apresChangement(id);
+  revalidatePath(`/admin/blog/${id}`);
+  return { ok: true, message: a.id ? "Article enregistré" : "Article créé", id };
 }
 
 // ----------------------------------------------------------------------------

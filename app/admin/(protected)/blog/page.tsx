@@ -41,6 +41,8 @@ interface Ligne {
   statut: "brouillon" | "publie";
   /** Statut de la version anglaise (traductions.en.statut), null sans version. */
   en_statut: StatutVersion | null;
+  /** Slug propre de la version anglaise (traductions.en.slug), null = slug français. */
+  en_slug: string | null;
   categorie: string | null;
   published_at: string | null;
   contenu_html: string | null;
@@ -55,7 +57,7 @@ export default async function AdminBlogPage() {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("articles")
-    .select("id, slug, titre, statut, categorie, published_at, contenu_html, image_cover, images, visuels, en_statut:traductions->en->>statut")
+    .select("id, slug, titre, statut, categorie, published_at, contenu_html, image_cover, images, visuels, en_statut:traductions->en->>statut, en_slug:traductions->en->>slug")
     .order("published_at", { ascending: false, nullsFirst: true });
 
   if (error) throw new Error(error.message);
@@ -123,6 +125,7 @@ export default async function AdminBlogPage() {
                   : [];
                 const manquants = visuels.filter((src) => !resoudreImage(src, article.visuels)).length;
                 const chemin = `/blog/${article.slug}`;
+                const cheminEn = `/en/blog/${article.en_slug ?? article.slug}`;
                 const enEnLigne = e === "en-ligne" && article.en_statut === "publie";
                 return (
                   <TableRow key={article.id}>
@@ -136,6 +139,7 @@ export default async function AdminBlogPage() {
                       <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
                         {article.categorie && <span>{CATEGORIES[article.categorie]}</span>}
                         <span>{chemin}</span>
+                        {article.en_slug && <span title="URL de la version anglaise">{cheminEn}</span>}
                         {article.en_statut && (
                           <span
                             className={cn(
@@ -201,7 +205,7 @@ export default async function AdminBlogPage() {
                                 variant="ghost"
                                 size="icon-sm"
                                 className="text-xs font-mono"
-                                render={<a href={`/en${chemin}`} target="_blank" rel="noreferrer" />}
+                                render={<a href={cheminEn} target="_blank" rel="noreferrer" />}
                                 aria-label="Voir la version anglaise"
                               >
                                 EN

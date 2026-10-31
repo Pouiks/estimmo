@@ -1,15 +1,19 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
-import type { Locale } from "@/lib/i18n/routing";
+import { LOCALES, type Locale } from "@/lib/i18n/routing";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Categorie } from "./categories";
 import type { Visuels } from "./images";
 import type { TiptapNode } from "./render";
 import {
+  articleParSlug,
+  slugsPublics,
   versionEnLigne,
   versionPour,
+  type AvecSlug,
   type AvecTraductions,
   type Faq,
+  type SlugsPublics,
   type Version,
 } from "./traductions";
 
@@ -20,8 +24,13 @@ import {
  * le cache ISR des pages concernées.
  *
  * Sa version anglaise n'est visible que si l'article est en ligne ET si
- * `traductions.en.statut = 'publie'` (voir lib/blog/traductions.ts).
+ * `traductions.en.statut = 'publie'` (voir lib/blog/traductions.ts). Elle peut
+ * avoir son propre slug (`traductions.en.slug`) : `slugs` sur chaque article
+ * renvoyé donne l'URL publique par langue, `slug` reste le slug français.
  */
+
+/** Forme des slugs acceptée dans une URL (et dans les filtres PostgREST construits ici). */
+const SLUG_URL = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 /** Ligne lue en base pour une carte (colonnes françaises + traductions). */
 export interface LigneCarte extends AvecTraductions {
@@ -81,20 +90,33 @@ export async function articlesEnLigne(locale: Locale, limite = 200): Promise<Art
     .map((ligne) => versionPour(ligne, locale));
 }
 
-/** Slugs de tous les articles en ligne : un lien interne vers un autre slug devient du texte. */
-export async function slugsEnLigne(): Promise<Set<string>> {
-  const { data } = await enLigne("slug");
-  return new Set(((data ?? []) as unknown as { slug: string }[]).map((l) => l.slug));
+/**
+ * Articles en ligne, par slug français : leurs slugs publics par langue. Les
+ * liens internes du corps (`/blog/<slug fr>`) sont réécrits vers le slug de la
+ * langue de la page ; un lien vers un article hors ligne devient du texte.
+ */
+export async function slugsEnLigne(): Promise<Map<string, SlugsPublics>> {
+  const { data } = await enLigne("slug, traductions");
+  return new Map(((data ?? []) as unknown as AvecSlug[]).map((l) => [l.slug, slugsPublics(l)]));
 }
 
 /**
- * Article en ligne, dans la langue demandée si sa version y est publiée,
- * sinon en français (`langue` = "fr" : la page l'affiche en repli, hors index).
+ * Article en ligne désigné par `slug` sur une page en `locale` : son slug
+ * français ou le slug public d'une de ses traductions. Si `slugs[locale]`
+ * diffère du slug demandé, la page redirige vers l'URL publique de la langue.
+ * Contenu dans la langue demandée si sa version y est publiée, sinon en
+ * français (`langue` = "fr" : affiché en repli, hors index).
  * null = aucun article en ligne sous ce slug (404).
  */
 export async function articleEnLigne(slug: string, locale: Locale): Promise<ArticleComplet | null> {
-  const { data } = await enLigne(CHAMPS_COMPLETS).eq("slug", slug).maybeSingle();
-  return data ? versionPour(data as unknown as LigneComplete, locale) : null;
+  if (!SLUG_URL.test(slug)) return null;
+  const filtres = [
+    `slug.eq.${slug}`,
+    ...LOCALES.filter((l) => l !== "fr").map((l) => `traductions->${l}->>slug.eq.${slug}`),
+  ];
+  const { data } = await enLigne(CHAMPS_COMPLETS).or(filtres.join(",")).limit(3);
+  const article = articleParSlug((data ?? []) as unknown as LigneComplete[], slug, locale);
+  return article ? versionPour(article, locale) : null;
 }
 
 /**

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition, type ReactNode } from "react";
-import { Languages, Loader2, Plus, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Languages, Loader2, Plus, Trash2, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { EditeurCorps } from "@/components/admin/editeur-corps";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { traductionDepuis, type Faq, type VersionInput } from "@/lib/blog/traductions";
-import { cn } from "@/lib/utils";
+import { cn, slugify } from "@/lib/utils";
 import {
   saveArticleEditorial,
   type ArticleEditorialInput,
@@ -178,6 +179,7 @@ function ChampsVersion({
 
 const VERSION_VIDE: VersionInput = {
   statut: "brouillon",
+  slug: "",
   titre: "",
   metaTitle: "",
   metaDescription: "",
@@ -188,9 +190,11 @@ const VERSION_VIDE: VersionInput = {
 };
 
 /**
- * Édition d'un article éditorial (HTML importé) : un onglet par langue
- * (textes, corps, FAQ), réglages communs dans la barre latérale (statut,
- * date, slug, catégorie, « À lire aussi »). Un seul enregistrement pour tout.
+ * Édition d'un article éditorial : un onglet par langue (textes, corps, FAQ,
+ * slug anglais), réglages communs dans la barre latérale (statut, date, slug
+ * français, catégorie, « À lire aussi »). Un seul enregistrement pour tout.
+ * Sans `article.id`, c'est la création : le slug suit le titre jusqu'à être
+ * saisi à la main, et l'enregistrement ouvre la page de l'article créé.
  */
 export function ArticleEditorialEditor({
   article,
@@ -200,7 +204,7 @@ export function ArticleEditorialEditor({
   imagesResolues,
 }: {
   article: ArticleEditorialData;
-  /** « À lire aussi » : les autres articles (même slug dans les deux langues). */
+  /** « À lire aussi » : les autres articles, désignés par leur slug français. */
   autresArticles: { slug: string; titre: string }[];
   motsCles: string[];
   /** Alt français de la couverture (section Images) : point de départ de l'anglais. */
@@ -208,15 +212,23 @@ export function ArticleEditorialEditor({
   /** Chemin logique → URL affichable des images (aperçu dans l'éditeur visuel). */
   imagesResolues: Record<string, string>;
 }) {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [a, setA] = useState(article);
   // Recrée l'éditeur visuel anglais quand son contenu est remplacé d'un bloc.
   const [generationEn, setGenerationEn] = useState(0);
+  // Création : le slug français est déduit du titre tant qu'il n'a pas été saisi.
+  const [slugTouche, setSlugTouche] = useState(Boolean(article.id));
 
   const maj = <K extends keyof ArticleEditorialData>(cle: K, valeur: ArticleEditorialData[K]) =>
     setA((prev) => ({ ...prev, [cle]: valeur }));
   /** Champs français (colonnes de l'article). */
-  const majFr = (patch: Partial<ChampsVersionValeurs>) => setA((prev) => ({ ...prev, ...patch }));
+  const majFr = (patch: Partial<ChampsVersionValeurs>) =>
+    setA((prev) => ({
+      ...prev,
+      ...patch,
+      ...(patch.titre !== undefined && !slugTouche ? { slug: slugify(patch.titre) } : {}),
+    }));
   /** Champs de la version anglaise. */
   const majEn = (patch: Partial<VersionInput>) =>
     setA((prev) =>
@@ -231,8 +243,12 @@ export function ArticleEditorialEditor({
   function enregistrer() {
     startTransition(async () => {
       const result = await saveArticleEditorial(a);
-      if (result.ok) toast.success(result.message);
-      else toast.error(result.message);
+      if (!result.ok) {
+        toast.error(result.message);
+        return;
+      }
+      toast.success(result.message);
+      if (!a.id && result.id) router.replace(`/admin/blog/${result.id}`);
     });
   }
 
@@ -318,9 +334,10 @@ export function ArticleEditorialEditor({
           {!en ? (
             <div className="space-y-4 rounded-xl border border-dashed p-8 text-center">
               <p className="text-sm text-muted-foreground">
-                Pas encore de version anglaise. Elle partage l&apos;URL, les images, la date et
-                les réglages de l&apos;article ; seuls les textes sont à traduire. Elle reste
-                invisible tant qu&apos;elle est en brouillon.
+                Pas encore de version anglaise. Elle partage les images, la date et les
+                réglages de l&apos;article ; les textes sont à traduire et elle peut avoir son
+                propre slug (URL /en/blog/…). Elle reste invisible tant qu&apos;elle est en
+                brouillon.
               </p>
               <div className="flex flex-wrap justify-center gap-2">
                 <Button type="button" onClick={partirDuFrancais}>
@@ -359,6 +376,33 @@ export function ArticleEditorialEditor({
                 >
                   <Trash2 className="size-4" /> Supprimer la version anglaise
                 </Button>
+              </div>
+
+              <div className="space-y-2 rounded-xl border p-4">
+                <Label htmlFor="en-slug">Slug anglais (URL /en/blog/…)</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="en-slug"
+                    className="font-mono text-sm"
+                    value={en.slug}
+                    placeholder={a.slug}
+                    onChange={(e) => majEn({ slug: e.target.value })}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={!en.titre.trim()}
+                    title="Déduire le slug du titre anglais"
+                    onClick={() => majEn({ slug: slugify(en.titre) })}
+                  >
+                    <Wand2 className="size-4" /> Depuis le titre
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Vide = même slug que le français (/en/blog/{a.slug || "…"}). Une fois la
+                  version anglaise en ligne, l&apos;ancienne adresse redirige vers la nouvelle,
+                  mais mieux vaut ne plus le changer (référencement).
+                </p>
               </div>
 
               <ChampsVersion
@@ -413,7 +457,7 @@ export function ArticleEditorialEditor({
           </div>
           <Button className="w-full" disabled={pending} onClick={enregistrer}>
             {pending && <Loader2 className="size-4 animate-spin" />}
-            Enregistrer
+            {a.id ? "Enregistrer" : "Créer l'article"}
           </Button>
           <p className="text-xs text-muted-foreground">
             Enregistre les deux langues. Statut et date valent pour l&apos;article entier ;
@@ -423,10 +467,21 @@ export function ArticleEditorialEditor({
 
         <div className="space-y-4 rounded-xl border p-4">
           <div className="space-y-2">
-            <Label htmlFor="slug">Slug (URL /blog/… et /en/blog/…)</Label>
-            <Input id="slug" value={a.slug} onChange={(e) => maj("slug", e.target.value)} />
+            <Label htmlFor="slug">Slug français (URL /blog/…)</Label>
+            <Input
+              id="slug"
+              className="font-mono text-sm"
+              value={a.slug}
+              onChange={(e) => {
+                setSlugTouche(true);
+                maj("slug", e.target.value);
+              }}
+            />
             <p className="text-xs text-muted-foreground">
-              À ne plus changer une fois l&apos;article en ligne (liens et référencement perdus).
+              Identifiant de l&apos;article (liens internes, « À lire aussi », images). Sert
+              aussi à l&apos;URL anglaise tant que la version anglaise n&apos;a pas son propre
+              slug. À ne plus changer une fois l&apos;article en ligne (liens et référencement
+              perdus).
             </p>
           </div>
           <div className="space-y-2">

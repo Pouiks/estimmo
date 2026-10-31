@@ -45,6 +45,26 @@ describe("entreesBilingues", () => {
     ]);
     expect(alternatesSitemap("/").languages?.["x-default"]).toBe(base);
   });
+
+  it("accepte un chemin par langue (article au slug anglais propre)", () => {
+    const entrees = entreesBilingues(
+      { fr: "/blog/frais-de-notaire", en: "/blog/notary-fees" },
+      { priority: 0.6 }
+    );
+    expect(entrees.map((e) => e.url)).toEqual([
+      `${base}/blog/frais-de-notaire`,
+      `${base}/en/blog/notary-fees`,
+    ]);
+    for (const e of entrees) {
+      expect(e.alternates).toEqual({
+        languages: {
+          fr: `${base}/blog/frais-de-notaire`,
+          en: `${base}/en/blog/notary-fees`,
+          "x-default": `${base}/blog/frais-de-notaire`,
+        },
+      });
+    }
+  });
 });
 
 describe("entreeMonolingue", () => {

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/lib/i18n/routing";
-import { urlAbsolue } from "@/lib/i18n/seo";
+import { cheminDe, urlAbsolue, type Chemins } from "@/lib/i18n/seo";
 import { escapeHtml } from "@/lib/security/html";
 
 /**
@@ -20,21 +20,22 @@ export const COMMUNES_PAR_SITEMAP = 20_000;
 export type EntreeSitemap = MetadataRoute.Sitemap[number];
 type Extra = Pick<EntreeSitemap, "lastModified" | "changeFrequency" | "priority" | "images">;
 
-/** Alternates hreflang d'une page existant dans toutes les langues. */
-export function alternatesSitemap(
-  cheminFr: string
-): NonNullable<EntreeSitemap["alternates"]> {
+/**
+ * Alternates hreflang d'une page existant dans toutes les langues. `chemins` :
+ * même chemin partout, ou un chemin par langue (article au slug anglais propre).
+ */
+export function alternatesSitemap(chemins: Chemins): NonNullable<EntreeSitemap["alternates"]> {
   const languages: Record<string, string> = {};
-  for (const locale of LOCALES) languages[locale] = urlAbsolue(cheminFr, locale);
-  languages["x-default"] = urlAbsolue(cheminFr, DEFAULT_LOCALE);
+  for (const locale of LOCALES) languages[locale] = urlAbsolue(cheminDe(chemins, locale), locale);
+  languages["x-default"] = urlAbsolue(cheminDe(chemins, DEFAULT_LOCALE), DEFAULT_LOCALE);
   return { languages };
 }
 
 /** Une entrée par langue, chacune avec les alternates complets. */
-export function entreesBilingues(cheminFr: string, extra: Extra): EntreeSitemap[] {
-  const alternates = alternatesSitemap(cheminFr);
+export function entreesBilingues(chemins: Chemins, extra: Extra): EntreeSitemap[] {
+  const alternates = alternatesSitemap(chemins);
   return LOCALES.map((locale) => ({
-    url: urlAbsolue(cheminFr, locale),
+    url: urlAbsolue(cheminDe(chemins, locale), locale),
     alternates,
     ...extra,
   }));

@@ -94,21 +94,41 @@ Vitest · pnpm. Déploiement Vercel.
 - **Données** : `leads.locale` (email prospect dans sa langue, notification agent en FR) ;
   `articles.traductions` jsonb (29/10/2026) : un article porte sa version française dans
   ses colonnes et ses traductions par locale (`{ en: { titre, meta_title, meta_description,
-  extrait, contenu_html, faq, image_cover_alt, statut } }`), **même slug dans les deux
-  langues** (`/blog/x` ↔ `/en/blog/x`) ; tout le reste (images, date, statut, catégorie,
-  « À lire aussi ») est commun. Version EN visible = article en ligne ET
-  `traductions.en.statut = 'publie'`. Sans version EN publiée, `/en/blog/x` affiche le
+  extrait, contenu_html, faq, image_cover_alt, statut, slug } }`) ; tout le reste (images,
+  date, statut, catégorie, « À lire aussi ») est commun. Version EN visible = article en
+  ligne ET `traductions.en.statut = 'publie'`. Sans version EN publiée, `/en/blog/x` affiche le
   français avec un bandeau (`components/blog/bandeau-langue.tsx`), `noindex`, ni canonical
   ni hreflang ; **jamais de `redirect` vers `/blog/x`** (le proxy renverrait un cookie
   `NEXT_LOCALE=en` vers `/en/…` en boucle), le lien du bandeau est le `Link` next-intl
   `locale="fr"` qui synchronise le cookie. Hreflang fr/en (page + sitemap) seulement si
   les deux versions sont en ligne. Fonctions pures : `lib/blog/traductions.ts`
-  (`versionPour`, `languesEnLigne`, `traductionDepuis`…) ; requêtes :
-  `lib/blog/publication.ts` (`articlesEnLigne(locale)` filtre en mémoire, `slugsEnLigne()`).
+  (`versionPour`, `languesEnLigne`, `traductionDepuis`, `slugsPublics`, `articleParSlug`…) ;
+  requêtes : `lib/blog/publication.ts` (`articlesEnLigne(locale)` filtre en mémoire,
+  `slugsEnLigne()` → Map slug fr → slugs publics).
+  **Slug par langue (31/10/2026)** : la colonne `slug` (fr) reste l'identifiant stable
+  (`articles_lies`, liens `/blog/<slug fr>` du corps, chemins d'images) ;
+  `traductions.en.slug` (facultatif) donne l'URL `/en/blog/<slug en>`, sinon l'URL anglaise
+  reprend le slug français. Tout article renvoyé par `versionPour` porte `slugs: { fr, en }`
+  (slug public par langue) : les liens (`CarteArticle`, liens internes réécrits par
+  `preparerHtml`, canonical/hreflang via `alternatesPour(chemins)`, sitemap via
+  `entreesBilingues(chemins)`) utilisent `slugs[locale]`, jamais `slug`. La page
+  `/[locale]/blog/[slug]` retrouve l'article par slug fr OU slug traduit
+  (`articleEnLigne`, filtre `.or()` PostgREST sur `traductions->en->>slug`) et fait un
+  `permanentRedirect` (next-intl, même locale → pas de boucle cookie) quand le slug de l'URL
+  n'est pas le slug public de la langue (`/en/blog/<slug fr>` → `/en/blog/<slug en>`,
+  `/blog/<slug en>` → `/blog/<slug fr>`) ; le sélecteur de langue passe par cette
+  redirection. Un slug anglais n'est routable que si la version EN est publiée. Tous les
+  slugs publics partagent le même espace : l'admin refuse un slug (fr ou en) déjà pris par
+  un autre article (`slugDejaPris`), index unique + contrainte de forme en base
+  (`20261031120000_articles_slug_traduit.sql`).
   Admin : onglets Français / English dans l'éditeur (`components/ui/tabs.tsx`, Base UI,
-  `keepMounted` pour garder les deux TipTap), statut propre à la version EN, « Partir du
-  texte français », aperçu `?lang=en` ; l'import JSON et le panneau Images ne touchent
-  jamais `traductions`. Migrations `20261018120000_i18n_locale.sql`,
+  `keepMounted` pour garder les deux TipTap), statut et slug propres à la version EN
+  (« Depuis le titre » = slugify du titre anglais), « Partir du texte français », aperçu
+  `?lang=en` ; **« Nouvel article » ouvre ce même éditeur** (`saveArticleEditorial` sans
+  `id` = insertion, couverture `/images/blog/<slug>/cover.webp` 1200×630 à déposer ensuite
+  depuis la section Images ; l'ancien éditeur TipTap `article-editor.tsx` ne sert plus
+  qu'aux éventuels articles `contenu` jsonb, aucun en base) ; l'import JSON et le panneau
+  Images ne touchent jamais `traductions`. Migrations `20261018120000_i18n_locale.sql`,
   `20261029120000_articles_traductions_integrees.sql` (ajoute `traductions`, fusionne
   l'ancien modèle `lang` + `traduction_de` du 28/10 en conservant ses colonnes pour la
   prod encore déployée) puis `20261029130000_articles_traductions_nettoyage.sql` (supprime

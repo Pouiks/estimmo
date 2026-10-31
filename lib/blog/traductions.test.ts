@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  articleParSlug,
+  cheminsBlog,
   inputVersVersion,
   languesEnLigne,
+  slugPour,
+  slugsPublics,
   traductionDepuis,
   traductionPour,
   versionEnLigne,
@@ -102,10 +106,84 @@ describe("versionPour", () => {
   });
 });
 
+describe("slugs publics", () => {
+  const avecSlugEn = { ...francais, traductions: { en: { ...anglaise, slug: "notary-fees" } } };
+  const slugEnBrouillon = {
+    ...francais,
+    traductions: { en: { ...anglaise, statut: "brouillon" as const, slug: "notary-fees" } },
+  };
+
+  it("slug français partout tant que la traduction n'a pas de slug propre ou n'est pas publiée", () => {
+    for (const article of [sansTraduction, brouillon, publiee, slugEnBrouillon]) {
+      expect(slugPour(article, "fr")).toBe("frais-de-notaire");
+      expect(slugPour(article, "en")).toBe("frais-de-notaire");
+      expect(slugsPublics(article)).toEqual({ fr: "frais-de-notaire", en: "frais-de-notaire" });
+    }
+    // Un slug anglais vide ("" ou null) compte comme absent.
+    expect(slugPour({ ...francais, traductions: { en: { ...anglaise, slug: "" } } }, "en")).toBe(
+      "frais-de-notaire"
+    );
+  });
+
+  it("slug anglais propre quand la traduction publiée en a un (brouillon sur demande)", () => {
+    expect(slugPour(avecSlugEn, "en")).toBe("notary-fees");
+    expect(slugPour(avecSlugEn, "fr")).toBe("frais-de-notaire");
+    expect(slugsPublics(avecSlugEn)).toEqual({ fr: "frais-de-notaire", en: "notary-fees" });
+    expect(slugPour(slugEnBrouillon, "en", { brouillons: true })).toBe("notary-fees");
+  });
+
+  it("versionPour expose slugs par langue et garde slug = identifiant français", () => {
+    const en = versionPour(avecSlugEn, "en");
+    expect(en.slug).toBe("frais-de-notaire");
+    expect(en.slugs).toEqual({ fr: "frais-de-notaire", en: "notary-fees" });
+    const fr = versionPour(avecSlugEn, "fr");
+    expect(fr.slugs).toEqual({ fr: "frais-de-notaire", en: "notary-fees" });
+    expect(versionPour(brouillon, "en").slugs).toEqual({ fr: "frais-de-notaire", en: "frais-de-notaire" });
+  });
+
+  it("cheminsBlog : chemins non préfixés par langue", () => {
+    expect(cheminsBlog({ fr: "frais-de-notaire", en: "notary-fees" })).toEqual({
+      fr: "/blog/frais-de-notaire",
+      en: "/blog/notary-fees",
+    });
+  });
+
+  describe("articleParSlug", () => {
+    const autre = { ...francais, slug: "autre-article", traductions: null };
+    const candidats = [autre, avecSlugEn];
+
+    it("retrouve l'article par le slug public de la langue", () => {
+      expect(articleParSlug(candidats, "notary-fees", "en")).toBe(avecSlugEn);
+      expect(articleParSlug(candidats, "frais-de-notaire", "fr")).toBe(avecSlugEn);
+      expect(articleParSlug(candidats, "autre-article", "en")).toBe(autre);
+    });
+
+    it("retrouve l'article par un slug d'une autre langue (la page redirigera)", () => {
+      // Ancienne URL anglaise /en/blog/<slug fr> après ajout d'un slug anglais
+      expect(articleParSlug(candidats, "frais-de-notaire", "en")).toBe(avecSlugEn);
+      // /blog/<slug en> (sélecteur de langue depuis la page anglaise)
+      expect(articleParSlug(candidats, "notary-fees", "fr")).toBe(avecSlugEn);
+    });
+
+    it("ignore un slug qui n'existe que dans une traduction en brouillon", () => {
+      expect(articleParSlug([autre, slugEnBrouillon], "notary-fees", "en")).toBeNull();
+      expect(articleParSlug([autre, slugEnBrouillon], "notary-fees", "fr")).toBeNull();
+      expect(articleParSlug(candidats, "inconnu", "fr")).toBeNull();
+    });
+
+    it("en cas de collision, préfère l'article dont c'est le slug public dans la langue", () => {
+      const collision = { ...francais, slug: "notary-fees", traductions: null };
+      expect(articleParSlug([collision, avecSlugEn], "notary-fees", "en")).toBe(avecSlugEn);
+      expect(articleParSlug([avecSlugEn, collision], "notary-fees", "fr")).toBe(collision);
+    });
+  });
+});
+
 describe("formulaire ↔ traduction stockée", () => {
   it("traductionDepuis copie le français en brouillon, meta title replié sur le titre", () => {
     const input = traductionDepuis({ ...francais, meta_title: null });
     expect(input.statut).toBe("brouillon");
+    expect(input.slug).toBe("");
     expect(input.titre).toBe(francais.titre);
     expect(input.metaTitle).toBe(francais.titre);
     expect(input.contenuHtml).toBe(francais.contenu_html);
@@ -117,6 +195,7 @@ describe("formulaire ↔ traduction stockée", () => {
     const input = versionVersInput({ statut: "brouillon", titre: "T" });
     expect(input).toEqual({
       statut: "brouillon",
+      slug: "",
       titre: "T",
       metaTitle: "",
       metaDescription: "",
@@ -125,8 +204,9 @@ describe("formulaire ↔ traduction stockée", () => {
       faq: [],
       imageCoverAlt: "",
     });
-    expect(inputVersVersion({ ...input, extrait: "  " })).toEqual({
+    expect(inputVersVersion({ ...input, extrait: "  ", slug: " " })).toEqual({
       statut: "brouillon",
+      slug: null,
       titre: "T",
       meta_title: null,
       meta_description: null,
@@ -137,10 +217,13 @@ describe("formulaire ↔ traduction stockée", () => {
     });
   });
 
-  it("aller-retour stable sur une traduction complète", () => {
+  it("aller-retour stable sur une traduction complète, slug compris", () => {
     expect(inputVersVersion(versionVersInput(anglaise))).toEqual({
       ...anglaise,
+      slug: null,
       extrait: null,
     });
+    const avecSlug = { ...anglaise, slug: "notary-fees" };
+    expect(inputVersVersion(versionVersInput(avecSlug)).slug).toBe("notary-fees");
   });
 });

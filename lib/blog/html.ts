@@ -86,8 +86,8 @@ export interface OptionsRendu {
   /** Un lien vers /blog/<slug> n'est gardé que si l'article est en ligne. */
   articleEnLigne: (slug: string) => boolean;
   /**
-   * Chemin public d'un article dans la langue de la page (« /en/blog/<slug> ») :
-   * même slug dans toutes les langues, seul le préfixe change.
+   * Chemin public d'un article dans la langue de la page, à partir de son slug
+   * français (« /en/blog/<slug anglais> » : préfixe et, le cas échéant, slug traduit).
    */
   cheminArticle?: (slug: string) => string;
   /**
@@ -102,7 +102,8 @@ export interface OptionsRendu {
  *  - un lien vers un article programmé (pas encore en ligne) devient du texte
  *    simple, sans quoi il mènerait à une 404 ; il redevient un lien quand sa
  *    cible est publiée (le cron revalide tous les articles) ;
- *  - dans une page anglaise, un lien interne est préfixé /en (même slug) ;
+ *  - dans une page anglaise, un lien interne (/blog/<slug français>) est réécrit
+ *    vers l'URL anglaise de sa cible (/en/blog/<slug anglais ou français>) ;
  *  - le chemin logique d'une image est remplacé par son URL (Storage ou
  *    public/) ; une image pas encore livrée devient un bloc neutre aux bonnes
  *    proportions (pas d'image cassée ni de décalage de mise en page).

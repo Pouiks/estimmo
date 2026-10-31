@@ -69,4 +69,17 @@ describe("alternatesPour (langues limitées)", () => {
       canonical: "/blog/frais-de-notaire",
     });
   });
+
+  it("accepte un chemin par langue (article au slug anglais propre)", () => {
+    const chemins = { fr: "/blog/frais-de-notaire", en: "/blog/notary-fees" };
+    expect(alternatesPour(chemins, "en", ["fr", "en"])).toEqual({
+      canonical: "/en/blog/notary-fees",
+      languages: {
+        fr: "/blog/frais-de-notaire",
+        en: "/en/blog/notary-fees",
+        "x-default": "/blog/frais-de-notaire",
+      },
+    });
+    expect(alternatesPour(chemins, "fr", ["fr", "en"]).canonical).toBe("/blog/frais-de-notaire");
+  });
 });

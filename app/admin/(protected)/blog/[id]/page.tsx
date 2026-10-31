@@ -59,9 +59,9 @@ export default async function EditArticlePage({
     );
   }
 
-  // Article éditorial (HTML importé depuis content/blog)
+  // Article éditorial (HTML importé depuis content/blog, ou créé dans l'admin)
   const traductions = (article.traductions ?? {}) as Traductions;
-  // « À lire aussi » : tous les autres articles (même slug dans les deux langues)
+  // « À lire aussi » : tous les autres articles, désignés par leur slug français
   const { data: autres } = await supabase
     .from("articles")
     .select("slug, titre")
@@ -77,17 +77,21 @@ export default async function EditArticlePage({
         : { url: null, source: null };
 
   const emplacements: EmplacementVisuel[] = [
-    {
-      cle: article.image_cover,
-      libelle: "Couverture",
-      estCouverture: true,
-      largeur: article.image_cover_largeur ?? 1200,
-      hauteur: article.image_cover_hauteur ?? 630,
-      alt: article.image_cover_alt ?? "",
-      legende: null,
-      prompt: article.image_cover_prompt,
-      ...etat(article.image_cover),
-    },
+    ...(article.image_cover
+      ? [
+          {
+            cle: article.image_cover as string,
+            libelle: "Couverture",
+            estCouverture: true,
+            largeur: article.image_cover_largeur ?? 1200,
+            hauteur: article.image_cover_hauteur ?? 630,
+            alt: article.image_cover_alt ?? "",
+            legende: null,
+            prompt: article.image_cover_prompt,
+            ...etat(article.image_cover),
+          },
+        ]
+      : []),
     ...((article.images ?? []) as ImageCorps[]).map((im, i) => ({
       cle: im.src,
       libelle: `Image ${i + 1} (corps)`,

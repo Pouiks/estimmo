@@ -1,6 +1,6 @@
 import "server-only";
 import { imagesPubliees, type Visuels } from "@/lib/blog/images";
-import { languesEnLigne, type AvecTraductions } from "@/lib/blog/traductions";
+import { cheminsBlog, languesEnLigne, slugsPublics, type AvecSlug } from "@/lib/blog/traductions";
 import { getAllCommuneSlugs, getDepartementsResume } from "@/lib/seo/communes";
 import { hrefDepartement, nomDepartement } from "@/lib/seo/departements";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -46,10 +46,9 @@ export async function sitemapPagesFixes(): Promise<EntreeSitemap[]> {
       })
     );
 
-  // Même slug dans les deux langues : un article dont la version anglaise est
-  // en ligne a deux entrées (hreflang mutuels) ; sinon son URL française seule.
-  const lignes = (articles.data ?? []) as (AvecTraductions & {
-    slug: string;
+  // Un article dont la version anglaise est en ligne a deux entrées (hreflang
+  // mutuels, chacune sur le slug public de sa langue) ; sinon son URL française seule.
+  const lignes = (articles.data ?? []) as (AvecSlug & {
     published_at: string;
     updated_at: string;
     image_cover: string | null;
@@ -65,10 +64,10 @@ export async function sitemapPagesFixes(): Promise<EntreeSitemap[]> {
       // Couverture et images du corps réellement affichées (Google Images).
       images: imagesPubliees(a),
     };
-    const chemin = `/blog/${a.slug}`;
+    const chemins = cheminsBlog(slugsPublics(a));
     return languesEnLigne(a).length > 1
-      ? entreesBilingues(chemin, extra)
-      : [entreeMonolingue(chemin, "fr", extra)];
+      ? entreesBilingues(chemins, extra)
+      : [entreeMonolingue(chemins.fr, "fr", extra)];
   });
 
   return [...statiques, ...pagesDepartements, ...pagesArticles];

@@ -23,7 +23,7 @@ export async function CarteArticle({
 
   return (
     <Link
-      href={`/blog/${article.slug}`}
+      href={`/blog/${article.slugs[locale]}`}
       className="group flex h-full flex-col overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-md"
     >
       <Couverture

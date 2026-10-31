@@ -4,6 +4,7 @@ import { preparerHtml } from "@/lib/blog/html";
 import { resoudreImage } from "@/lib/blog/images";
 import type { ArticleComplet } from "@/lib/blog/publication";
 import { ArticleContent } from "@/lib/blog/render";
+import type { SlugsPublics } from "@/lib/blog/traductions";
 import { SITE } from "@/lib/config";
 import type { Locale } from "@/lib/i18n/routing";
 import { cheminLocalise } from "@/lib/i18n/seo";
@@ -22,8 +23,11 @@ export async function ArticleCorps({
 }: {
   article: ArticleComplet;
   locale: Locale;
-  /** Articles en ligne : les liens vers les autres restent du texte simple. */
-  slugsEnLigne: Set<string>;
+  /**
+   * Articles en ligne (slug français → slugs publics) : un lien interne est
+   * réécrit vers le slug de la langue de la page ; vers un autre, il devient du texte.
+   */
+  slugsEnLigne: Map<string, SlugsPublics>;
 }) {
   const [t, format] = await Promise.all([
     getTranslations({ locale, namespace: "blog" }),
@@ -33,7 +37,7 @@ export async function ArticleCorps({
   const corpsHtml = article.contenu_html
     ? preparerHtml(article.contenu_html, {
         articleEnLigne: (s) => slugsEnLigne.has(s),
-        cheminArticle: (s) => cheminLocalise(`/blog/${s}`, locale),
+        cheminArticle: (s) => cheminLocalise(`/blog/${slugsEnLigne.get(s)?.[locale] ?? s}`, locale),
         resoudreImage: (src) => resoudreImage(src, article.visuels),
       })
     : null;
