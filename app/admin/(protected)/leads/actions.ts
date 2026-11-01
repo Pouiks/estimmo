@@ -53,6 +53,33 @@ export async function saveLeadNotes(
   return { ok: true, message: "Notes enregistrées" };
 }
 
+/**
+ * Suppression définitive d'un lead (la file CRM suit par cascade). Le CRM
+ * externe, s'il a déjà reçu le lead, n'est pas prévenu.
+ */
+export async function deleteLead(leadId: string): Promise<ActionResult> {
+  await requireAdmin();
+
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("leads")
+    .delete()
+    .eq("id", leadId)
+    .select("id");
+
+  if (error) return { ok: false, message: error.message };
+  if (!data || data.length === 0) {
+    return { ok: false, message: "Lead introuvable (déjà supprimé ?)" };
+  }
+
+  revalidatePath("/admin/leads");
+  revalidatePath(`/admin/leads/${leadId}`);
+  revalidatePath("/admin/estimations-manuelles");
+  revalidatePath("/admin/stats");
+  revalidatePath("/admin", "layout"); // compteur des manuelles dans le menu
+  return { ok: true, message: "Lead supprimé" };
+}
+
 export async function retryCrmSync(queueId: number): Promise<ActionResult> {
   await requireAdmin();
 

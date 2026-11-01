@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { PROJET_LABELS, ScoreBadge, StatutBadge } from "./badges";
+import { LeadMenu } from "./lead-menu";
 
 export interface LeadRow {
   id: string;
@@ -55,6 +56,9 @@ export function LeadsTable({ leads }: { leads: LeadRow[] }) {
             <TableHead>Bien</TableHead>
             <TableHead className="text-center">Score</TableHead>
             <TableHead>Statut</TableHead>
+            <TableHead className="w-10">
+              <span className="sr-only">Actions</span>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -101,6 +105,15 @@ export function LeadsTable({ leads }: { leads: LeadRow[] }) {
               </TableCell>
               <TableCell>
                 <StatutBadge statut={lead.statut} />
+              </TableCell>
+              <TableCell className="text-right">
+                <LeadMenu
+                  leadId={lead.id}
+                  libelle={
+                    [lead.prenom, lead.nom].filter(Boolean).join(" ") ||
+                    lead.email
+                  }
+                />
               </TableCell>
             </TableRow>
           ))}

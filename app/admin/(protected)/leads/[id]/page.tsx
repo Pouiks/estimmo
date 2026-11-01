@@ -13,6 +13,7 @@ import {
   LeadStatutSelect,
   RetryCrmButton,
 } from "@/components/admin/lead-actions";
+import { LeadMenu } from "@/components/admin/lead-menu";
 import { requireAdmin } from "@/lib/supabase/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -124,7 +125,17 @@ export default async function LeadDetailPage({
             )}
           </p>
         </div>
-        <LeadStatutSelect leadId={lead.id} statut={lead.statut} />
+        <div className="flex items-center gap-2">
+          <LeadStatutSelect leadId={lead.id} statut={lead.statut} />
+          <LeadMenu
+            leadId={lead.id}
+            libelle={
+              [lead.prenom, lead.nom].filter(Boolean).join(" ") || lead.email
+            }
+            afficherFiche={false}
+            apresSuppression="/admin/leads"
+          />
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
