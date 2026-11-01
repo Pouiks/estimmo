@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { normaliserLot } from "@/lib/analytics/evenements";
-import { rateLimit } from "@/lib/security/rate-limit";
+import { cookieSansSuivi, ipExclue } from "@/lib/analytics/exclusions";
+import { clientIp, rateLimit } from "@/lib/security/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
@@ -16,6 +17,15 @@ export async function POST(request: NextRequest) {
     windowMs: 60_000,
   });
   if (limited) return limited;
+
+  // Tests du propriétaire : rien n'est enregistré pour les IP listées dans
+  // ANALYTICS_IPS_EXCLUES ni pour un navigateur qui a utilisé l'admin.
+  if (
+    ipExclue(clientIp(request), process.env.ANALYTICS_IPS_EXCLUES) ||
+    cookieSansSuivi(request.headers.get("cookie"))
+  ) {
+    return new NextResponse(null, { status: 204 });
+  }
 
   // Corps lu en texte : le repli sendBeacon l'envoie en text/plain.
   let body: unknown;

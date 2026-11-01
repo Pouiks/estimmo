@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   ColonnesJours,
@@ -14,6 +15,7 @@ import {
   type AnalyticsBrut,
 } from "@/lib/analytics/agregats";
 import { APPAREILS, type Appareil } from "@/lib/analytics/evenements";
+import { COOKIE_SANS_SUIVI, listeIps } from "@/lib/analytics/exclusions";
 import { LIBELLES_APPAREILS, LIBELLES_ETAPES } from "@/lib/analytics/libelles";
 import { requireAdmin } from "@/lib/supabase/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -69,6 +71,9 @@ export default async function AdminAnalyticsPage({
   const analytics = error
     ? null
     : preparerAnalytics(data as AnalyticsBrut, { depuis, jusqua });
+
+  const navigateurExclu = (await cookies()).has(COOKIE_SANS_SUIVI);
+  const ipsExclues = listeIps(process.env.ANALYTICS_IPS_EXCLUES);
 
   return (
     <div className="max-w-6xl space-y-6">
@@ -158,8 +163,8 @@ export default async function AdminAnalyticsPage({
               value={analytics.kpis.engagees}
               detail={
                 analytics.kpis.tauxEngagement === null
-                  ? "Au moins un champ touché"
-                  : `${analytics.kpis.tauxEngagement} % des affichages ont touché un champ`
+                  ? "Ont touché un champ ou validé une étape"
+                  : `${analytics.kpis.tauxEngagement} % des affichages ont touché un champ ou validé une étape`
               }
             />
             <Kpi
@@ -176,7 +181,7 @@ export default async function AdminAnalyticsPage({
               value={analytics.kpis.dureeMediane ?? "–"}
               detail={
                 analytics.kpis.etapeCritique
-                  ? `Étape la plus quittée : ${analytics.kpis.etapeCritique} · ${LIBELLES_ETAPES[analytics.kpis.etapeCritique]}`
+                  ? `Étape la plus quittée par les remplisseurs : ${analytics.kpis.etapeCritique} · ${LIBELLES_ETAPES[analytics.kpis.etapeCritique]}`
                   : "De l'ouverture à l'estimation"
               }
             />
@@ -219,11 +224,22 @@ export default async function AdminAnalyticsPage({
           </Card>
 
           <p className="text-xs text-muted-foreground">
+            <strong className="font-medium text-foreground">Exclusions :</strong>{" "}
+            {navigateurExclu
+              ? "ce navigateur est exclu du suivi (cookie posé à la connexion admin, un an)."
+              : "ce navigateur sera exclu du suivi à partir de la prochaine page (cookie posé par l'admin)."}{" "}
+            {ipsExclues.length === 0
+              ? "Aucune adresse IP exclue (variable ANALYTICS_IPS_EXCLUES)."
+              : `IP exclues : ${ipsExclues.join(", ")}.`}
+          </p>
+          <p className="text-xs text-muted-foreground">
             Les événements sont envoyés par le navigateur : les visiteurs sans
             JavaScript ou équipés d'un bloqueur ne sont pas comptés. Les durées
             sont des médianes entre l'affichage d'une étape et sa validation.
             Les sessions antérieures au 1er novembre 2026 n'ont ni champs, ni
-            durées, ni appareil (segment « Inconnu »).
+            durées, ni appareil (segment « Inconnu ») : elles comptent comme
+            engagées seulement si elles ont validé l'étape 1, et leurs abandons
+            apparaissent « sans toucher un champ » faute de mesure.
           </p>
         </>
       )}

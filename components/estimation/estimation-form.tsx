@@ -9,6 +9,7 @@ import {
   type Etape,
   type LotEvenements,
 } from "@/lib/analytics/evenements";
+import { cookieSansSuivi } from "@/lib/analytics/exclusions";
 import { SuiviFormulaire } from "@/lib/analytics/suivi";
 import { estLocale } from "@/lib/i18n/routing";
 import { traduireCle } from "@/lib/i18n/traduire-cle";
@@ -84,7 +85,7 @@ export function EstimationForm() {
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!suiviRef.current) {
+    if (!sessionIdRef.current) {
       const sessionId = crypto.randomUUID();
       sessionIdRef.current = sessionId;
       const params = new URLSearchParams(window.location.search);
@@ -92,17 +93,21 @@ export function EstimationForm() {
         const value = params.get(key);
         if (value) utmRef.current[key.replace("utm_", "")] = value;
       }
-      suiviRef.current = new SuiviFormulaire({
-        sessionId,
-        locale: estLocale(locale) ? locale : undefined,
-        appareil: classerAppareil(window.innerWidth),
-        page: window.location.pathname.slice(0, 120),
-        envoyer: envoyerLot,
-      });
-      suiviRef.current.vue(1);
+      // Navigateur exclu des statistiques (admin, testeurs) : aucun envoi.
+      if (!cookieSansSuivi(document.cookie)) {
+        suiviRef.current = new SuiviFormulaire({
+          sessionId,
+          locale: estLocale(locale) ? locale : undefined,
+          appareil: classerAppareil(window.innerWidth),
+          page: window.location.pathname.slice(0, 120),
+          envoyer: envoyerLot,
+        });
+        suiviRef.current.vue(1);
+      }
     }
     // Page quittée : on note l'étape affichée et on vide la file d'envoi.
     const suivi = suiviRef.current;
+    if (!suivi) return;
     const onPageHide = () => suivi.sortie(etapeRef.current);
     window.addEventListener("pagehide", onPageHide);
     return () => window.removeEventListener("pagehide", onPageHide);

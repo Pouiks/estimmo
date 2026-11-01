@@ -66,6 +66,8 @@ export interface LigneEntonnoir {
   completees: number;
   /** Sessions dont cette étape est la dernière affichée (non soumises). */
   abandons: number;
+  /** Parmi les abandons, sessions n'ayant touché aucun champ de l'étape. */
+  abandonsSansInteraction: number;
   /** abandons / vues, en % (null sans vue). */
   tauxAbandon: number | null;
   /** vues / sessions, en %. */
@@ -129,7 +131,11 @@ export interface AnalyticsFormulaire {
     /** soumissions / engagees, en %. */
     tauxConversionEngagees: number | null;
     dureeMediane: string | null;
-    /** Étape qui perd le plus de sessions (null sans abandon). */
+    /**
+     * Étape qui perd le plus de sessions parmi celles qui remplissaient le
+     * formulaire : à l'étape 1, les affichages sans aucune interaction ne
+     * comptent pas (null sans abandon).
+     */
     etapeCritique: 1 | 2 | 3 | 4 | null;
   };
   entonnoir: LigneEntonnoir[];
@@ -254,6 +260,9 @@ export function preparerAnalytics(
   const engagees = brut.engagees ?? 0;
   const soumissions = brut.soumissions ?? 0;
 
+  const sansInteraction = (etape: number) =>
+    brut.derniers.find((d) => d.step === etape && d.champ === null)?.n ?? 0;
+
   const entonnoir: LigneEntonnoir[] = ETAPES_FORMULAIRE.map((etape) => {
     const e = brut.etapes.find((x) => x.etape === etape);
     const vues = e?.vues ?? 0;
@@ -264,6 +273,7 @@ export function preparerAnalytics(
       vues,
       completees: e?.completees ?? 0,
       abandons,
+      abandonsSansInteraction: Math.min(abandons, sansInteraction(etape)),
       tauxAbandon: pourcentage(abandons, vues),
       partSessions: pourcentage(vues, sessions),
       dureeMediane: formaterDuree(e?.duree_mediane_ms),
@@ -273,12 +283,16 @@ export function preparerAnalytics(
     };
   });
 
+  // Abandons « réels » : à l'étape 1, un affichage sans aucune interaction
+  // n'est pas un abandon du formulaire (la page d'accueil l'embarque).
+  const abandonsReels = (l: LigneEntonnoir) =>
+    l.etape === 1 ? l.abandons - l.abandonsSansInteraction : l.abandons;
   let etapeCritique: 1 | 2 | 3 | 4 | null = null;
   for (const ligne of entonnoir) {
     if (
-      ligne.abandons > 0 &&
+      abandonsReels(ligne) > 0 &&
       (etapeCritique === null ||
-        ligne.abandons > entonnoir[etapeCritique - 1].abandons)
+        abandonsReels(ligne) > abandonsReels(entonnoir[etapeCritique - 1]))
     ) {
       etapeCritique = ligne.etape;
     }
@@ -304,8 +318,7 @@ export function preparerAnalytics(
       etape,
       libelle: LIBELLES_ETAPES[etape],
       abandons: entonnoir[etape - 1].abandons,
-      abandonsSansInteraction:
-        brut.derniers.find((d) => d.step === etape && d.champ === null)?.n ?? 0,
+      abandonsSansInteraction: entonnoir[etape - 1].abandonsSansInteraction,
       champs,
     };
   });

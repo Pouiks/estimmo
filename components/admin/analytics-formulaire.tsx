@@ -150,9 +150,11 @@ export function Entonnoir({
               title={`${nombre(l.vues)} session(s) sur ${nombre(sessions)}`}
             />
             <p className="text-xs text-muted-foreground tabular-nums">
-              Abandons : {nombre(l.abandons)} ({pct(l.tauxAbandon)}) · Durée
-              médiane : {l.dureeMediane ?? "–"} · Retours : {nombre(l.retours)}{" "}
-              · Erreurs de saisie : {nombre(l.erreurs)}
+              Abandons : {nombre(l.abandons)} ({pct(l.tauxAbandon)})
+              {l.abandonsSansInteraction > 0 &&
+                `, dont ${nombre(l.abandonsSansInteraction)} sans toucher un champ`}{" "}
+              · Durée médiane : {l.dureeMediane ?? "–"} · Retours :{" "}
+              {nombre(l.retours)} · Erreurs de saisie : {nombre(l.erreurs)}
               {l.sessionsErreur > 0 && ` (${nombre(l.sessionsErreur)} sessions)`}
             </p>
           </div>
@@ -229,14 +231,32 @@ export function ColonnesJours({ jours }: { jours: Jour[] }) {
                 );
               })}
             </div>
-            <div className="mt-1 flex gap-[2px] text-[11px] text-muted-foreground">
-              {jours.map((j, i) => (
-                <div key={j.jour} className="max-w-6 flex-1 truncate text-center">
-                  {i % pasEtiquette === 0 || i === jours.length - 1
-                    ? j.libelle
-                    : ""}
-                </div>
-              ))}
+            {/* Axe : une étiquette sur N, jamais tronquée (elle déborde de sa
+                colonne ; la première est calée à gauche, la dernière à droite). */}
+            <div className="mt-1 flex h-4 gap-[2px] text-[11px] text-muted-foreground">
+              {jours.map((j, i) => {
+                const premier = i === 0;
+                const dernier = i === jours.length - 1;
+                const visible = premier || dernier || i % pasEtiquette === 0;
+                return (
+                  <div key={j.jour} className="relative h-4 max-w-6 flex-1">
+                    {visible && (
+                      <span
+                        className={cn(
+                          "absolute top-0 whitespace-nowrap",
+                          premier
+                            ? "left-0"
+                            : dernier
+                              ? "right-0"
+                              : "left-1/2 -translate-x-1/2"
+                        )}
+                      >
+                        {j.libelle}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
             <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
               <span className="flex items-center gap-1.5">

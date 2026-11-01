@@ -1,5 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import {
+  COOKIE_SANS_SUIVI,
+  DUREE_COOKIE_SANS_SUIVI,
+} from "@/lib/analytics/exclusions";
 import { proxyI18n } from "@/lib/i18n/proxy";
 
 /**
@@ -62,6 +66,16 @@ async function protegerAdmin(request: NextRequest) {
     url.pathname = "/admin/leads";
     url.search = "";
     return NextResponse.redirect(url);
+  }
+
+  // Un navigateur qui utilise l'admin est exclu des statistiques du
+  // formulaire : cookie lu par le tunnel (aucun envoi) et par /api/track.
+  if (user && !request.cookies.has(COOKIE_SANS_SUIVI)) {
+    response.cookies.set(COOKIE_SANS_SUIVI, "1", {
+      maxAge: DUREE_COOKIE_SANS_SUIVI,
+      path: "/",
+      sameSite: "lax",
+    });
   }
 
   return response;

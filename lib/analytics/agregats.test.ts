@@ -41,8 +41,8 @@ const BRUT: AnalyticsBrut = {
     { step: 4, champ: "telephone", touches: 20, renseignes: 15, erreurs: 6, sessions_erreur: 5 },
   ],
   derniers: [
-    { step: 1, champ: "adresse", n: 25 },
-    { step: 1, champ: null, n: 15 },
+    { step: 1, champ: "adresse", n: 15 },
+    { step: 1, champ: null, n: 25 },
     { step: 4, champ: "telephone", n: 10 },
     { step: 4, champ: "consentement", n: 8 },
   ],
@@ -141,7 +141,12 @@ describe("preparerAnalytics", () => {
       etapeCritique: null,
     });
     expect(a.entonnoir).toHaveLength(4);
-    expect(a.entonnoir[0]).toMatchObject({ vues: 0, abandons: 0, tauxAbandon: null });
+    expect(a.entonnoir[0]).toMatchObject({
+      vues: 0,
+      abandons: 0,
+      abandonsSansInteraction: 0,
+      tauxAbandon: null,
+    });
     expect(a.etapes[1].champs.map((c) => c.champ)).toEqual([
       "surface",
       "pieces",
@@ -165,7 +170,9 @@ describe("preparerAnalytics", () => {
       tauxConversion: 12,
       tauxConversionEngagees: 15,
       dureeMediane: "3 min 5 s",
-      etapeCritique: 1,
+      // Étape 1 : 40 abandons dont 25 sans interaction → 15 réels ;
+      // l'étape 4 en a 18 : c'est elle qui perd le plus de remplisseurs.
+      etapeCritique: 4,
     });
     expect(a.entonnoir[0]).toEqual({
       etape: 1,
@@ -173,6 +180,7 @@ describe("preparerAnalytics", () => {
       vues: 100,
       completees: 60,
       abandons: 40,
+      abandonsSansInteraction: 25,
       tauxAbandon: 40,
       partSessions: 100,
       dureeMediane: "42 s",
@@ -193,7 +201,7 @@ describe("preparerAnalytics", () => {
     const a = preparerAnalytics(BRUT, periode);
     const etape1 = a.etapes[0];
     expect(etape1.abandons).toBe(40);
-    expect(etape1.abandonsSansInteraction).toBe(15);
+    expect(etape1.abandonsSansInteraction).toBe(25);
     expect(etape1.champs[0]).toEqual({
       champ: "adresse",
       libelle: "Adresse du bien",
@@ -201,13 +209,26 @@ describe("preparerAnalytics", () => {
       renseignes: 70,
       erreurs: 25,
       sessionsErreur: 18,
-      abandonsApres: 25,
+      abandonsApres: 15,
     });
     // Champ sans aucune donnée : présent, à zéro.
     expect(etape1.champs[2]).toMatchObject({ champ: "horizon", touches: 0, renseignes: 0, abandonsApres: 0 });
     const etape4 = a.etapes[3];
     expect(etape4.champs.find((c) => c.champ === "consentement")?.abandonsApres).toBe(8);
     expect(etape4.abandonsSansInteraction).toBe(0);
+  });
+
+  it("l'étape critique ignore les affichages sans interaction, pas les abandons suivants", () => {
+    // Sans le « sans interaction » de l'étape 1, c'est elle qui domine (40 > 18).
+    const brut = { ...BRUT, derniers: BRUT.derniers.filter((d) => d.champ !== null) };
+    expect(preparerAnalytics(brut, periode).kpis.etapeCritique).toBe(1);
+    // Un abandon à l'étape 3 sans toucher ses champs reste un abandon réel.
+    const brut3 = {
+      ...BRUT,
+      derniers: [...BRUT.derniers, { step: 3, champ: null, n: 15 }],
+      etapes: BRUT.etapes.map((e) => (e.etape === 3 ? { ...e, abandons: 30 } : e)),
+    };
+    expect(preparerAnalytics(brut3, periode).kpis.etapeCritique).toBe(3);
   });
 
   it("classe les réponses par fréquence avec les libellés du site, sans les booléens", () => {

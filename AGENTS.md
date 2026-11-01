@@ -232,6 +232,15 @@ Vitest · pnpm. Déploiement Vercel.
   touché) et « abandons sans toucher aucun champ » à l'étape 1. L'entonnoir a
   quitté `/admin/stats` (lien vers Analytics). Les sessions antérieures au
   01/11/2026 n'ont ni champs, ni durées, ni appareil (segment « Inconnu »).
+- **Exclusions** (`lib/analytics/exclusions.ts`) : les tests du propriétaire ne
+  sont pas enregistrés. Par IP : `ANALYTICS_IPS_EXCLUES` (liste, vérifiée par
+  `/api/track`). Par navigateur : cookie `estimmo_sans_suivi=1` (un an) posé par
+  `proxy.ts` sur tout navigateur connecté à l'admin ; le tunnel ne crée alors
+  aucun suivi et `/api/track` revérifie le cookie. Pour tester le suivi depuis
+  son poste : navigation privée (sans cookie) ET IP absente de la variable.
+- `engagees` (migration `20261101130000`) = session ayant touché un champ OU
+  validé une étape (les sessions d'avant le 01/11 n'ont pas d'événements de
+  champ) ; « étape la plus quittée » ignore les affichages sans interaction.
 - Volume : ~40 événements/parcours complet, ~10 requêtes ; pas de purge
   automatique (à envisager si la table grossit, Supabase gratuit).
 
