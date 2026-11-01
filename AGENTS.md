@@ -59,6 +59,7 @@ Vitest · pnpm. Déploiement Vercel.
 - [x] Phase 8 - Lighthouse prod : landing Perf 95/SEO 100 ; commune Perf 96/SEO 100
 - [x] 18/10/2026 - i18n fr/en complet (next-intl) : site, tunnel, SEO, emails, blog ; 170+ tests Vitest
 - [x] 29/10/2026 - Blog : versions FR/EN dans un même article (onglets admin, `articles.traductions`) ; 274 tests
+- [x] 01/11/2026 - Analytics du formulaire : événements par étape et par champ, section `/admin/analytics` ; 319 tests
 
 ## i18n (18/10/2026) - next-intl 4, fr par défaut / en
 - **URLs** : français sans préfixe (URLs historiques inchangées), anglais sous `/en/...`,
@@ -199,6 +200,41 @@ Vitest · pnpm. Déploiement Vercel.
   article, JSON-LD BlogPosting + BreadcrumbList + FAQPage. `updated_at` (= dateModified,
   lastmod) ne bouge que sur un changement éditorial (trigger, migration 20261019120000).
 
+## Analytics du formulaire (01/11/2026) - `/admin/analytics`
+- **Une seule source** : la table `form_events` (déjà utilisée pour l'entonnoir
+  vue/complete/submit) s'enrichit de `champ`, `valeur`, `locale`, `appareil`,
+  `page`, `ecoule_ms` (migration `20261101120000_analytics_formulaire.sql`,
+  rétrocompatible : l'ancien code continue d'insérer). Événements :
+  `view` (étape 1-4, 5 = résultat), `complete`, `submit`, `focus` (1er focus d'un
+  champ texte), `saisie` (champ renseigné ; valeur seulement pour les champs à
+  choix, `a,b` pour les multiples, `aucun` si vide, `oui`/`non` pour les
+  booléens), `erreur` (validation affichée), `retour`, `erreur_api` (statut HTTP
+  ou `reseau`), `recommencer`, `sortie` (pagehide). **Jamais de donnée
+  personnelle** : adresse, email, téléphone, nom, surface… ne transmettent que
+  « renseigné ». Pas de cookie, id de session tiré au chargement du formulaire.
+- **Client** : `lib/analytics/suivi.ts` (`SuiviFormulaire`, pur et testé :
+  file + lots de 50, délai 1,5 s, dédoublonnage, plafond 300 événements/session,
+  `t` = ms depuis l'ouverture) branché dans `estimation-form.tsx` (`setField` →
+  `saisie`, `onFocusCapture` du `<form>` → `focus` via l'attribut `name` des
+  inputs, `validerEtape` → `erreurs`, `pagehide` → `sortie`). Transport `fetch`
+  keepalive, repli `sendBeacon`. `/api/track` accepte le lot
+  (`lib/analytics/evenements.ts`, Zod) et l'ancien format unitaire.
+- **Agrégation en SQL** : fonction `analytics_formulaire(depuis, jusqua,
+  appareil, locale, page)` → jsonb (entonnoir, abandons = sessions dont c'est la
+  dernière étape vue sans submit, durées médianes vue→complete, champs
+  touchés/renseignés/erreurs, dernier champ touché avant abandon, dernière
+  valeur par session, série par jour Paris, segments). Service_role seulement
+  (revoke anon/authenticated, comme `barometre_kpis`). Mise en forme pure :
+  `lib/analytics/agregats.ts` (`preparerAnalytics`, libellés FR depuis
+  `messages/fr` via `lib/analytics/libelles.ts`).
+- **Lecture** : le formulaire est dans le hero de l'accueil → une « session »
+  = un affichage de la page, d'où la tuile « Sessions engagées » (≥ 1 champ
+  touché) et « abandons sans toucher aucun champ » à l'étape 1. L'entonnoir a
+  quitté `/admin/stats` (lien vers Analytics). Les sessions antérieures au
+  01/11/2026 n'ont ni champs, ni durées, ni appareil (segment « Inconnu »).
+- Volume : ~40 événements/parcours complet, ~10 requêtes ; pas de purge
+  automatique (à envisager si la table grossit, Supabase gratuit).
+
 ## Sécurité (16/10/2026)
 - Admin (19/10/2026) : chaque action serveur commence par `requireAdmin()` (session
   Supabase + rôle `profiles`) ; `proxy.ts` redirige /admin vers /admin/login.
@@ -238,6 +274,10 @@ Vitest · pnpm. Déploiement Vercel.
   Sans CRM_WEBHOOK_URL le cron ne fait rien.
 
 ## Reste à faire (nécessite le client)
+- Analytics (01/11/2026) : appliquer `pnpm db:migrate` (migration
+  `20261101120000_analytics_formulaire.sql`) **avant** de déployer : sans elle,
+  les insertions de `/api/track` échouent (événements perdus) et `/admin/analytics`
+  affiche un message d'erreur explicite
 - Blog : les 28 articles sont en base en **brouillon** (dates du 20/10 au 13/12/2026 déjà
   posées) car la prod tournait encore sur l'ancien code, qui affiche tout article
   « publie » sans regarder la date. Après déploiement : `pnpm import:articles --programmer`

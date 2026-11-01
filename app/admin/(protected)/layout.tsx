@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
+  Activity,
   BarChart3,
   ExternalLink,
   FileText,
@@ -24,6 +25,7 @@ const navItems = [
   { href: "/admin/medias", label: "Médias", icon: Images },
   { href: "/admin/traductions", label: "Traductions", icon: Languages },
   { href: "/admin/stats", label: "Stats", icon: BarChart3 },
+  { href: "/admin/analytics", label: "Analytics", icon: Activity },
 ];
 
 async function signOut() {

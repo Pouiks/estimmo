@@ -1,4 +1,12 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+import { Activity, ArrowRight } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { requireAdmin } from "@/lib/supabase/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -12,7 +20,7 @@ async function chargerStats() {
   const depuis30j = new Date(Date.now() - JOURS_SERIE * 24 * 3600 * 1000);
   const depuis7j = new Date(Date.now() - 7 * 24 * 3600 * 1000);
 
-  const [total, semaine, manuelles, recents, scores, events] =
+  const [total, semaine, manuelles, recents, scores] =
     await Promise.all([
       supabase.from("leads").select("id", { count: "exact", head: true }),
       supabase
@@ -30,11 +38,6 @@ async function chargerStats() {
         .gte("created_at", depuis30j.toISOString())
         .limit(10_000),
       supabase.from("leads").select("score_lead").limit(10_000),
-      supabase
-        .from("form_events")
-        .select("session_id, step, event")
-        .gte("created_at", depuis30j.toISOString())
-        .limit(50_000),
     ]);
 
   // --- Série leads / jour (30 jours) ---
@@ -69,19 +72,6 @@ async function chargerStats() {
     scoreRows.length > 0 ? Math.round(sommeScores / scoreRows.length) : 0;
   const maxTranche = Math.max(1, ...tranches.map((t) => t.count));
 
-  // --- Entonnoir de complétion (30 jours) ---
-  const vues = [1, 2, 3, 4].map(() => new Set<string>());
-  const completes = [1, 2, 3, 4].map(() => new Set<string>());
-  const soumissions = new Set<string>();
-  for (const ev of events.data ?? []) {
-    const index = Number(ev.step) - 1;
-    if (index < 0 || index > 3) continue;
-    if (ev.event === "view") vues[index].add(ev.session_id);
-    if (ev.event === "complete") completes[index].add(ev.session_id);
-    if (ev.event === "submit") soumissions.add(ev.session_id);
-  }
-  const baseFunnel = Math.max(1, vues[0].size);
-
   return {
     totalCount: total.count ?? 0,
     semaineCount: semaine.count ?? 0,
@@ -91,9 +81,6 @@ async function chargerStats() {
     tranches,
     maxTranche,
     scoreMoyen,
-    vues: vues.map((set) => set.size),
-    soumissions: soumissions.size,
-    baseFunnel,
   };
 }
 
@@ -108,9 +95,6 @@ export default async function AdminStatsPage() {
     tranches,
     maxTranche,
     scoreMoyen,
-    vues,
-    soumissions,
-    baseFunnel,
   } = await chargerStats();
 
   return (
@@ -187,46 +171,24 @@ export default async function AdminStatsPage() {
           </CardContent>
         </Card>
 
-        {/* Entonnoir de complétion */}
+        {/* Le parcours du formulaire a sa propre section */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">
-              Complétion du formulaire - 30 jours
-            </CardTitle>
+            <CardTitle className="text-base">Parcours du formulaire</CardTitle>
+            <CardDescription>
+              Entonnoir par étape, champs qui bloquent, durées, réponses
+              données et segments (appareil, langue) : tout est dans la section
+              Analytics.
+            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {["Projet", "Bien", "État", "Coordonnées"].map((label, i) => {
-              const n = vues[i];
-              const pct = Math.round((n / baseFunnel) * 100);
-              return (
-                <div key={label} className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span>
-                      Étape {i + 1} - {label}
-                    </span>
-                    <span className="font-semibold">
-                      {n} <span className="text-muted-foreground">({pct} %)</span>
-                    </span>
-                  </div>
-                  <div className="h-2.5 rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-primary"
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-            <div className="flex justify-between border-t pt-3 text-sm">
-              <span className="font-medium">Estimations envoyées</span>
-              <span className="font-semibold">
-                {soumissions}{" "}
-                <span className="text-muted-foreground">
-                  ({Math.round((soumissions / baseFunnel) * 100)} % des
-                  visiteurs du formulaire)
-                </span>
-              </span>
-            </div>
+          <CardContent>
+            <Link
+              href="/admin/analytics"
+              className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted"
+            >
+              <Activity className="size-4" /> Ouvrir les analytics
+              <ArrowRight className="size-4" />
+            </Link>
           </CardContent>
         </Card>
       </div>

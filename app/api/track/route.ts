@@ -1,17 +1,15 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { normaliserLot } from "@/lib/analytics/evenements";
 import { rateLimit } from "@/lib/security/rate-limit";
-import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-/** Suivi anonyme du tunnel d'estimation (taux d'abandon par étape). */
-const eventSchema = z.object({
-  sessionId: z.uuid(),
-  step: z.number().int().min(1).max(4),
-  event: z.enum(["view", "complete", "submit"]),
-});
-
+/**
+ * Suivi anonyme du tunnel d'estimation (étapes, champs, erreurs, durées),
+ * agrégé dans /admin/analytics. Le navigateur envoie des lots d'événements
+ * (lib/analytics/suivi.ts) ; aucune donnée personnelle n'y figure.
+ */
 export async function POST(request: NextRequest) {
-  // Un parcours complet émet ~8 événements : 60/min par IP est large.
+  // Un parcours complet envoie ~10 lots : 60/min par IP est large.
   const limited = rateLimit(request, {
     scope: "track",
     limit: 60,
@@ -19,27 +17,39 @@ export async function POST(request: NextRequest) {
   });
   if (limited) return limited;
 
+  // Corps lu en texte : le repli sendBeacon l'envoie en text/plain.
   let body: unknown;
   try {
-    body = await request.json();
+    body = JSON.parse(await request.text());
   } catch {
     return NextResponse.json({ ok: false }, { status: 400 });
   }
 
-  const parsed = eventSchema.safeParse(body);
-  if (!parsed.success) {
+  const lot = normaliserLot(body);
+  if (!lot) {
     return NextResponse.json({ ok: false }, { status: 400 });
   }
+
+  const lignes = lot.evenements.map((e) => ({
+    session_id: lot.sessionId,
+    step: e.etape,
+    event: e.event,
+    champ: e.champ ?? null,
+    valeur: e.valeur ?? null,
+    locale: lot.locale ?? null,
+    appareil: lot.appareil ?? null,
+    page: lot.page ?? null,
+    ecoule_ms: e.t,
+  }));
 
   try {
-    const supabase = createAdminClient();
-    await supabase.from("form_events").insert({
-      session_id: parsed.data.sessionId,
-      step: parsed.data.step,
-      event: parsed.data.event,
-    });
-  } catch {
-    // Le tracking ne doit jamais gêner le parcours.
+    const { error } = await createAdminClient()
+      .from("form_events")
+      .insert(lignes);
+    if (error) console.error("[track] insertion échouée :", error.message);
+  } catch (err) {
+    // Le suivi ne doit jamais gêner le parcours.
+    console.error("[track] erreur :", err);
   }
 
   return new NextResponse(null, { status: 204 });

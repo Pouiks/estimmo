@@ -141,6 +141,7 @@ export function AddressAutocomplete({
         <MapPin size={18} />
       </span>
       <input
+        name="adresse"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onFocus={() => suggestions.length > 0 && setOpen(true)}

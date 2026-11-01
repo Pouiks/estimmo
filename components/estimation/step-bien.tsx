@@ -29,6 +29,7 @@ export function StepBien({ state, setField, errors }: StepProps) {
         {isAppartement ? t("surfaceCarrez") : t("surfaceHabitable")}
       </SectionLabel>
       <TextField
+        name="surface"
         type="number"
         inputMode="numeric"
         min={8}
@@ -88,6 +89,7 @@ export function StepBien({ state, setField, errors }: StepProps) {
                 inputMode="numeric"
                 min={0}
                 max={50}
+                name="etage"
                 placeholder="3"
                 value={state.etage}
                 onChange={(e) => setField("etage", e.target.value)}
@@ -102,6 +104,7 @@ export function StepBien({ state, setField, errors }: StepProps) {
                 inputMode="numeric"
                 min={1}
                 max={60}
+                name="etagesImmeuble"
                 placeholder="6"
                 value={state.etagesImmeuble}
                 onChange={(e) => setField("etagesImmeuble", e.target.value)}

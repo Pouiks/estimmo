@@ -24,6 +24,7 @@ export function StepContact({ state, setField, errors }: StepProps) {
         <div>
           <SectionLabel>{t("prenom")}</SectionLabel>
           <TextField
+            name="prenom"
             autoComplete="given-name"
             placeholder={t("placeholders.prenom")}
             value={state.prenom}
@@ -34,6 +35,7 @@ export function StepContact({ state, setField, errors }: StepProps) {
         <div>
           <SectionLabel>{t("nom")}</SectionLabel>
           <TextField
+            name="nom"
             autoComplete="family-name"
             placeholder={t("placeholders.nom")}
             value={state.nom}
@@ -47,6 +49,7 @@ export function StepContact({ state, setField, errors }: StepProps) {
         <SectionLabel>{t("email")}</SectionLabel>
         <TextField
           type="email"
+          name="email"
           autoComplete="email"
           placeholder={t("placeholders.email")}
           value={state.email}
@@ -84,6 +87,7 @@ export function StepContact({ state, setField, errors }: StepProps) {
         <SectionLabel hint={t("telephoneHint")}>{t("telephone")}</SectionLabel>
         <TextField
           type="tel"
+          name="telephone"
           autoComplete="tel"
           placeholder={t("placeholders.telephone")}
           value={state.telephone}

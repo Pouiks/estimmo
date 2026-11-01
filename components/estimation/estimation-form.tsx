@@ -4,6 +4,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  classerAppareil,
+  type Etape,
+  type LotEvenements,
+} from "@/lib/analytics/evenements";
+import { SuiviFormulaire } from "@/lib/analytics/suivi";
+import { estLocale } from "@/lib/i18n/routing";
 import { traduireCle } from "@/lib/i18n/traduire-cle";
 import { AVEC_CLES, traduireIssues } from "@/lib/leads/erreurs";
 import {
@@ -26,23 +33,34 @@ import { ResultatEstimation, type ResultatApi } from "./resultat";
 import { C } from "./design";
 
 const STEP_KEYS = ["projet", "bien", "etat", "contact"] as const;
+/** Fenêtre pendant laquelle un clic qui suit un changement d'étape est ignoré. */
+const DELAI_ANTI_DOUBLE_CLIC_MS = 400;
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"];
 
 type ParseResult =
   | { success: true }
   | { success: false; error: { issues: { path: PropertyKey[]; message: string }[] } };
 
-function track(sessionId: string | null, step: number, event: string) {
-  if (!sessionId) return;
+/**
+ * Transport du suivi anonyme (lib/analytics/suivi.ts) : jamais bloquant,
+ * aucune erreur remontée. keepalive permet l'envoi pendant la fermeture de
+ * la page ; sendBeacon est le repli des navigateurs qui le refusent.
+ */
+function envoyerLot(lot: LotEvenements) {
+  const corps = JSON.stringify(lot);
   try {
     void fetch("/api/track", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionId, step, event }),
+      body: corps,
       keepalive: true,
-    });
+    }).catch(() => {});
   } catch {
-    // le tracking ne bloque jamais le parcours
+    try {
+      navigator.sendBeacon?.("/api/track", corps);
+    } catch {
+      // le suivi ne bloque jamais le parcours
+    }
   }
 }
 
@@ -56,25 +74,46 @@ export function EstimationForm() {
   const [submitting, setSubmitting] = useState(false);
   const [resultat, setResultat] = useState<ResultatApi | null>(null);
   const sessionIdRef = useRef<string | null>(null);
+  const suiviRef = useRef<SuiviFormulaire | null>(null);
+  const etapeRef = useRef<Etape>(1);
+  /** Envoi en cours : garde synchrone, indépendante du rendu (double clic, Entrée). */
+  const envoiRef = useRef(false);
+  /** Instant du dernier changement d'étape : absorbe les doubles clics sur Continuer. */
+  const changementEtapeRef = useRef(0);
   const utmRef = useRef<Record<string, string>>({});
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (sessionIdRef.current) return;
-    sessionIdRef.current = crypto.randomUUID();
-    const params = new URLSearchParams(window.location.search);
-    for (const key of UTM_KEYS) {
-      const value = params.get(key);
-      if (value) utmRef.current[key.replace("utm_", "")] = value;
+    if (!suiviRef.current) {
+      const sessionId = crypto.randomUUID();
+      sessionIdRef.current = sessionId;
+      const params = new URLSearchParams(window.location.search);
+      for (const key of UTM_KEYS) {
+        const value = params.get(key);
+        if (value) utmRef.current[key.replace("utm_", "")] = value;
+      }
+      suiviRef.current = new SuiviFormulaire({
+        sessionId,
+        locale: estLocale(locale) ? locale : undefined,
+        appareil: classerAppareil(window.innerWidth),
+        page: window.location.pathname.slice(0, 120),
+        envoyer: envoyerLot,
+      });
+      suiviRef.current.vue(1);
     }
-    track(sessionIdRef.current, 1, "view");
-  }, []);
+    // Page quittée : on note l'étape affichée et on vide la file d'envoi.
+    const suivi = suiviRef.current;
+    const onPageHide = () => suivi.sortie(etapeRef.current);
+    window.addEventListener("pagehide", onPageHide);
+    return () => window.removeEventListener("pagehide", onPageHide);
+  }, [locale]);
 
   const setField = useCallback(
     <K extends keyof EstimationFormState>(
       key: K,
       value: EstimationFormState[K]
     ) => {
+      suiviRef.current?.saisie(key, value);
       setState((prev) => ({ ...prev, [key]: value }));
       setErrors((prev) => {
         if (!(key in prev)) return prev;
@@ -146,27 +185,47 @@ export function EstimationForm() {
       return true;
     }
     // Les schémas portent des clés (validation.*) : traduction à l'affichage.
-    setErrors(
-      traduireIssues(parsed.error.issues, (cle) => traduireCle(tRacine, cle))
+    const erreurs = traduireIssues(parsed.error.issues, (cle) =>
+      traduireCle(tRacine, cle)
     );
+    setErrors(erreurs);
+    suiviRef.current?.erreurs(n as Etape, Object.keys(erreurs));
     return false;
   }
 
+  /** Le second clic d'un double clic arrive sur l'étape suivante : on l'ignore. */
+  function etapeVientDeChanger() {
+    return Date.now() - changementEtapeRef.current < DELAI_ANTI_DOUBLE_CLIC_MS;
+  }
+
   function suivant() {
+    if (etapeVientDeChanger()) return;
     if (!validerEtape(step)) return;
-    track(sessionIdRef.current, step, "complete");
+    suiviRef.current?.complete(step as Etape);
+    changementEtapeRef.current = Date.now();
     setStep((s) => s + 1);
-    track(sessionIdRef.current, step + 1, "view");
+    suiviRef.current?.vue((step + 1) as Etape);
     topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function precedent() {
     setErrors({});
+    if (step > 1) {
+      suiviRef.current?.retour(step as Etape);
+      suiviRef.current?.vue((step - 1) as Etape);
+    }
+    changementEtapeRef.current = Date.now();
     setStep((s) => Math.max(1, s - 1));
   }
 
   async function soumettre() {
+    // Un seul envoi à la fois : le bouton est désactivé pendant le calcul,
+    // mais la touche Entrée et un double clic très rapide passent avant le
+    // nouveau rendu ; cette garde est synchrone et ferme ces chemins.
+    if (envoiRef.current || etapeVientDeChanger()) return;
     if (!validerEtape(4)) return;
+    envoiRef.current = true;
+    suiviRef.current?.complete(4);
     setSubmitting(true);
 
     const payload = {
@@ -211,6 +270,7 @@ export function EstimationForm() {
       });
 
       if (!res.ok) {
+        suiviRef.current?.erreurApi(String(res.status));
         const data = (await res.json().catch(() => null)) as {
           details?: { champ: string; message: string }[];
         } | null;
@@ -227,17 +287,23 @@ export function EstimationForm() {
       }
 
       const data = (await res.json()) as ResultatApi;
-      track(sessionIdRef.current, 4, "submit");
+      suiviRef.current?.soumis();
       setResultat(data);
       topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch {
+      suiviRef.current?.erreurApi("reseau");
       toast.error(t("toasts.reseau"));
     } finally {
+      envoiRef.current = false;
       setSubmitting(false);
     }
   }
 
   const isResult = resultat !== null;
+
+  useEffect(() => {
+    etapeRef.current = isResult ? 5 : (step as Etape);
+  }, [isResult, step]);
   const peutAvancer = isResult || parseEtape(step, state).success;
   const stepLabel = isResult
     ? t("resultat")
@@ -315,6 +381,8 @@ export function EstimationForm() {
               resultat={resultat}
               state={state}
               onRestart={() => {
+                suiviRef.current?.recommencer();
+                suiviRef.current?.vue(1);
                 setResultat(null);
                 setState(initialFormState);
                 setStep(1);
@@ -328,8 +396,14 @@ export function EstimationForm() {
               key={step}
               onSubmit={(e) => {
                 e.preventDefault();
+                if (submitting) return;
                 if (step < 4) suivant();
                 else void soumettre();
+              }}
+              onFocusCapture={(e) => {
+                // Suivi : premier focus des champs texte (attribut name).
+                const nom = (e.target as HTMLElement).getAttribute("name");
+                if (nom) suiviRef.current?.focus(nom);
               }}
               noValidate
             >
@@ -388,6 +462,7 @@ export function EstimationForm() {
               type="button"
               onClick={() => (step < 4 ? suivant() : void soumettre())}
               disabled={submitting}
+              aria-busy={submitting}
               style={{
                 flex: 1,
                 padding: "15px 22px",
