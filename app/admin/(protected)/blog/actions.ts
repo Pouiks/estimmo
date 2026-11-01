@@ -8,7 +8,12 @@ import { creerMedia, listerMedias, mediaParId, recadrerMedia } from "@/lib/blog/
 import { POSITIONS } from "@/lib/blog/optimisation";
 import { depuisChampParis } from "@/lib/blog/planning";
 import { revaliderBlog } from "@/lib/blog/publication";
-import { inputVersVersion } from "@/lib/blog/traductions";
+import {
+  inputVersVersion,
+  versionVersInput,
+  type Traductions,
+  type VersionTraduite,
+} from "@/lib/blog/traductions";
 import { requireAdmin } from "@/lib/supabase/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { slugify } from "@/lib/utils";
@@ -341,6 +346,115 @@ function messageSlugEnDouble(error: { code?: string; message: string }): string 
  * Un nouvel article naît avec un emplacement de couverture au format du blog
  * (/images/blog/<slug>/cover.webp, 1200×630), à remplir depuis la section Images.
  */
+export type ActionPublicationEn = "publier" | "depublier";
+
+/** Version anglaise stockée → publiable ? (mêmes exigences que le français). */
+function versionEnPubliable(en: VersionTraduite): { ok: true } | { ok: false; message: string } {
+  const parsed = versionSchema.safeParse({ ...versionVersInput(en), statut: "publie" });
+  if (parsed.success) return { ok: true };
+  return {
+    ok: false,
+    message: parsed.error.issues[0]?.message ?? "Version anglaise incomplète",
+  };
+}
+
+function avecStatutEn(traductions: Traductions, en: VersionTraduite, statut: "brouillon" | "publie") {
+  return { ...traductions, en: { ...en, statut } };
+}
+
+/**
+ * Bouton « Publier EN » / « Dépublier EN » de la liste : change seulement le
+ * statut de la version anglaise (visible sur /en/blog si l'article français
+ * est lui-même en ligne). La publication exige une version complète.
+ */
+export async function changerPublicationEn(
+  id: string,
+  action: ActionPublicationEn
+): Promise<SaveArticleResult> {
+  await requireAdmin();
+  if (!z.uuid().safeParse(id).success) return { ok: false, message: "Article inconnu" };
+
+  const supabase = createAdminClient();
+  const { data: article } = await supabase
+    .from("articles")
+    .select("id, traductions")
+    .eq("id", id)
+    .maybeSingle();
+  const traductions = ((article?.traductions ?? {}) as Traductions) ?? {};
+  const en = traductions.en;
+  if (!article || !en) return { ok: false, message: "Cet article n'a pas de version anglaise" };
+
+  if (action === "publier") {
+    const verdict = versionEnPubliable(en);
+    if (!verdict.ok) return verdict;
+  }
+
+  const { error } = await supabase
+    .from("articles")
+    .update({
+      traductions: avecStatutEn(traductions, en, action === "publier" ? "publie" : "brouillon"),
+    })
+    .eq("id", id);
+  if (error) return { ok: false, message: error.message };
+
+  await revaliderBlog();
+  revalidatePath("/admin/blog");
+  revalidatePath(`/admin/blog/${id}`);
+  return {
+    ok: true,
+    message:
+      action === "publier" ? "Version anglaise publiée" : "Version anglaise repassée en brouillon",
+  };
+}
+
+/**
+ * Publie d'un coup toutes les versions anglaises en brouillon qui sont
+ * complètes ; les autres sont listées dans le message, sans bloquer.
+ */
+export async function publierVersionsAnglaises(): Promise<SaveArticleResult> {
+  await requireAdmin();
+
+  const supabase = createAdminClient();
+  const { data, error } = await supabase.from("articles").select("id, titre, traductions");
+  if (error) return { ok: false, message: error.message };
+
+  let publiees = 0;
+  const ignorees: string[] = [];
+  for (const article of data ?? []) {
+    const traductions = ((article.traductions ?? {}) as Traductions) ?? {};
+    const en = traductions.en;
+    if (!en || en.statut === "publie") continue;
+    const verdict = versionEnPubliable(en);
+    if (!verdict.ok) {
+      ignorees.push(`${article.titre} (${verdict.message})`);
+      continue;
+    }
+    const { error: erreur } = await supabase
+      .from("articles")
+      .update({ traductions: avecStatutEn(traductions, en, "publie") })
+      .eq("id", article.id);
+    if (erreur) {
+      ignorees.push(`${article.titre} (${erreur.message})`);
+      continue;
+    }
+    publiees++;
+  }
+
+  if (publiees > 0) {
+    await revaliderBlog();
+    revalidatePath("/admin/blog");
+  }
+
+  const detail =
+    ignorees.length > 0
+      ? ` ; ${ignorees.length} ignorée(s) : ${ignorees.slice(0, 3).join(" · ")}${ignorees.length > 3 ? "…" : ""}`
+      : "";
+  return {
+    ok: publiees > 0 || ignorees.length === 0,
+    message: `${publiees} version(s) anglaise(s) publiée(s)${detail}`,
+  };
+}
+
 export async function saveArticleEditorial(input: unknown): Promise<SaveArticleResult> {
   await requireAdmin();
 

@@ -12,6 +12,10 @@ import {
 } from "@/components/ui/table";
 import { DeleteArticleButton } from "@/components/admin/delete-article-button";
 import { PublicationArticleButton } from "@/components/admin/publication-article-button";
+import {
+  PublicationEnButton,
+  PublierVersionsEnButton,
+} from "@/components/admin/publication-en-button";
 import { resoudreImage, type Visuels } from "@/lib/blog/images";
 import type { StatutVersion } from "@/lib/blog/traductions";
 import { requireAdmin } from "@/lib/supabase/auth";
@@ -80,10 +84,11 @@ export default async function AdminBlogPage() {
   const prochain = articles
     .filter((a) => etat(a) === "programme")
     .sort((a, b) => (a.published_at! < b.published_at! ? -1 : 1))[0];
+  const enBrouillons = articles.filter((a) => a.en_statut === "brouillon").length;
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Blog</h1>
           {articles.length > 0 && (
@@ -92,12 +97,16 @@ export default async function AdminBlogPage() {
               {compte("brouillon")} brouillon(s)
               {prochain?.published_at &&
                 ` - prochain : ${dateFmt.format(new Date(prochain.published_at))}`}
+              {enBrouillons > 0 && ` · ${enBrouillons} version(s) anglaise(s) en brouillon`}
             </p>
           )}
         </div>
-        <Button render={<Link href="/admin/blog/nouveau" />}>
-          <Plus className="size-4" /> Nouvel article
-        </Button>
+        <div className="flex items-center gap-2">
+          {enBrouillons > 0 && <PublierVersionsEnButton nombre={enBrouillons} />}
+          <Button render={<Link href="/admin/blog/nouveau" />}>
+            <Plus className="size-4" /> Nouvel article
+          </Button>
+        </div>
       </div>
 
       {articles.length === 0 ? (
@@ -185,6 +194,12 @@ export default async function AdminBlogPage() {
                         )}
                         {e !== "brouillon" && (
                           <PublicationArticleButton articleId={article.id} action="depublier" titre={article.titre} />
+                        )}
+                        {article.en_statut && (
+                          <PublicationEnButton
+                            articleId={article.id}
+                            action={article.en_statut === "publie" ? "depublier" : "publier"}
+                          />
                         )}
                       </div>
                     </TableCell>
