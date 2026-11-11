@@ -16,21 +16,26 @@ interface Suggestion {
 }
 
 /**
- * Autocomplétion d'adresse via /api/geocode (proxy Géoplateforme IGN),
- * debounce 300 ms, annulation des requêtes obsolètes.
+ * Autocomplétion d'adresse via /api/geocode (Géoplateforme IGN, relais
+ * Photon en cas de panne), debounce 300 ms, annulation des requêtes
+ * obsolètes. `commune` (page commune) restreint les résultats à son code INSEE.
  */
 export function AddressAutocomplete({
   value,
   onChange,
+  commune,
 }: {
   value: Adresse | null;
   onChange: (adresse: Adresse | null) => void;
+  commune?: { codeInsee: string };
 }) {
   const t = useTranslations("estimation.adresse");
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [indisponible, setIndisponible] = useState(false);
+  const citycode = commune?.codeInsee;
   const abortRef = useRef<AbortController | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -50,14 +55,25 @@ export function AddressAutocomplete({
         abortRef.current = controller;
         setLoading(true);
         try {
-          const res = await fetch(`/api/geocode?q=${encodeURIComponent(q)}`, {
+          const params = new URLSearchParams({ q });
+          if (citycode) params.set("citycode", citycode);
+          const res = await fetch(`/api/geocode?${params}`, {
             signal: controller.signal,
           });
-          const data = (await res.json()) as { suggestions?: Suggestion[] };
+          const data = (await res.json()) as {
+            suggestions?: Suggestion[];
+            error?: string;
+          };
           setSuggestions(data.suggestions ?? []);
+          setIndisponible(res.status === 502 || data.error === "geocodage_indisponible");
           setOpen(true);
-        } catch {
-          // requête annulée ou réseau : on n'affiche rien
+        } catch (err) {
+          // Requête annulée : rien à faire. Réseau coupé : on le dit.
+          if (!(err instanceof DOMException && err.name === "AbortError")) {
+            setSuggestions([]);
+            setIndisponible(true);
+            setOpen(true);
+          }
         } finally {
           setLoading(false);
         }
@@ -66,7 +82,7 @@ export function AddressAutocomplete({
     );
 
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [query, citycode]);
 
   // Fermeture au clic extérieur
   useEffect(() => {
@@ -257,7 +273,7 @@ export function AddressAutocomplete({
             boxShadow: "0 16px 40px -18px rgba(12,31,28,.3)",
           }}
         >
-          {t("aucune")}
+          {indisponible ? t("indisponible") : t("aucune")}
         </p>
       )}
     </div>

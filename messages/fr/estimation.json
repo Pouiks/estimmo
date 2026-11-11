@@ -39,6 +39,7 @@
     "placeholder": "12 rue des Lilas, 75011 Paris",
     "modifier": "Modifier l'adresse",
     "aucune": "Aucune adresse trouvée - précisez le numéro et la ville.",
+    "indisponible": "Le service d'adresses est momentanément indisponible. Réessayez dans un instant ou appelez-nous.",
     "libelle": "Adresse du bien"
   },
   "bien": {

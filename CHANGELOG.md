@@ -29,6 +29,29 @@ le même commit que l'entrée du changelog.
 Rien pour l'instant. Propositions restantes de l'audit : P6 (contrôle du géocodage),
 P7 (fourchette), P8 (rayon à l'écran), P9 (identifiant de mutation), P10.
 
+## [3.0.1] - 2026-11-11 **[critique]**
+
+Correctif publié en urgence le 11/11/2026 au soir : la recherche d'adresse du formulaire
+(premier geste du tunnel) ne proposait plus rien depuis la panne totale du géocodeur de
+l'IGN (data.geopf.fr en 504 sur tous ses points d'entrée). Le code du site n'était pas en
+cause ; il n'avait aucun service de secours.
+
+### Ajouté
+- **Relais automatique de géocodage** (`lib/geo/geocodage.ts`) : Géoplateforme IGN
+  d'abord ; si elle échoue (erreur ou délai de 5 s), Photon (komoot, base
+  OpenStreetMap) prend le relais. Photon ne renvoie pas de code INSEE : il est retrouvé
+  dans notre table `communes_ref` par code postal et nom de commune (`lib/geo/communes.ts`,
+  arrondissements de Paris, Lyon et Marseille compris). Une réponse vide d'un fournisseur
+  qui fonctionne reste une vraie réponse (adresse inconnue), sans relais. Effet : le
+  prospect obtient des adresses même quand l'IGN est en panne ; la réponse indique la
+  `source` utilisée et un avertissement est journalisé pour chaque relais.
+- **Message explicite** sous le champ d'adresse quand aucun fournisseur ne répond
+  (« service momentanément indisponible, réessayez ou appelez-nous »), au lieu d'un
+  silence qui laissait croire à une adresse inconnue.
+- Paramètre `citycode` sur `/api/geocode` (filtre IGN, filtre après résolution pour
+  Photon) : préparé pour le formulaire des pages communes.
+- 15 tests unitaires sur la conversion des réponses, la résolution INSEE et l'ordre des relais.
+
 ## [3.0.0] - 2026-11-11
 
 Version **majeure** : les comparables changent pour toutes les estimations de vente
