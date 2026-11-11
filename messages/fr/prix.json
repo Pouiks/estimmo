@@ -19,6 +19,8 @@
   "actifs": "Les marchés les plus actifs",
   "prixAppart": "{prix}/m²",
   "loyers": "loyers",
+  "parRegion": "Par région",
+  "parRegionTexte": "Chaque région liste ses départements, puis chaque département toutes ses communes.",
   "parDepartement": "Par département",
   "parDepartementTexte": "Chaque département liste l'ensemble de ses communes avec leur prix médian au m².",
   "nbCommunes": "{n, plural, one {# commune} other {# communes}}",

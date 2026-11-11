@@ -19,6 +19,7 @@ import {
   slugDepartement,
 } from "@/lib/seo/departements";
 import { jsonLdFilAriane } from "@/lib/seo/json-ld";
+import { hrefRegion, regionDuDepartement } from "@/lib/seo/regions";
 
 /** ISR quotidien, comme les pages communes. */
 export const revalidate = 86400;
@@ -87,9 +88,11 @@ export default async function DepartementPage({ params }: Props) {
   const annee = String(new Date().getFullYear());
   const euro = (n: number) => format.number(n, "currency");
 
+  const region = regionDuDepartement(code);
   const jsonLdBreadcrumb = jsonLdFilAriane([
     { nom: t("filAriane.accueil"), url: urlAbsolue("/", locale) },
     { nom: t("filAriane.prix"), url: urlAbsolue("/prix-immobilier", locale) },
+    ...(region ? [{ nom: region.nom, url: urlAbsolue(hrefRegion(region), locale) }] : []),
     { nom, url: urlAbsolue(hrefDepartement(code), locale) },
   ]);
 
@@ -106,6 +109,14 @@ export default async function DepartementPage({ params }: Props) {
           <Link href="/prix-immobilier" className="hover:text-foreground">
             {t("filAriane.prix")}
           </Link>{" "}
+          {region && (
+            <>
+              ›{" "}
+              <Link href={hrefRegion(region)} className="hover:text-foreground">
+                {region.nom}
+              </Link>{" "}
+            </>
+          )}
           ›{" "}
           <span className="text-foreground">
             {nom} ({code})

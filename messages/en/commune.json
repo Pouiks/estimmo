@@ -135,6 +135,8 @@
     }
   },
   "maillage": {
+    "proches": "Towns near {nom}",
+    "procheDistance": "{nom} ({km, number, decimal1} km)",
     "titre": "Property prices in the department ({code})",
     "toutes": "All towns in {paris, select, true {} other {the}} {nom} ({code})"
   }

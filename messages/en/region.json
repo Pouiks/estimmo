@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "titre": "Property prices in {nom} - Price per m² by department and town {annee}",
+    "description": "Median prices per m² for the towns of the {nom} region, department by department, calculated from actual sales (DVF database). Free online valuation.",
+    "introuvable": "Region not found"
+  },
+  "filAriane": {
+    "accueil": "Home",
+    "prix": "Property prices"
+  },
+  "h1": "Property prices in {nom} in {annee}",
+  "intro": "{departements, plural, one {# department} other {# departments}}, {communes, plural, one {# town tracked} other {# towns tracked}}{ventes, plural, =0 {} other {, # sales analysed over the last 12 months of published data}}. Pick a department to see the median price per m² of each town.",
+  "parDepartement": "Price per m² by department",
+  "nbCommunes": "{n, plural, one {# town} other {# towns}}",
+  "cta": "Value my property for free",
+  "autresRegions": "Other regions",
+  "mentions": "{dvf}. {disclaimer}"
+}

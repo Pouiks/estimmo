@@ -35,6 +35,7 @@ import { getContexteCommune } from "@/lib/seo/contexte";
 import { hrefDepartement, nomDepartement } from "@/lib/seo/departements";
 import { regimeCommune } from "@/lib/seo/indexation";
 import { jsonLdAgentImmobilier, jsonLdFilAriane } from "@/lib/seo/json-ld";
+import { hrefRegion, regionDuDepartement } from "@/lib/seo/regions";
 import { GABARIT_COMMUNE_MODIFIE_LE } from "@/lib/seo/sitemap";
 import {
   brefTextes,
@@ -145,6 +146,7 @@ export default async function CommunePage({ params }: Props) {
   const chemin = `/prix-immobilier/${slug}`;
   const url = urlAbsolue(chemin, locale);
   const departement = nomDepartement(stats.departement);
+  const region = regionDuDepartement(stats.departement);
   const voisines = departement ? voisinesTexte(stats, faits, t) : null;
   const vsDepartement = departement ? departementTexte(stats, faits, departement, t) : null;
   const bref = brefTextes(stats, faits, t);
@@ -210,6 +212,7 @@ export default async function CommunePage({ params }: Props) {
   const jsonLdBreadcrumb = jsonLdFilAriane([
     { nom: t("filAriane.accueil"), url: urlAbsolue("/", locale) },
     { nom: t("filAriane.prix"), url: urlAbsolue("/prix-immobilier", locale) },
+    ...(region ? [{ nom: region.nom, url: urlAbsolue(hrefRegion(region), locale) }] : []),
     ...(departement
       ? [{ nom: departement, url: urlAbsolue(hrefDepartement(stats.departement), locale) }]
       : []),
@@ -229,6 +232,14 @@ export default async function CommunePage({ params }: Props) {
           <Link href="/prix-immobilier" className="hover:text-foreground">
             {t("filAriane.prix")}
           </Link>{" "}
+          {region && (
+            <>
+              ›{" "}
+              <Link href={hrefRegion(region)} className="hover:text-foreground">
+                {region.nom}
+              </Link>{" "}
+            </>
+          )}
           {departement && (
             <>
               ›{" "}
@@ -591,11 +602,14 @@ export default async function CommunePage({ params }: Props) {
           </ul>
         </section>
 
-        {/* Maillage interne */}
-        {voisinesDept.length > 0 && (
+        {/* Maillage interne : communes voisines (distance à vol d'oiseau),
+            sinon les plus actives du département */}
+        {(faits.voisines.length > 0 || voisinesDept.length > 0) && (
           <section className="mt-12 border-t pt-8">
             <h2 className="text-lg font-semibold">
-              {t("maillage.titre", { code: stats.departement })}
+              {faits.voisines.length > 0
+                ? t("maillage.proches", { nom })
+                : t("maillage.titre", { code: stats.departement })}
             </h2>
             {departement && (
               <p className="mt-1 text-sm text-muted-foreground">
@@ -612,13 +626,19 @@ export default async function CommunePage({ params }: Props) {
               </p>
             )}
             <ul className="mt-3 flex flex-wrap gap-2">
-              {voisinesDept.map((v) => (
+              {(faits.voisines.length > 0
+                ? faits.voisines.slice(0, 10).map((v) => ({
+                    slug: v.slug,
+                    libelle: t("maillage.procheDistance", { nom: v.nom_commune, km: v.distance_km }),
+                  }))
+                : voisinesDept.map((v) => ({ slug: v.slug, libelle: v.nom_commune }))
+              ).map((v) => (
                 <li key={v.slug}>
                   <Link
                     href={`/prix-immobilier/${v.slug}`}
                     className="inline-block rounded-full border px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
                   >
-                    {v.nom_commune}
+                    {v.libelle}
                   </Link>
                 </li>
               ))}

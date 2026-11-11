@@ -135,6 +135,8 @@
     }
   },
   "maillage": {
+    "proches": "Communes voisines de {nom}",
+    "procheDistance": "{nom} ({km, number, decimal1} km)",
     "titre": "Prix immobilier dans le département ({code})",
     "toutes": "Toutes les communes {paris, select, true {de} other {du}} {nom} ({code})"
   }

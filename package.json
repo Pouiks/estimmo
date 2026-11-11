@@ -1,6 +1,6 @@
 {
   "name": "estimmo",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -18,6 +18,7 @@
     "import:geo": "node --env-file-if-exists=.env.local --import tsx scripts/import-geo.ts",
     "import:insee": "node --env-file-if-exists=.env.local --import tsx scripts/import-insee.ts",
     "import:dvf:annuel": "node --env-file-if-exists=.env.local --import tsx scripts/import-dvf-annuel.ts",
+    "seo:verif": "node --env-file-if-exists=.env.local --import tsx scripts/seo-verif.ts",
     "sql": "node --env-file-if-exists=.env.local --import tsx scripts/sql.ts",
     "seed:articles": "node --env-file-if-exists=.env.local --import tsx scripts/seed-articles.ts",
     "import:articles": "node --env-file-if-exists=.env.local --import tsx scripts/import-articles.ts",

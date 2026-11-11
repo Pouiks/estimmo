@@ -19,6 +19,8 @@
   "actifs": "The most active markets",
   "prixAppart": "{prix}/m²",
   "loyers": "rents",
+  "parRegion": "By region",
+  "parRegionTexte": "Each region lists its departments, and each department all of its towns.",
   "parDepartement": "By department",
   "parDepartementTexte": "Each department lists all of its towns with their median price per m².",
   "nbCommunes": "{n, plural, one {# town} other {# towns}}",

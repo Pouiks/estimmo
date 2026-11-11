@@ -9,6 +9,7 @@ import { localeDeParams } from "@/lib/i18n/server";
 import { getDepartementsResume, getTopCommunes } from "@/lib/seo/communes";
 import { hrefDepartement, nomDepartement } from "@/lib/seo/departements";
 import { jsonLdFilAriane } from "@/lib/seo/json-ld";
+import { REGIONS, hrefRegion } from "@/lib/seo/regions";
 
 export const revalidate = 86400;
 
@@ -105,6 +106,21 @@ export default async function PrixImmobilierIndexPage({ params }: Props) {
                     })
                   : t("loyers")}
               </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+
+      <h2 className="mt-12 text-xl font-bold">{t("parRegion")}</h2>
+      <p className="mt-2 text-sm text-muted-foreground">{t("parRegionTexte")}</p>
+      <ul className="mt-4 flex flex-wrap gap-2">
+        {REGIONS.map((r) => (
+          <li key={r.code}>
+            <Link
+              href={hrefRegion(r)}
+              className="inline-block rounded-full border px-3 py-1.5 text-sm transition-colors hover:border-primary"
+            >
+              {r.nom}
             </Link>
           </li>
         ))}

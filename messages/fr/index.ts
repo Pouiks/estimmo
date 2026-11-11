@@ -13,6 +13,7 @@ import notFound from "./notFound.json";
 import prix from "./prix.json";
 import quartier from "./quartier.json";
 import rappel from "./rappel.json";
+import region from "./region.json";
 import result from "./result.json";
 import validation from "./validation.json";
 
@@ -33,6 +34,7 @@ const fr = {
   prix,
   quartier,
   rappel,
+  region,
   result,
   validation,
 };

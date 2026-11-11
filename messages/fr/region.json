@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "titre": "Prix immobilier en {nom} - Prix au m² par département et commune {annee}",
+    "description": "Prix médians au m² des communes de la région {nom}, département par département, calculés à partir des ventes réelles (base DVF). Estimation gratuite en ligne.",
+    "introuvable": "Région introuvable"
+  },
+  "filAriane": {
+    "accueil": "Accueil",
+    "prix": "Prix immobilier"
+  },
+  "h1": "Prix immobilier en {nom} en {annee}",
+  "intro": "{departements, plural, one {# département} other {# départements}}, {communes, plural, one {# commune suivie} other {# communes suivies}}{ventes, plural, =0 {} other {, # ventes analysées sur les 12 derniers mois de données publiées}}. Choisissez un département pour accéder au prix médian au m² de chaque commune.",
+  "parDepartement": "Prix au m² par département",
+  "nbCommunes": "{n, plural, one {# commune} other {# communes}}",
+  "cta": "Estimer mon bien gratuitement",
+  "autresRegions": "Les autres régions",
+  "mentions": "{dvf}. {disclaimer}"
+}

@@ -29,6 +29,29 @@ le même commit que l'entrée du changelog.
 Rien pour l'instant. Propositions restantes de l'audit : P6 (contrôle du géocodage),
 P7 (fourchette), P8 (rayon à l'écran), P9 (identifiant de mutation), P10.
 
+## [3.4.0] - 2026-11-12
+
+Phase 5 du chantier SEO : maillage interne.
+
+### Ajouté
+- **Pages région** `/prix-immobilier/region/<slug>` (18 régions, `lib/seo/regions.ts`,
+  namespace `region`) listant leurs départements avec le nombre de communes, et les
+  autres régions. Arborescence complète : accueil > prix immobilier > région >
+  département > commune, reflétée dans les fils d'Ariane (visibles et JSON-LD) des
+  pages département et commune. Les pages région sont dans `/sitemaps/pages.xml` (fr/en).
+- **« Communes voisines de {Commune} »** : le bloc de liens du bas de page renvoie
+  vers les 10 communes les plus proches à vol d'oiseau avec leur distance (données de
+  la phase 2) ; sans ces données, les 8 communes les plus actives du département, comme
+  avant. Le tableau de comparaison (5 plus proches) lie aussi chaque commune.
+- **`pnpm seo:verif`** (`scripts/seo-verif.ts`) : contrôle de bout en bout sur le site
+  déployé, par département : chaque commune est liée depuis sa page département (aucune
+  orpheline, 3 clics depuis l'accueil : accueil → prix immobilier → département →
+  commune), sitemap du département = communes indexables en base, et pour un
+  échantillon de communes : 200 sans redirection, canonical auto-référent, noindex
+  cohérent avec le seuil, H1 unique, aucun hreflang, formulaire présent, JSON-LD
+  attendus, version anglaise en noindex. Code de sortie 1 en cas d'échec.
+- Le hub `/prix-immobilier` liste les régions au-dessus des départements.
+
 ## [3.3.0] - 2026-11-12
 
 Phase 4 du chantier SEO : version anglaise des pages communes.

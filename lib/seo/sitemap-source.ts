@@ -4,6 +4,7 @@ import { cheminsBlog, languesEnLigne, slugsPublics, type AvecSlug } from "@/lib/
 import { getCommunesSitemap, getDepartementsResume } from "@/lib/seo/communes";
 import { estIndexable } from "@/lib/seo/indexation";
 import { hrefDepartement, nomDepartement } from "@/lib/seo/departements";
+import { REGIONS, hrefRegion } from "@/lib/seo/regions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   entreeMonolingue,
@@ -36,6 +37,12 @@ export async function sitemapPagesFixes(): Promise<EntreeSitemap[]> {
     ...entreesBilingues("/barometre-immobilier", { changeFrequency: "daily", priority: 0.8 }),
     ...entreesBilingues("/blog", { changeFrequency: "weekly", priority: 0.6 }),
   ];
+
+  // Régions dont au moins un département est en base (Mayotte n'a ni DVF ni ANIL).
+  const codesPresents = new Set(departements.map((d) => d.departement));
+  const pagesRegions = REGIONS.filter((r) => r.departements.some((d) => codesPresents.has(d))).flatMap((r) =>
+    entreesBilingues(hrefRegion(r), { changeFrequency: "weekly", priority: 0.7 })
+  );
 
   // Seuls les départements présents en base (976 Mayotte n'a ni DVF ni ANIL).
   const pagesDepartements = departements
@@ -71,7 +78,7 @@ export async function sitemapPagesFixes(): Promise<EntreeSitemap[]> {
       : [entreeMonolingue(chemins.fr, "fr", extra)];
   });
 
-  return [...statiques, ...pagesDepartements, ...pagesArticles];
+  return [...statiques, ...pagesRegions, ...pagesDepartements, ...pagesArticles];
 }
 
 /**
