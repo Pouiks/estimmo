@@ -24,6 +24,7 @@ import {
   type ExclusionReason,
   type MutationGroup,
 } from "./dvf-clean";
+import { DVF_DEPARTEMENTS } from "./dvf-departements";
 import {
   chunk,
   fetchCsvStream,
@@ -35,18 +36,7 @@ import {
 const BASE_URL = "https://files.data.gouv.fr/geo-dvf/latest/csv";
 const BATCH_SIZE = 5_000;
 
-// Départements couverts par DVF. Absents : 57 (Moselle), 67 (Bas-Rhin),
-// 68 (Haut-Rhin) - Livre foncier d'Alsace-Moselle - et 976 (Mayotte).
-export const DVF_DEPARTEMENTS: string[] = [
-  ...Array.from({ length: 19 }, (_, i) => String(i + 1).padStart(2, "0")),
-  "2A",
-  "2B",
-  ...Array.from({ length: 75 }, (_, i) => String(i + 21)),
-  "971",
-  "972",
-  "973",
-  "974",
-].filter((d) => !["57", "67", "68"].includes(d));
+export { DVF_DEPARTEMENTS };
 
 interface CommuneRef {
   nom: string;

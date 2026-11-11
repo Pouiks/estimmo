@@ -18,9 +18,9 @@
   "h1": "Property prices in {nom}",
   "intro": {
     "sansVentes": "In {nom}, property transactions are not published in the DVF database (Livre foncier regime in Alsace-Moselle, or too few sales). You will find the observed reference rents below, and our team provides a free personalised valuation of your property on request.",
-    "v0": "The property market in {nom} shows a median price of {prix}, calculated from sales actually recorded by the French tax authorities (DVF database). Over the last twelve months of published data, {ventes, plural, =0 {no sales were analysed} one {# sale was analysed} other {# sales were analysed}} in the town.",
-    "v1": "How much is a property worth in {nom}? Deeds of sale recorded by the DGFiP (DVF database) show a median value of {prix}. This price level is based on {ventes, plural, one {# transaction observed} other {# transactions observed}} over twelve months in the town.",
-    "v2": "In {nom}, officially recorded property sales over the last twelve months - {ventes, number, integer} in total - set the median price at {prix}. These figures come from public DVF data, the same data used by notaries and professionals."
+    "v0": "The property market in {nom} shows a median price of {prix}, calculated from sales actually recorded by the French tax authorities (DVF database). {fenetre, select, 36m {Over the last three years of published data} other {Over the last twelve months of published data}}, {ventes, plural, =0 {no sales were analysed} one {# sale was analysed} other {# sales were analysed}} in the town.",
+    "v1": "How much is a property worth in {nom}? Deeds of sale recorded by the DGFiP (DVF database) show a median value of {prix}. This price level is based on {ventes, plural, one {# transaction observed} other {# transactions observed}} {fenetre, select, 36m {over three years} other {over twelve months}} in the town.",
+    "v2": "In {nom}, officially recorded property sales {fenetre, select, 36m {over the last three years} other {over the last twelve months}} - {ventes, number, integer} in total - set the median price at {prix}. These figures come from public DVF data, the same data used by notaries and professionals."
   },
   "prix": {
     "appart": "{appart, number, currency}/m² for a flat",
@@ -37,9 +37,61 @@
   "chiffres": {
     "appart": "Flat - median price",
     "maison": "House - median price",
-    "ventes": "Sales analysed (12 months)",
+    "ventes": "Sales analysed ({fenetre, select, 36m {3 years} other {12 months}})",
     "evolution": "1-year change",
-    "maj": "{dvf} - aggregated statistics over the last 12 months of published data, updated on {date, date, short}."
+    "fenetre36": "Fewer than 10 sales in the last twelve months: the medians above are calculated over the last three years of sales to remain reliable.",
+    "maj": "{dvf} - aggregated statistics over {fenetre, select, 36m {the last 36 months} other {the last 12 months}} of published data, updated on {date, date, short}."
+  },
+  "marche": {
+    "titre": "The {nom} property market in figures",
+    "volumeFaibleV0": "With {ventes, plural, one {# sale} other {# sales}} {fenetre, select, 36m {over the last three years} other {over twelve months}}, {nom} is a narrow market: each transaction weighs on the median, and valuing a specific property means widening the comparison to neighbouring towns.",
+    "volumeFaibleV1": "{nom} records only {ventes, plural, one {# sale} other {# sales}} {fenetre, select, 36m {in three years} other {in twelve months}}. In such a quiet market, the median price gives an order of magnitude, not a selling price: comparing with properties sold nearby remains essential.",
+    "volumeMoyenV0": "{ventes, number, integer} sales {fenetre, select, 36m {over three years} other {in twelve months}}: the {nom} market is active enough for the medians per m² to be representative, without hiding the gaps between neighbourhoods and property conditions.",
+    "volumeMoyenV1": "With {ventes, number, integer} transactions {fenetre, select, 36m {over three years} other {over twelve months}}, {nom} offers enough sales volume to read a reliable trend, neighbourhood by neighbourhood.",
+    "volumeFortV0": "{ventes, number, integer} sales {fenetre, select, 36m {over three years} other {in twelve months}} make {nom} a deep market: median prices are solid and comparables plentiful to value a property down to the address.",
+    "volumeFortV1": "A very active market: {ventes, number, integer} transactions {fenetre, select, 36m {in three years} other {in twelve months}} in {nom}. The medians faithfully reflect the market, and the estimator has many recent comparables.",
+    "longueV0": "Over a longer period, the median price {type, select, A {of flats} other {of houses}} in {nom} {hausse, select, true {rose} other {fell}} by {evo} between {depuis} and {jusqua}.",
+    "longueV1": "Between {depuis} and {jusqua}, {type, select, A {flats} other {houses}} in {nom} {hausse, select, true {gained} other {lost}} {evo} per m² in annual median."
+  },
+  "annees": {
+    "titre": "Price per m² in {nom} by year",
+    "annee": "Year",
+    "appart": "Flats",
+    "maison": "Houses",
+    "cellule": "{prix, number, currency}/m² ({n, plural, one {# sale} other {# sales}})",
+    "note": "Annual median price per m² of cleaned DVF sales (excluding multi-dwelling sales, outbuildings and outliers). A year with fewer than 5 sales is indicative only."
+  },
+  "voisines": {
+    "titre": "{nom} compared with neighbouring towns",
+    "positionV0": "{position, select, plusCher {At {prix, number, currency}/m², {nom} sits {ecart} above the median of the {n} nearest towns ({mediane, number, currency}/m²).} moinsCher {At {prix, number, currency}/m², {nom} remains {ecart} below the median of the {n} nearest towns ({mediane, number, currency}/m²).} other {At {prix, number, currency}/m², {nom} is in line with the {n} nearest towns ({mediane, number, currency}/m², a gap of {ecart}).}}",
+    "positionV1": "{position, select, plusCher {{type, select, A {Flats} other {Houses}} sell for more here than nearby: {prix, number, currency}/m² against a median of {mediane, number, currency}/m² in the {n} neighbouring towns, {ecart} more.} moinsCher {{type, select, A {Flats} other {Houses}} are more affordable here than nearby: {prix, number, currency}/m² against {mediane, number, currency}/m² in the {n} neighbouring towns, {ecart} less.} other {{type, select, A {Flats} other {Houses}} sell at the same level as nearby: {prix, number, currency}/m² against {mediane, number, currency}/m² in the {n} neighbouring towns.}}",
+    "departement": "{position, select, plusCher {Across the department ({departement}), the median {type, select, A {for flats} other {for houses}} is {prixDept, number, currency}/m²: {nom} is {ecart} more expensive.} moinsCher {Across the department ({departement}), the median {type, select, A {for flats} other {for houses}} is {prixDept, number, currency}/m²: {nom} is {ecart} cheaper.} other {Across the department ({departement}), the median {type, select, A {for flats} other {for houses}} is {prixDept, number, currency}/m²: {nom} is at the department's level.}}",
+    "commune": "Town",
+    "distance": "Distance",
+    "prix": "Median price ({type, select, A {flats} other {houses}})",
+    "ventes": "Sales (12 months)",
+    "km": "{km, number, decimal1} km",
+    "ligneDepartement": "Department ({nom})",
+    "pct": "{v, number, decimal1}%"
+  },
+  "bref": {
+    "titre": "{nom} at a glance",
+    "population": "{nom} has {population, number, integer} inhabitants (INSEE).",
+    "logements": "The town has {logements, number, integer} dwellings, of which {partMaisons}% are houses and {partAppartements}% flats.",
+    "proprietaires": "{partProprietaires}% of main residences are owner-occupied.",
+    "dominante": "{dominante, select, maisons {A housing stock dominated by detached houses: sales mostly involve houses with land, whose value depends heavily on garden size and overall condition.} appartements {A mostly collective housing stock: floor level, lift, orientation and service charges account for most price differences between flats.} other {A mixed stock of houses and flats: both markets coexist, often with different prices per m² depending on the property type.}}",
+    "tuilePopulation": "Inhabitants",
+    "tuileProprietaires": "Owner-occupiers",
+    "tuileMaisons": "Share of houses",
+    "pct": "{v}%"
+  },
+  "sources": {
+    "titre": "Sources and updates",
+    "dvf": "Sale prices: DVF database (DGFiP, data.gouv.fr), sales published up to {derniereVente, date, long}, cleaned by us (excluding multi-dwelling sales, outbuildings and outliers).",
+    "dvfSansDate": "Sale prices: DVF database (DGFiP, data.gouv.fr), cleaned by us (excluding multi-dwelling sales, outbuildings and outliers).",
+    "insee": "Population and housing: INSEE, {millesime} census and legal populations (via geo.api.gouv.fr).",
+    "anil": "Rents: {anil}, {millesime} edition.",
+    "maj": "Town figures updated on {date, date, long}."
   },
   "loyers": {
     "titre": "What rent in {nom}?",
@@ -59,11 +111,19 @@
     "titre": "Frequently asked questions - {nom}",
     "appart": {
       "question": "What is the price per m² of a flat in {nom} in {annee}?",
-      "reponse": "The median price of a flat in {nom} is {prix, number, currency}/m², based on sales recorded in the DVF database over the last twelve months of published data. Depending on condition, floor and fittings, the actual value of a property may differ significantly from this median."
+      "reponse": "The median price of a flat in {nom} is {prix, number, currency}/m², based on sales recorded in the DVF database {fenetre, select, 36m {over the last three years of published data} other {over the last twelve months of published data}}. Depending on condition, floor and fittings, the actual value of a property may differ significantly from this median."
     },
     "maison": {
       "question": "What is the price per m² of a house in {nom}?",
-      "reponse": "Houses sell for a median of {prix, number, currency}/m² in {nom}. Plot size, overall condition and precise location cause this price to vary considerably."
+      "reponse": "Houses sell for a median of {prix, number, currency}/m² in {nom}{fenetre, select, 36m { (median of the last three years)} other {}}. Plot size, overall condition and precise location cause this price to vary considerably."
+    },
+    "tendance": {
+      "question": "Are property prices rising in {nom}?",
+      "reponse": "{tendance, select, hausse {Yes: over one year, the median price per m² is up {evo} in {nom}} baisse {No: over one year, the median price per m² is down {evo} in {nom}} other {Prices are stable in {nom} over one year ({evo})}}{aLongue, select, true {. {type, select, A {For flats} other {For houses}}, the change between {depuis} and {jusqua} is {evoLongue}} other {}}. These figures reflect sales actually signed, not advertised asking prices."
+    },
+    "voisines": {
+      "question": "Is {nom} more expensive than neighbouring towns?",
+      "reponse": "{position, select, plusCher {Yes: a median of {prix, number, currency}/m² {type, select, A {for a flat} other {for a house}}, against {mediane, number, currency}/m² in the {n} nearest towns, {ecart} more.} moinsCher {No: a median of {prix, number, currency}/m² {type, select, A {for a flat} other {for a house}}, against {mediane, number, currency}/m² in the {n} nearest towns, {ecart} less.} other {Prices are comparable: a median of {prix, number, currency}/m² {type, select, A {for a flat} other {for a house}} in {nom}, against {mediane, number, currency}/m² in the {n} nearest towns.}} Each town keeps its own features (old centre, housing estates, views, transport links) that explain these gaps from one street to the next."
     },
     "loyer": {
       "question": "What rent for a flat in {nom}?",

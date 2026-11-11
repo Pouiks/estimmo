@@ -1,9 +1,17 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getFormatter, getTranslations } from "next-intl/server";
-import { ArrowRight, Building2, Home, LineChart, Receipt } from "lucide-react";
+import { ArrowRight, Building2, Home, LineChart, Receipt, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { JsonLd } from "@/components/site/json-ld";
 import { SITE } from "@/lib/config";
 import { Link } from "@/lib/i18n/navigation";
@@ -15,21 +23,30 @@ import {
   urlAbsolue,
 } from "@/lib/i18n/seo";
 import { localeDeParams } from "@/lib/i18n/server";
+import { analyserCommune, prixAffiches } from "@/lib/seo/analyse";
 import {
   getCommuneBySlug,
   getCommunesVoisines,
   getLoyersByInsee,
   getTopCommunes,
 } from "@/lib/seo/communes";
+import { getContexteCommune } from "@/lib/seo/contexte";
 import { hrefDepartement, nomDepartement } from "@/lib/seo/departements";
+import { regimeCommune } from "@/lib/seo/indexation";
 import { jsonLdFilAriane } from "@/lib/seo/json-ld";
+import { GABARIT_COMMUNE_MODIFIE_LE } from "@/lib/seo/sitemap";
 import {
+  brefTextes,
+  departementTexte,
   evolutionAffichable,
+  evolutionLongueTexte,
   evolutionTexte,
   faqCommune,
   formatEvo,
   introCommune,
   prixTexte,
+  voisinesTexte,
+  volumeTexte,
 } from "@/lib/seo/textes";
 
 /** ISR : revalidation quotidienne, pages hors top 2000 générées à la demande. */
@@ -65,8 +82,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const annee = String(new Date(stats.updated_at).getFullYear());
   const cp = stats.code_postal ?? stats.departement;
   const title = t("meta.titre", { nom, cp, annee });
+  const regime = regimeCommune(stats);
   // Prix médian maison et/ou appartement ; sans aucune vente, loyers seulement.
-  const prix = prixTexte(stats, t);
+  const prix = prixTexte(prixAffiches(stats, regime.fenetre), t);
   const description = prix
     ? t("meta.descriptionVentes", { nom, prix })
     : t("meta.descriptionLoyers", { nom });
@@ -83,6 +101,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       sousTitre: description,
     }),
+    // Seuil de qualité : trop peu de ventes pour des chiffres fiables →
+    // page accessible et liée, mais hors index et hors sitemap.
+    robots: regime.indexable ? undefined : { index: false, follow: true },
   };
 }
 
@@ -91,9 +112,10 @@ export default async function CommunePage({ params }: Props) {
   const stats = await getCommuneBySlug(slug);
   if (!stats) notFound();
 
-  const [loyers, voisines, t, tc, format] = await Promise.all([
+  const [loyers, voisinesDept, contexte, t, tc, format] = await Promise.all([
     getLoyersByInsee(stats.code_insee),
     getCommunesVoisines(stats.departement, stats.code_insee),
+    getContexteCommune(stats.code_insee),
     getTranslations({ locale, namespace: "commune" }),
     getTranslations({ locale, namespace: "common" }),
     getFormatter({ locale }),
@@ -104,14 +126,23 @@ export default async function CommunePage({ params }: Props) {
   const annee = new Date(stats.updated_at).getFullYear();
   const na = tc("na");
   const euroM2 = (n: number) => `${format.number(n, "currency")}/m²`;
-  const faq = faqCommune(stats, loyers, annee, t);
+  const regime = regimeCommune(stats);
+  const faits = analyserCommune(stats, contexte, regime);
+  const prix = faits.prix;
+  const faq = faqCommune(stats, loyers, annee, t, faits);
   const evolution = evolutionTexte(stats, t, na);
-  const aDesVentes = Boolean(
-    stats.prix_m2_median_appartement || stats.prix_m2_median_maison
-  );
+  const volume = volumeTexte(stats, faits, t);
+  const longue = evolutionLongueTexte(stats, faits, t, na);
+  const aDesVentes = Boolean(prix.appart || prix.maison);
   const chemin = `/prix-immobilier/${slug}`;
   const url = urlAbsolue(chemin, locale);
   const departement = nomDepartement(stats.departement);
+  const voisines = departement ? voisinesTexte(stats, faits, t) : null;
+  const vsDepartement = departement ? departementTexte(stats, faits, departement, t) : null;
+  const bref = brefTextes(stats, faits, t);
+  const voisinesComparees = faits.voisines.filter((v) => v.prix).slice(0, 5);
+  const majChiffres = new Date(stats.contenu_modifie_le ?? stats.updated_at);
+  const majPage = majChiffres > GABARIT_COMMUNE_MODIFIE_LE ? majChiffres : GABARIT_COMMUNE_MODIFIE_LE;
 
   const jsonLdDataset = {
     "@context": "https://schema.org",
@@ -125,17 +156,18 @@ export default async function CommunePage({ params }: Props) {
       "https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres-geolocalisees/",
     license: "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
     spatialCoverage: { "@type": "Place", name: nom },
+    dateModified: majPage.toISOString().slice(0, 10),
     variableMeasured: [
-      stats.prix_m2_median_appartement && {
+      prix.appart && {
         "@type": "PropertyValue",
         name: t("jsonLd.medianAppart"),
-        value: stats.prix_m2_median_appartement,
+        value: prix.appart,
         unitText: "EUR/m2",
       },
-      stats.prix_m2_median_maison && {
+      prix.maison && {
         "@type": "PropertyValue",
         name: t("jsonLd.medianMaison"),
-        value: stats.prix_m2_median_maison,
+        value: prix.maison,
         unitText: "EUR/m2",
       },
     ].filter(Boolean),
@@ -195,7 +227,7 @@ export default async function CommunePage({ params }: Props) {
         </h1>
 
         <p className="mt-4 text-lg text-muted-foreground">
-          {introCommune(stats, t)}
+          {introCommune(stats, prix, t)}
         </p>
 
         {/* Chiffres clés */}
@@ -207,9 +239,7 @@ export default async function CommunePage({ params }: Props) {
                 {t("chiffres.appart")}
               </p>
               <p className="text-2xl font-bold">
-                {stats.prix_m2_median_appartement
-                  ? euroM2(stats.prix_m2_median_appartement)
-                  : na}
+                {prix.appart ? euroM2(prix.appart) : na}
               </p>
             </CardContent>
           </Card>
@@ -220,9 +250,7 @@ export default async function CommunePage({ params }: Props) {
                 {t("chiffres.maison")}
               </p>
               <p className="text-2xl font-bold">
-                {stats.prix_m2_median_maison
-                  ? euroM2(stats.prix_m2_median_maison)
-                  : na}
+                {prix.maison ? euroM2(prix.maison) : na}
               </p>
             </CardContent>
           </Card>
@@ -230,10 +258,10 @@ export default async function CommunePage({ params }: Props) {
             <CardContent className="pt-6">
               <Receipt className="size-5 text-primary" />
               <p className="mt-2 text-sm text-muted-foreground">
-                {t("chiffres.ventes")}
+                {t("chiffres.ventes", { fenetre: prix.fenetre })}
               </p>
               <p className="text-2xl font-bold">
-                {format.number(stats.nb_ventes_12m, "integer")}
+                {format.number(prix.ventes, "integer")}
               </p>
             </CardContent>
           </Card>
@@ -254,14 +282,167 @@ export default async function CommunePage({ params }: Props) {
 
         {aDesVentes && (
           <p className="mt-3 text-xs text-muted-foreground">
+            {prix.fenetre === "36m" && <>{t("chiffres.fenetre36")} </>}
             {t("chiffres.maj", {
               dvf: tc("mentions.dvf"),
-              date: new Date(stats.updated_at),
+              fenetre: prix.fenetre,
+              date: majChiffres,
             })}
           </p>
         )}
 
-        {evolution && <p className="mt-6">{evolution}</p>}
+        {/* Le marché en chiffres : volume, tendance, évolution longue */}
+        {(volume || evolution || longue) && (
+          <section className="mt-10">
+            <h2 className="text-2xl font-bold tracking-tight">
+              {t("marche.titre", { nom })}
+            </h2>
+            <div className="mt-4 space-y-3">
+              {volume && <p>{volume}</p>}
+              {evolution && <p>{evolution}</p>}
+              {longue && <p>{longue}</p>}
+            </div>
+          </section>
+        )}
+
+        {/* Série annuelle */}
+        {faits.serieAnnuelle.length > 1 && (
+          <section className="mt-10">
+            <h2 className="text-2xl font-bold tracking-tight">
+              {t("annees.titre", { nom })}
+            </h2>
+            <Table className="mt-4">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t("annees.annee")}</TableHead>
+                  <TableHead>{t("annees.appart")}</TableHead>
+                  <TableHead>{t("annees.maison")}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {faits.serieAnnuelle.map((ligne) => (
+                  <TableRow key={ligne.annee}>
+                    <TableCell className="font-medium">{ligne.annee}</TableCell>
+                    <TableCell>
+                      {ligne.appart?.prix
+                        ? t("annees.cellule", { prix: ligne.appart.prix, n: ligne.appart.nb })
+                        : na}
+                    </TableCell>
+                    <TableCell>
+                      {ligne.maison?.prix
+                        ? t("annees.cellule", { prix: ligne.maison.prix, n: ligne.maison.nb })
+                        : na}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <p className="mt-2 text-xs text-muted-foreground">{t("annees.note")}</p>
+          </section>
+        )}
+
+        {/* Communes voisines et département */}
+        {faits.typeReference && voisinesComparees.length > 0 && (
+          <section className="mt-10">
+            <h2 className="text-2xl font-bold tracking-tight">
+              {t("voisines.titre", { nom })}
+            </h2>
+            {voisines && <p className="mt-4">{voisines}</p>}
+            {vsDepartement && <p className="mt-3">{vsDepartement}</p>}
+            <Table className="mt-4">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t("voisines.commune")}</TableHead>
+                  <TableHead>{t("voisines.distance")}</TableHead>
+                  <TableHead>{t("voisines.prix", { type: faits.typeReference })}</TableHead>
+                  <TableHead>{t("voisines.ventes")}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow className="bg-muted/40">
+                  <TableCell className="font-semibold">{nom}</TableCell>
+                  <TableCell>-</TableCell>
+                  <TableCell className="font-semibold">
+                    {faits.prixReference ? euroM2(faits.prixReference) : na}
+                  </TableCell>
+                  <TableCell>{format.number(stats.nb_ventes_12m, "integer")}</TableCell>
+                </TableRow>
+                {voisinesComparees.map((v) => (
+                  <TableRow key={v.slug}>
+                    <TableCell>
+                      <Link
+                        href={`/prix-immobilier/${v.slug}`}
+                        className="text-primary underline underline-offset-4"
+                      >
+                        {v.nom_commune}
+                      </Link>
+                    </TableCell>
+                    <TableCell>{t("voisines.km", { km: v.distance_km })}</TableCell>
+                    <TableCell>{v.prix ? euroM2(v.prix) : na}</TableCell>
+                    <TableCell>{format.number(v.nb_ventes_12m, "integer")}</TableCell>
+                  </TableRow>
+                ))}
+                {departement && faits.prixDepartement && (
+                  <TableRow className="text-muted-foreground">
+                    <TableCell>{t("voisines.ligneDepartement", { nom: departement })}</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>{euroM2(faits.prixDepartement)}</TableCell>
+                    <TableCell>
+                      {contexte?.departement
+                        ? format.number(contexte.departement.nb_ventes_12m, "integer")
+                        : na}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </section>
+        )}
+
+        {/* La commune en bref (INSEE) */}
+        {faits.insee && bref.length > 0 && (
+          <section className="mt-10">
+            <h2 className="text-2xl font-bold tracking-tight">{t("bref.titre", { nom })}</h2>
+            <div className="mt-4 grid gap-4 sm:grid-cols-3">
+              <Card>
+                <CardContent className="pt-6">
+                  <Users className="size-5 text-primary" />
+                  <p className="mt-2 text-sm text-muted-foreground">{t("bref.tuilePopulation")}</p>
+                  <p className="text-xl font-bold">
+                    {faits.insee.population ? format.number(faits.insee.population, "integer") : na}
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <Home className="size-5 text-primary" />
+                  <p className="mt-2 text-sm text-muted-foreground">{t("bref.tuileProprietaires")}</p>
+                  <p className="text-xl font-bold">
+                    {faits.insee.partProprietaires !== null
+                      ? t("bref.pct", { v: String(faits.insee.partProprietaires) })
+                      : na}
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <Building2 className="size-5 text-primary" />
+                  <p className="mt-2 text-sm text-muted-foreground">{t("bref.tuileMaisons")}</p>
+                  <p className="text-xl font-bold">
+                    {faits.insee.partMaisons !== null
+                      ? t("bref.pct", { v: String(faits.insee.partMaisons) })
+                      : na}
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="mt-4 space-y-2">
+              {bref.map((phrase) => (
+                <p key={phrase}>{phrase}</p>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Loyers */}
         {loyers && (
@@ -351,8 +532,27 @@ export default async function CommunePage({ params }: Props) {
           </div>
         </section>
 
+        {/* Sources et mise à jour */}
+        <section className="mt-12 rounded-lg border bg-muted/30 p-4 text-xs text-muted-foreground">
+          <h2 className="text-sm font-semibold text-foreground">{t("sources.titre")}</h2>
+          <ul className="mt-2 space-y-1">
+            {aDesVentes && (
+              <li>
+                {contexte?.derniere_vente
+                  ? t("sources.dvf", { derniereVente: new Date(contexte.derniere_vente) })
+                  : t("sources.dvfSansDate")}
+              </li>
+            )}
+            {faits.insee && <li>{t("sources.insee", { millesime: String(faits.insee.millesime) })}</li>}
+            {loyers && (
+              <li>{t("sources.anil", { anil: tc("mentions.anil"), millesime: String(loyers.millesime) })}</li>
+            )}
+            <li>{t("sources.maj", { date: majPage })}</li>
+          </ul>
+        </section>
+
         {/* Maillage interne */}
-        {voisines.length > 0 && (
+        {voisinesDept.length > 0 && (
           <section className="mt-12 border-t pt-8">
             <h2 className="text-lg font-semibold">
               {t("maillage.titre", { code: stats.departement })}
@@ -372,7 +572,7 @@ export default async function CommunePage({ params }: Props) {
               </p>
             )}
             <ul className="mt-3 flex flex-wrap gap-2">
-              {voisines.map((v) => (
+              {voisinesDept.map((v) => (
                 <li key={v.slug}>
                   <Link
                     href={`/prix-immobilier/${v.slug}`}

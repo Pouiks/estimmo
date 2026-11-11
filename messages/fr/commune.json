@@ -18,9 +18,9 @@
   "h1": "Prix immobilier à {nom}",
   "intro": {
     "sansVentes": "À {nom}, les transactions immobilières ne sont pas publiées dans la base DVF (régime du Livre foncier en Alsace-Moselle, ou volume de ventes insuffisant). Vous trouverez ci-dessous les loyers de référence observés, et notre équipe réalise gratuitement une estimation personnalisée de votre bien sur simple demande.",
-    "v0": "Le marché immobilier de {nom} affiche un prix médian de {prix}, calculé à partir des ventes réellement enregistrées par les services de l'État (base DVF). Sur les douze derniers mois de données publiées, {ventes, plural, =0 {aucune vente n'a été analysée} one {# vente a été analysée} other {# ventes ont été analysées}} sur la commune.",
-    "v1": "Combien vaut un bien à {nom} ? Les actes de vente enregistrés par la DGFiP (base DVF) font ressortir une valeur médiane de {prix}. Ce niveau de prix s'appuie sur {ventes, plural, one {# transaction observée} other {# transactions observées}} en douze mois sur la commune.",
-    "v2": "À {nom}, les ventes immobilières officiellement enregistrées ces douze derniers mois - {ventes, number, integer} au total - établissent le prix médian à {prix}. Ces chiffres proviennent des données publiques DVF, les mêmes que celles utilisées par les notaires et les professionnels."
+    "v0": "Le marché immobilier de {nom} affiche un prix médian de {prix}, calculé à partir des ventes réellement enregistrées par les services de l'État (base DVF). {fenetre, select, 36m {Sur les trois dernières années de données publiées} other {Sur les douze derniers mois de données publiées}}, {ventes, plural, =0 {aucune vente n'a été analysée} one {# vente a été analysée} other {# ventes ont été analysées}} sur la commune.",
+    "v1": "Combien vaut un bien à {nom} ? Les actes de vente enregistrés par la DGFiP (base DVF) font ressortir une valeur médiane de {prix}. Ce niveau de prix s'appuie sur {ventes, plural, one {# transaction observée} other {# transactions observées}} {fenetre, select, 36m {en trois ans} other {en douze mois}} sur la commune.",
+    "v2": "À {nom}, les ventes immobilières officiellement enregistrées {fenetre, select, 36m {ces trois dernières années} other {ces douze derniers mois}} - {ventes, number, integer} au total - établissent le prix médian à {prix}. Ces chiffres proviennent des données publiques DVF, les mêmes que celles utilisées par les notaires et les professionnels."
   },
   "prix": {
     "appart": "{appart, number, currency}/m² pour un appartement",
@@ -37,9 +37,61 @@
   "chiffres": {
     "appart": "Appartement - prix médian",
     "maison": "Maison - prix médian",
-    "ventes": "Ventes analysées (12 mois)",
+    "ventes": "Ventes analysées ({fenetre, select, 36m {3 ans} other {12 mois}})",
     "evolution": "Évolution sur 1 an",
-    "maj": "{dvf} - statistiques agrégées sur les 12 derniers mois de données publiées, mises à jour le {date, date, short}."
+    "fenetre36": "Moins de 10 ventes sur les douze derniers mois : les médianes ci-dessus sont calculées sur les trois dernières années de ventes, pour rester fiables.",
+    "maj": "{dvf} - statistiques agrégées sur {fenetre, select, 36m {les 36 derniers mois} other {les 12 derniers mois}} de données publiées, mises à jour le {date, date, short}."
+  },
+  "marche": {
+    "titre": "Le marché immobilier de {nom} en chiffres",
+    "volumeFaibleV0": "Avec {ventes, plural, one {# vente} other {# ventes}} {fenetre, select, 36m {sur les trois dernières années} other {sur douze mois}}, {nom} est un marché étroit : chaque transaction pèse sur la médiane, et l'estimation d'un bien précis demande d'élargir la comparaison aux communes voisines.",
+    "volumeFaibleV1": "{nom} n'enregistre que {ventes, plural, one {# vente} other {# ventes}} {fenetre, select, 36m {en trois ans} other {en douze mois}}. Sur un marché aussi peu actif, le prix médian donne un ordre de grandeur, pas un prix de vente : la comparaison avec les biens vendus alentour reste indispensable.",
+    "volumeMoyenV0": "{ventes, number, integer} ventes {fenetre, select, 36m {sur trois ans} other {en douze mois}} : le marché de {nom} est assez actif pour que les médianes au m² soient représentatives, sans gommer les écarts entre quartiers et entre états de bien.",
+    "volumeMoyenV1": "Avec {ventes, number, integer} transactions {fenetre, select, 36m {sur trois ans} other {sur douze mois}}, {nom} offre un volume de ventes suffisant pour lire une tendance fiable, quartier par quartier.",
+    "volumeFortV0": "{ventes, number, integer} ventes {fenetre, select, 36m {sur trois ans} other {en douze mois}} font de {nom} un marché profond : les prix médians y sont solides et les comparables nombreux pour estimer un bien à l'adresse près.",
+    "volumeFortV1": "Marché très actif : {ventes, number, integer} transactions {fenetre, select, 36m {en trois ans} other {en douze mois}} à {nom}. Les médianes reflètent fidèlement le marché, et l'estimateur dispose de nombreux comparables récents.",
+    "longueV0": "Sur plus longue période, le prix médian {type, select, A {des appartements} other {des maisons}} à {nom} {hausse, select, true {a progressé} other {a reculé}} de {evo} entre {depuis} et {jusqua}.",
+    "longueV1": "Entre {depuis} et {jusqua}, {type, select, A {les appartements} other {les maisons}} de {nom} ont {hausse, select, true {gagné} other {perdu}} {evo} au m² en médiane annuelle."
+  },
+  "annees": {
+    "titre": "Prix au m² à {nom} par année",
+    "annee": "Année",
+    "appart": "Appartements",
+    "maison": "Maisons",
+    "cellule": "{prix, number, currency}/m² ({n, plural, one {# vente} other {# ventes}})",
+    "note": "Médiane annuelle du prix au m² des ventes DVF nettoyées (hors ventes multi-logements, dépendances et valeurs aberrantes). Une année avec moins de 5 ventes n'est qu'indicative."
+  },
+  "voisines": {
+    "titre": "{nom} face aux communes voisines",
+    "positionV0": "{position, select, plusCher {Avec {prix, number, currency}/m², {nom} se situe {ecart} au-dessus de la médiane des {n} communes les plus proches ({mediane, number, currency}/m²).} moinsCher {Avec {prix, number, currency}/m², {nom} reste {ecart} en dessous de la médiane des {n} communes les plus proches ({mediane, number, currency}/m²).} other {Avec {prix, number, currency}/m², {nom} est dans la moyenne des {n} communes les plus proches ({mediane, number, currency}/m², écart de {ecart}).}}",
+    "positionV1": "{position, select, plusCher {{type, select, A {Les appartements} other {Les maisons}} s'y vendent plus cher qu'alentour : {prix, number, currency}/m² contre {mediane, number, currency}/m² en médiane dans les {n} communes voisines, soit {ecart} de plus.} moinsCher {{type, select, A {Les appartements} other {Les maisons}} y sont plus abordables qu'alentour : {prix, number, currency}/m² contre {mediane, number, currency}/m² dans les {n} communes voisines, soit {ecart} de moins.} other {{type, select, A {Les appartements} other {Les maisons}} s'y vendent au même niveau qu'alentour : {prix, number, currency}/m² contre {mediane, number, currency}/m² dans les {n} communes voisines.}}",
+    "departement": "{position, select, plusCher {À l'échelle du département ({departement}), la médiane {type, select, A {des appartements} other {des maisons}} est de {prixDept, number, currency}/m² : {nom} est {ecart} plus chère.} moinsCher {À l'échelle du département ({departement}), la médiane {type, select, A {des appartements} other {des maisons}} est de {prixDept, number, currency}/m² : {nom} est {ecart} moins chère.} other {À l'échelle du département ({departement}), la médiane {type, select, A {des appartements} other {des maisons}} est de {prixDept, number, currency}/m² : {nom} est au niveau du département.}}",
+    "commune": "Commune",
+    "distance": "Distance",
+    "prix": "Prix médian ({type, select, A {appartements} other {maisons}})",
+    "ventes": "Ventes (12 mois)",
+    "km": "{km, number, decimal1} km",
+    "ligneDepartement": "Département ({nom})",
+    "pct": "{v, number, decimal1} %"
+  },
+  "bref": {
+    "titre": "{nom} en bref",
+    "population": "{nom} compte {population, number, integer} habitants (INSEE).",
+    "logements": "La commune recense {logements, number, integer} logements, dont {partMaisons} % de maisons et {partAppartements} % d'appartements.",
+    "proprietaires": "{partProprietaires} % des résidences principales sont occupées par leur propriétaire.",
+    "dominante": "{dominante, select, maisons {Un parc dominé par la maison individuelle : les ventes portent surtout sur des maisons avec terrain, dont la valeur dépend fortement de la surface du jardin et de l'état général.} appartements {Un parc essentiellement collectif : l'étage, l'ascenseur, l'exposition et les charges de copropriété font l'essentiel des écarts de prix entre appartements.} other {Un parc mixte, maisons et appartements : les deux marchés coexistent, avec des prix au m² souvent différents selon le type de bien.}}",
+    "tuilePopulation": "Habitants",
+    "tuileProprietaires": "Propriétaires occupants",
+    "tuileMaisons": "Part de maisons",
+    "pct": "{v} %"
+  },
+  "sources": {
+    "titre": "Sources et mise à jour",
+    "dvf": "Prix de vente : base DVF (DGFiP, data.gouv.fr), ventes publiées jusqu'au {derniereVente, date, long}, nettoyées par nos soins (hors ventes multi-logements, dépendances et valeurs aberrantes).",
+    "dvfSansDate": "Prix de vente : base DVF (DGFiP, data.gouv.fr), nettoyée par nos soins (hors ventes multi-logements, dépendances et valeurs aberrantes).",
+    "insee": "Population et logements : INSEE, recensement {millesime} et populations légales (via geo.api.gouv.fr).",
+    "anil": "Loyers : {anil}, millésime {millesime}.",
+    "maj": "Chiffres de la commune mis à jour le {date, date, long}."
   },
   "loyers": {
     "titre": "Quel loyer à {nom} ?",
@@ -59,11 +111,19 @@
     "titre": "Questions fréquentes - {nom}",
     "appart": {
       "question": "Quel est le prix au m² d'un appartement à {nom} en {annee} ?",
-      "reponse": "Le prix médian d'un appartement à {nom} est de {prix, number, currency}/m², d'après les ventes enregistrées dans la base DVF sur les douze derniers mois de données publiées. Selon l'état, l'étage et les prestations, la valeur réelle d'un bien peut s'écarter sensiblement de cette médiane."
+      "reponse": "Le prix médian d'un appartement à {nom} est de {prix, number, currency}/m², d'après les ventes enregistrées dans la base DVF {fenetre, select, 36m {sur les trois dernières années de données publiées} other {sur les douze derniers mois de données publiées}}. Selon l'état, l'étage et les prestations, la valeur réelle d'un bien peut s'écarter sensiblement de cette médiane."
     },
     "maison": {
       "question": "Quel est le prix au m² d'une maison à {nom} ?",
-      "reponse": "Les maisons se vendent en médiane {prix, number, currency}/m² à {nom}. La surface du terrain, l'état général et la localisation précise font varier ce prix de façon importante."
+      "reponse": "Les maisons se vendent en médiane {prix, number, currency}/m² à {nom}{fenetre, select, 36m { (médiane des trois dernières années)} other {}}. La surface du terrain, l'état général et la localisation précise font varier ce prix de façon importante."
+    },
+    "tendance": {
+      "question": "Les prix immobiliers montent-ils à {nom} ?",
+      "reponse": "{tendance, select, hausse {Oui : sur un an, le prix médian au m² progresse de {evo} à {nom}} baisse {Non : sur un an, le prix médian au m² recule de {evo} à {nom}} other {Les prix sont stables à {nom} sur un an ({evo})}}{aLongue, select, true {. {type, select, A {Pour les appartements} other {Pour les maisons}}, l'évolution entre {depuis} et {jusqua} est de {evoLongue}} other {}}. Ces chiffres reflètent les ventes réellement signées, pas les prix affichés dans les annonces."
+    },
+    "voisines": {
+      "question": "{nom} est-elle plus chère que les communes voisines ?",
+      "reponse": "{position, select, plusCher {Oui : {prix, number, currency}/m² en médiane {type, select, A {pour un appartement} other {pour une maison}}, contre {mediane, number, currency}/m² dans les {n} communes les plus proches, soit {ecart} de plus.} moinsCher {Non : {prix, number, currency}/m² en médiane {type, select, A {pour un appartement} other {pour une maison}}, contre {mediane, number, currency}/m² dans les {n} communes les plus proches, soit {ecart} de moins.} other {Les prix sont comparables : {prix, number, currency}/m² en médiane {type, select, A {pour un appartement} other {pour une maison}} à {nom}, contre {mediane, number, currency}/m² dans les {n} communes les plus proches.}} Chaque commune garde ses particularités (centre ancien, lotissements, vue, desserte) qui expliquent ces écarts d'une rue à l'autre."
     },
     "loyer": {
       "question": "Quel loyer pour un appartement à {nom} ?",

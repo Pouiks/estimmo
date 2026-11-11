@@ -2,6 +2,7 @@ import "server-only";
 import { imagesPubliees, type Visuels } from "@/lib/blog/images";
 import { cheminsBlog, languesEnLigne, slugsPublics, type AvecSlug } from "@/lib/blog/traductions";
 import { getCommunesSitemap, getDepartementsResume } from "@/lib/seo/communes";
+import { estIndexable } from "@/lib/seo/indexation";
 import { hrefDepartement, nomDepartement } from "@/lib/seo/departements";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
@@ -73,9 +74,12 @@ export async function sitemapPagesFixes(): Promise<EntreeSitemap[]> {
   return [...statiques, ...pagesDepartements, ...pagesArticles];
 }
 
-/** Communes d'un département (fr et en, hreflang), lastmod réel. */
+/**
+ * Communes d'un département (fr et en, hreflang), lastmod réel. Les pages
+ * sous le seuil de qualité (noindex) n'y figurent pas.
+ */
 export async function sitemapCommunes(departement: string): Promise<EntreeSitemap[]> {
-  const communes = await getCommunesSitemap(departement);
+  const communes = (await getCommunesSitemap(departement)).filter(estIndexable);
   return communes.flatMap((c) =>
     entreesBilingues(`/prix-immobilier/${c.slug}`, {
       lastModified: lastmodCommune(c.contenu_modifie_le),

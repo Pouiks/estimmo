@@ -1,6 +1,6 @@
 {
   "name": "estimmo",
-  "version": "3.0.2",
+  "version": "3.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -15,6 +15,9 @@
     "admin:create": "node --env-file-if-exists=.env.local --import tsx scripts/create-admin.ts",
     "import:dvf": "node --env-file-if-exists=.env.local --import tsx scripts/import-dvf.ts",
     "import:loyers": "node --env-file-if-exists=.env.local --import tsx scripts/import-loyers.ts",
+    "import:geo": "node --env-file-if-exists=.env.local --import tsx scripts/import-geo.ts",
+    "import:insee": "node --env-file-if-exists=.env.local --import tsx scripts/import-insee.ts",
+    "import:dvf:annuel": "node --env-file-if-exists=.env.local --import tsx scripts/import-dvf-annuel.ts",
     "sql": "node --env-file-if-exists=.env.local --import tsx scripts/sql.ts",
     "seed:articles": "node --env-file-if-exists=.env.local --import tsx scripts/seed-articles.ts",
     "import:articles": "node --env-file-if-exists=.env.local --import tsx scripts/import-articles.ts",
@@ -74,6 +77,7 @@
     "csv-parse": "^7.0.1",
     "eslint": "^9",
     "eslint-config-next": "16.4.2",
+    "fflate": "^0.8.3",
     "pg": "^8.22.0",
     "shadcn": "^4.13.0",
     "tailwindcss": "^4",

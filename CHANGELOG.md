@@ -29,6 +29,59 @@ le même commit que l'entrée du changelog.
 Rien pour l'instant. Propositions restantes de l'audit : P6 (contrôle du géocodage),
 P7 (fourchette), P8 (rayon à l'écran), P9 (identifiant de mutation), P10.
 
+## [3.1.0] - 2026-11-12
+
+Phase 2 du chantier SEO : chaque page commune porte des informations propres à la
+commune (plus seulement un gabarit où le nom change). Déployé d'abord sur le **Gard (30)
+et l'Hérault (34)** (`DEPARTEMENTS_PILOTES`, `lib/seo/indexation.ts`), extension à la
+France après validation. Deux actions à lancer par le client, dans l'ordre :
+`pnpm db:migrate` (migration `20261112110000_communes_contexte.sql`), puis les imports
+`pnpm import:geo`, `pnpm import:insee` (France entière, quelques minutes) et
+`pnpm import:dvf:annuel -- --depts 30,34` (millésimes 2021 à 2025, ~10 min). Sans eux
+le site fonctionne : les nouvelles sections n'apparaissent que là où les données existent.
+
+### Ajouté
+- **Données de contexte** (migration `20261112110000`) : tables `communes_geo` (centre
+  et population, geo.api.gouv.fr), `communes_insee` (logements, résidences principales,
+  propriétaires occupants, maisons/appartements, recensement INSEE 2022),
+  `communes_stats_annuelles` (médiane et volume par commune, année civile et type de
+  bien, DVF 2021 → 2025, agrégés à l'import sans stocker les mutations : plan Supabase
+  gratuit préservé), `departements_stats` (médianes départementales) ; colonnes
+  `nb_ventes_36m` et médianes sur 36 mois dans `communes_stats` ; fonction
+  `commune_contexte()` (tout le contexte en un appel, dont les 10 communes les plus
+  proches à vol d'oiseau parmi celles qui ont une page). Scripts `scripts/import-geo.ts`,
+  `scripts/import-insee.ts` (zip INSEE lu avec fflate), `scripts/import-dvf-annuel.ts`
+  (mêmes règles de nettoyage que l'import principal).
+- **Nouvelles sections de la page commune** (`lib/seo/analyse.ts` → faits,
+  `lib/seo/textes.ts` → phrases) : « Le marché en chiffres » (volume de ventes faible /
+  moyen / fort, tendance sur un an, évolution longue depuis la première année fiable) ;
+  « Prix au m² par année » (tableau appartements / maisons, ventes par année) ;
+  « {Commune} face aux communes voisines » (phrase et tableau : 5 communes les plus
+  proches avec distance, prix médian du type de bien dominant et ventes, ligne du
+  département ; plus chère / moins chère / dans la moyenne avec l'écart en %) ;
+  « {Commune} en bref » (habitants, propriétaires occupants, part de maisons, parc
+  dominé par la maison, l'appartement ou mixte) ; « Sources et mise à jour » (date de la
+  dernière vente DVF publiée, millésime INSEE et ANIL, date de mise à jour des chiffres).
+  Toutes les phrases dépendent des chiffres et existent en deux tournures choisies par
+  commune ; 3 variantes d'introduction × 2 de tendance × 2 de volume × 2 de comparaison.
+- **FAQ de 3 à 5 questions chiffrées** : prix appartement, prix maison, « Les prix
+  montent-ils ? » (évolution 1 an et longue), « Plus chère que les voisines ? », loyer,
+  comment estimer ; balisage FAQPage identique au visible. `Dataset` JSON-LD porte
+  `dateModified`.
+- **Seuil de qualité** (`regimeCommune`) : dans les départements pilotes, une page est
+  indexable si elle a un prix médian et au moins 10 ventes sur 12 mois, ou au moins 30
+  ventes sur 36 mois (elle affiche alors les médianes sur 3 ans, étiquetées comme
+  telles, intro, tuiles et FAQ adaptées). Sinon : `noindex, follow`, hors sitemap,
+  toujours accessible et liée depuis la page département. Gard : 142 communes sur 350
+  indexables par la règle 12 mois, Hérault : 168 sur 341 ; la règle 36 mois en ajoute
+  (chiffre exact après `pnpm db:migrate`). Hors pilotes : rien ne change.
+- 51 tests unitaires (analyse, seuil, textes conditionnels, FAQ, médiane des scripts).
+
+### Modifié
+- Les textes d'origine (intro, tuiles, FAQ prix) disent explicitement la fenêtre
+  (12 mois ou 3 ans) ; les pages sans contexte importé gardent leur rendu précédent.
+- `GABARIT_COMMUNE_MODIFIE_LE` avancé au 12/11/2026 12:00 (lastmod des sitemaps).
+
 ## [3.0.2] - 2026-11-12
 
 Phase 1 du chantier SEO des pages communes (audit du 11/11/2026 : pages indexées puis

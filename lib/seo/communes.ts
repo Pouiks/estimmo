@@ -20,6 +20,10 @@ export interface CommuneStats {
   updated_at: string;
   /** Dernière fois que les chiffres de cette commune ont changé (lastmod). */
   contenu_modifie_le: string;
+  /** Agrégats sur 36 mois (migration 20261112110000 ; absents avant). */
+  nb_ventes_36m?: number | null;
+  prix_m2_median_36m_appartement?: number | null;
+  prix_m2_median_36m_maison?: number | null;
 }
 
 export interface LoyersCommuneRow {
@@ -175,39 +179,59 @@ export async function getDepartementsResume(): Promise<DepartementResume[]> {
   }));
 }
 
+export type CommuneSitemap = Pick<
+  CommuneStats,
+  | "slug"
+  | "contenu_modifie_le"
+  | "departement"
+  | "nb_ventes_12m"
+  | "nb_ventes_36m"
+  | "prix_m2_median_appartement"
+  | "prix_m2_median_maison"
+  | "prix_m2_median_36m_appartement"
+  | "prix_m2_median_36m_maison"
+>;
+
+const COLONNES_SITEMAP =
+  "slug, contenu_modifie_le, departement, nb_ventes_12m, nb_ventes_36m, " +
+  "prix_m2_median_appartement, prix_m2_median_maison, " +
+  "prix_m2_median_36m_appartement, prix_m2_median_36m_maison";
+const COLONNES_SITEMAP_REPLI =
+  "slug, updated_at, departement, nb_ventes_12m, prix_m2_median_appartement, prix_m2_median_maison";
+
 /**
- * Communes d'un département pour le sitemap : slug et date de modification
- * réelle. Tant que la migration 20261112100000 n'est pas appliquée (colonne
- * absente), on retombe sur updated_at pour ne pas vider le sitemap.
+ * Communes d'un département pour le sitemap : slug, date de modification
+ * réelle et chiffres nécessaires au seuil de qualité (lib/seo/indexation.ts).
+ * Tant que les migrations 20261112* ne sont pas appliquées (colonnes
+ * absentes), on retombe sur les colonnes d'origine pour ne pas vider le sitemap.
  */
-export async function getCommunesSitemap(
-  departement: string
-): Promise<{ slug: string; contenu_modifie_le: string }[]> {
+export async function getCommunesSitemap(departement: string): Promise<CommuneSitemap[]> {
   const supabase = createAdminClient();
   const pageSize = 1000;
-  const all: { slug: string; contenu_modifie_le: string }[] = [];
-  let colonne: "contenu_modifie_le" | "updated_at" = "contenu_modifie_le";
+  const all: CommuneSitemap[] = [];
+  let colonnes = COLONNES_SITEMAP;
   for (let from = 0; ; from += pageSize) {
-    let { data, error } = await supabase
-      .from("communes_stats")
-      .select(`slug, ${colonne}`)
-      .eq("departement", departement)
-      .order("slug")
-      .range(from, from + pageSize - 1);
-    if (error && colonne === "contenu_modifie_le") {
-      colonne = "updated_at";
-      ({ data, error } = await supabase
+    const requete = () =>
+      supabase
         .from("communes_stats")
-        .select(`slug, ${colonne}`)
+        .select(colonnes)
         .eq("departement", departement)
         .order("slug")
-        .range(from, from + pageSize - 1));
+        .range(from, from + pageSize - 1);
+    let { data, error } = await requete();
+    if (error && colonnes === COLONNES_SITEMAP) {
+      colonnes = COLONNES_SITEMAP_REPLI;
+      ({ data, error } = await requete());
     }
     if (error || !data || data.length === 0) break;
-    for (const ligne of data as unknown as Record<string, string>[]) {
-      all.push({ slug: ligne.slug, contenu_modifie_le: ligne[colonne] });
+    for (const ligne of data as unknown as Record<string, string | number | null>[]) {
+      all.push({
+        ...(ligne as unknown as CommuneSitemap),
+        contenu_modifie_le: String(ligne.contenu_modifie_le ?? ligne.updated_at),
+      });
     }
     if (data.length < pageSize) break;
   }
   return all;
 }
+
