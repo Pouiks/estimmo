@@ -91,11 +91,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : t("meta.descriptionLoyers", { nom });
   const chemin = `/prix-immobilier/${slug}`;
 
+  // Seule la version française est indexable : la version anglaise (copie
+  // traduite) est en noindex, follow et hors sitemap pour concentrer le crawl ;
+  // sans hreflang sur ces pages (un hreflang vers une page noindex est ignoré).
+  const indexable = regime.indexable && locale === DEFAULT_LOCALE;
+
   return {
     // Title absolu (sans « | ESTIMMO ») : format imposé, ~60 caractères.
     title: { absolute: title },
     description,
-    alternates: alternatesPour(chemin, locale),
+    alternates: alternatesPour(chemin, locale, [DEFAULT_LOCALE]),
     openGraph: openGraphPour({
       locale,
       cheminFr: chemin,
@@ -105,7 +110,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }),
     // Seuil de qualité : trop peu de ventes pour des chiffres fiables →
     // page accessible et liée, mais hors index et hors sitemap.
-    robots: regime.indexable ? undefined : { index: false, follow: true },
+    robots: indexable ? undefined : { index: false, follow: true },
   };
 }
 

@@ -29,6 +29,21 @@ le même commit que l'entrée du changelog.
 Rien pour l'instant. Propositions restantes de l'audit : P6 (contrôle du géocodage),
 P7 (fourchette), P8 (rayon à l'écran), P9 (identifiant de mutation), P10.
 
+## [3.3.0] - 2026-11-12
+
+Phase 4 du chantier SEO : version anglaise des pages communes.
+
+### Modifié
+- **Pages communes `/en/prix-immobilier/…` en `noindex, follow`** et retirées des sitemaps
+  (`communes-<dept>.xml` ne liste plus que les URLs françaises). Elles restent
+  accessibles (sélecteur de langue, liens) et transmettent leurs liens. Motif : copie
+  traduite de la page française, elles ressortaient sur des requêtes françaises quand la
+  version française sortait de l'index, et diluaient le crawl sur 69 832 URLs.
+- **Hreflang retirés des pages communes** (français comme anglais) : un hreflang vers une
+  page noindex est ignoré par Google et rend les signaux incohérents ; chaque page commune
+  garde un canonical auto-référent. L'accueil, les pages principales, les départements et
+  le blog restent indexables en anglais avec leurs hreflang fr/en/x-default.
+
 ## [3.2.0] - 2026-11-12
 
 Phase 3 du chantier SEO : optimisation on-page des pages communes.

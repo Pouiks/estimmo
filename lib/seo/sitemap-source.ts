@@ -75,13 +75,14 @@ export async function sitemapPagesFixes(): Promise<EntreeSitemap[]> {
 }
 
 /**
- * Communes d'un département (fr et en, hreflang), lastmod réel. Les pages
- * sous le seuil de qualité (noindex) n'y figurent pas.
+ * Communes d'un département, version française seulement (la version
+ * anglaise est noindex), lastmod réel. Les pages sous le seuil de qualité
+ * (noindex) n'y figurent pas.
  */
 export async function sitemapCommunes(departement: string): Promise<EntreeSitemap[]> {
   const communes = (await getCommunesSitemap(departement)).filter(estIndexable);
-  return communes.flatMap((c) =>
-    entreesBilingues(`/prix-immobilier/${c.slug}`, {
+  return communes.map((c) =>
+    entreeMonolingue(`/prix-immobilier/${c.slug}`, "fr", {
       lastModified: lastmodCommune(c.contenu_modifie_le),
       changeFrequency: "weekly",
       priority: 0.7,
