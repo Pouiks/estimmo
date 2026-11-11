@@ -65,7 +65,13 @@ function envoyerLot(lot: LotEvenements) {
   }
 }
 
-export function EstimationForm() {
+export interface CommuneFormulaire {
+  codeInsee: string;
+  nom: string;
+}
+
+/** `commune` (pages communes) : la recherche d'adresse est limitée à cette commune. */
+export function EstimationForm({ commune }: { commune?: CommuneFormulaire } = {}) {
   const t = useTranslations("estimation");
   const tRacine = useTranslations();
   const locale = useLocale();
@@ -413,7 +419,7 @@ export function EstimationForm() {
               noValidate
             >
               {step === 1 && (
-                <StepProjet state={state} setField={setField} errors={errors} />
+                <StepProjet state={state} setField={setField} errors={errors} commune={commune} />
               )}
               {step === 2 && (
                 <StepBien state={state} setField={setField} errors={errors} />

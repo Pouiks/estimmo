@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getFormatter, getTranslations } from "next-intl/server";
-import { ArrowRight, Building2, Home, LineChart, Receipt, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Building2, Home, LineChart, Receipt, Users } from "lucide-react";
+import { EstimationForm } from "@/components/estimation/estimation-form";
+import { TunnelProvider } from "@/components/estimation/tunnel-provider";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -33,7 +34,7 @@ import {
 import { getContexteCommune } from "@/lib/seo/contexte";
 import { hrefDepartement, nomDepartement } from "@/lib/seo/departements";
 import { regimeCommune } from "@/lib/seo/indexation";
-import { jsonLdFilAriane } from "@/lib/seo/json-ld";
+import { jsonLdAgentImmobilier, jsonLdFilAriane } from "@/lib/seo/json-ld";
 import { GABARIT_COMMUNE_MODIFIE_LE } from "@/lib/seo/sitemap";
 import {
   brefTextes,
@@ -91,7 +92,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const chemin = `/prix-immobilier/${slug}`;
 
   return {
-    title,
+    // Title absolu (sans « | ESTIMMO ») : format imposé, ~60 caractères.
+    title: { absolute: title },
     description,
     alternates: alternatesPour(chemin, locale),
     openGraph: openGraphPour({
@@ -112,12 +114,13 @@ export default async function CommunePage({ params }: Props) {
   const stats = await getCommuneBySlug(slug);
   if (!stats) notFound();
 
-  const [loyers, voisinesDept, contexte, t, tc, format] = await Promise.all([
+  const [loyers, voisinesDept, contexte, t, tc, th, format] = await Promise.all([
     getLoyersByInsee(stats.code_insee),
     getCommunesVoisines(stats.departement, stats.code_insee),
     getContexteCommune(stats.code_insee),
     getTranslations({ locale, namespace: "commune" }),
     getTranslations({ locale, namespace: "common" }),
+    getTranslations({ locale, namespace: "home" }),
     getFormatter({ locale }),
   ]);
 
@@ -173,6 +176,20 @@ export default async function CommunePage({ params }: Props) {
     ].filter(Boolean),
   };
 
+  // Même fiche RealEstateAgent que l'accueil, zone desservie = la commune.
+  const jsonLdAgent = jsonLdAgentImmobilier({
+    marque: SITE.name,
+    url,
+    telephone: SITE.agent.phoneHref.replace(/^tel:/, ""),
+    email: SITE.agent.email,
+    priceRange: th("jsonLd.priceRange", {
+      exclusif: tc("honoraires.exclusif", { taux: SITE.honoraires.tauxExclusif }),
+    }),
+    agent: { nom: SITE.agent.name, jobTitle: tc("agent.jobTitle") },
+    service: th("jsonLd.service"),
+    zone: { type: "City", nom },
+  });
+
   const jsonLdFaq = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -196,7 +213,7 @@ export default async function CommunePage({ params }: Props) {
 
   return (
     <>
-      <JsonLd data={[jsonLdDataset, jsonLdFaq, jsonLdBreadcrumb]} />
+      <JsonLd data={[jsonLdDataset, jsonLdFaq, jsonLdBreadcrumb, jsonLdAgent]} />
 
       <div className="mx-auto max-w-4xl px-4 py-10 sm:py-14">
         <nav className="text-sm text-muted-foreground">
@@ -221,14 +238,29 @@ export default async function CommunePage({ params }: Props) {
           › <span className="text-foreground">{nom}</span>
         </nav>
 
-        <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
-          {t("h1", { nom })}{" "}
-          <span className="text-muted-foreground">({cp})</span>
-        </h1>
-
-        <p className="mt-4 text-lg text-muted-foreground">
-          {introCommune(stats, prix, t)}
-        </p>
+        <div
+          id="estimation"
+          className="mt-4 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,460px)] lg:gap-10"
+        >
+          <div>
+            <h1 className="text-2xl font-bold leading-tight tracking-tight sm:text-3xl lg:text-4xl">
+              {t("h1", { nom, cp, annee: String(annee) })}
+            </h1>
+            <p className="mt-4 hidden text-lg text-muted-foreground lg:block">
+              {introCommune(stats, prix, t)}
+            </p>
+          </div>
+          {/* Formulaire d'estimation : visible sans défilement, sur mobile
+              (juste sous le H1) comme sur ordinateur (colonne de droite). */}
+          <div className="dcx w-full" style={{ color: "#0C1F1C" }}>
+            <TunnelProvider>
+              <EstimationForm commune={{ codeInsee: stats.code_insee, nom }} />
+            </TunnelProvider>
+          </div>
+          <p className="text-lg text-muted-foreground lg:hidden">
+            {introCommune(stats, prix, t)}
+          </p>
+        </div>
 
         {/* Chiffres clés */}
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -511,9 +543,12 @@ export default async function CommunePage({ params }: Props) {
                 {t("cta.texte")}
               </p>
             </div>
-            <Button size="lg" render={<Link href="/estimation" />}>
-              {t("cta.bouton")} <ArrowRight className="size-4" />
-            </Button>
+            <a
+              href="#estimation"
+              className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground shadow-xs hover:bg-primary/90"
+            >
+              {t("cta.bouton")}
+            </a>
           </CardContent>
         </Card>
 

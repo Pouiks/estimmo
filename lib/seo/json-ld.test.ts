@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { jsonLdFilAriane, serialiserJsonLd } from "./json-ld";
+import { jsonLdAgentImmobilier, jsonLdFilAriane, serialiserJsonLd } from "./json-ld";
 
 describe("serialiserJsonLd", () => {
   it("échappe « < » : une valeur ne peut pas fermer la balise <script>", () => {
@@ -39,6 +39,36 @@ describe("jsonLdFilAriane", () => {
       position: 3,
       name: "Article",
       item: "https://x.test/blog/a",
+    });
+  });
+});
+
+describe("jsonLdAgentImmobilier", () => {
+  const base = {
+    marque: "ESTIMMO",
+    url: "https://x.test/prix-immobilier/nice-06000",
+    telephone: "+33611118469",
+    email: "a@b.fr",
+    priceRange: "Honoraires à partir de 3 % en mandat exclusif",
+    agent: { nom: "Carenza Brown", jobTitle: "Conseillère immobilière" },
+    service: "Estimation immobilière gratuite en ligne",
+  };
+
+  it("RealEstateAgent complet, zone France par défaut", () => {
+    const agent = jsonLdAgentImmobilier(base);
+    expect(agent["@type"]).toBe("RealEstateAgent");
+    expect(agent.areaServed).toEqual({ "@type": "Country", name: "France" });
+    expect(agent.employee).toEqual({ "@type": "Person", name: "Carenza Brown", jobTitle: "Conseillère immobilière" });
+    expect(agent.makesOffer.itemOffered.name).toBe(base.service);
+    expect(agent.makesOffer.price).toBe("0");
+    // Champs exigés par Google pour un LocalBusiness : name, address ou url, telephone.
+    for (const cle of ["name", "url", "telephone", "priceRange"]) expect(agent).toHaveProperty(cle);
+  });
+
+  it("zone : une commune (pages communes)", () => {
+    expect(jsonLdAgentImmobilier({ ...base, zone: { type: "City", nom: "Nice" } }).areaServed).toEqual({
+      "@type": "City",
+      name: "Nice",
     });
   });
 });

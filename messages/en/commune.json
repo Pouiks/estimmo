@@ -1,6 +1,6 @@
 {
   "meta": {
-    "titre": "Property prices in {nom} ({cp}) - Price per m² {annee}",
+    "titre": "Property valuation {nom} ({cp}): price per m² {annee}",
     "descriptionVentes": "Median price in {nom}: {prix}, based on actual sales (DVF data). Free, instant online valuation of your property.",
     "descriptionLoyers": "Property market in {nom}: ANIL reference rents and a free valuation of your property by a local advisor.",
     "introuvable": "Town not found"
@@ -15,7 +15,7 @@
     "accueil": "Home",
     "prix": "Property prices"
   },
-  "h1": "Property prices in {nom}",
+  "h1": "Property valuation {nom} ({cp}): price per m² {annee}",
   "intro": {
     "sansVentes": "In {nom}, property transactions are not published in the DVF database (Livre foncier regime in Alsace-Moselle, or too few sales). You will find the observed reference rents below, and our team provides a free personalised valuation of your property on request.",
     "v0": "The property market in {nom} shows a median price of {prix}, calculated from sales actually recorded by the French tax authorities (DVF database). {fenetre, select, 36m {Over the last three years of published data} other {Over the last twelve months of published data}}, {ventes, plural, =0 {no sales were analysed} one {# sale was analysed} other {# sales were analysed}} in the town.",
@@ -103,8 +103,8 @@
     "note": "{anil} ({millesime} edition). Advertised rents including charges."
   },
   "cta": {
-    "titre": "How much is your property worth in {nom}?",
-    "texte": "Free valuation in 2 minutes, based on actual sales in your neighbourhood - instant result.",
+    "titre": "Value your property in {nom} in 2 minutes",
+    "texte": "Free and instant: your property is compared with actual sales in your neighbourhood, then your local advisor refines the valuation if you wish.",
     "bouton": "Value my property"
   },
   "faq": {

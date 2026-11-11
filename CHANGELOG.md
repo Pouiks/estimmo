@@ -29,6 +29,29 @@ le même commit que l'entrée du changelog.
 Rien pour l'instant. Propositions restantes de l'audit : P6 (contrôle du géocodage),
 P7 (fourchette), P8 (rayon à l'écran), P9 (identifiant de mutation), P10.
 
+## [3.2.0] - 2026-11-12
+
+Phase 3 du chantier SEO : optimisation on-page des pages communes.
+
+### Modifié
+- **Title et H1 au format cible** : « Estimation immobilière {Commune} ({CP}) : prix au
+  m² {année} » (environ 60 caractères, sans le suffixe « | ESTIMMO » sur ces pages pour
+  tenir la longueur), H1 identique ; hiérarchie H2 (sections) / H3 (questions de la
+  FAQ) inchangée. La meta description (prix médian + appel à l'estimation) date de 3.0.2.
+- **Formulaire d'estimation dans le haut de page** : le tunnel complet (le même que
+  l'accueil) est affiché juste sous le H1 sur mobile et en colonne de droite sur
+  ordinateur, donc visible sans défilement. La recherche d'adresse est limitée à la
+  commune de la page (`citycode` IGN, filtre après résolution pour Photon) avec un
+  placeholder « Numéro et rue à {Commune} ». Le bloc d'appel à l'action du bas renvoie
+  au formulaire (`#estimation`) au lieu de la page /estimation.
+- **JSON-LD** : fiche `RealEstateAgent` (marque, conseillère, service d'estimation
+  gratuit, zone desservie = la commune) ajoutée sur chaque page commune, construite par
+  le même code que l'accueil (`jsonLdAgentImmobilier`, testé) ; `BreadcrumbList`,
+  `FAQPage` et `Dataset` conservés. Validé : JSON bien formé (`serialiserJsonLd`),
+  types et propriétés schema.org attendus par Google (name, url, telephone, priceRange,
+  mainEntity Question/Answer, itemListElement).
+- Texte du bloc d'appel à l'action réécrit (gratuit, immédiat, conseillère locale).
+
 ## [3.1.0] - 2026-11-12
 
 Phase 2 du chantier SEO : chaque page commune porte des informations propres à la

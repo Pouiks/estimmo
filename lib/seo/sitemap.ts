@@ -26,7 +26,7 @@ type Extra = Pick<EntreeSitemap, "lastModified" | "changeFrequency" | "priority"
  * cette date et la date de modification de ses chiffres : quand le gabarit
  * change, toutes les pages ont réellement changé.
  */
-export const GABARIT_COMMUNE_MODIFIE_LE = new Date("2026-11-12T12:00:00Z");
+export const GABARIT_COMMUNE_MODIFIE_LE = new Date("2026-11-12T18:00:00Z");
 
 /** lastmod d'une page commune. */
 export function lastmodCommune(contenuModifieLe: string | Date): Date {

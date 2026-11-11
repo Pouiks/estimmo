@@ -16,7 +16,12 @@ import type { StepProps } from "./form-state";
 
 const HORIZONS = ["en_vente", "moins_3_mois", "3_6_mois", "curiosite"] as const;
 
-export function StepProjet({ state, setField, errors }: StepProps) {
+export function StepProjet({
+  state,
+  setField,
+  errors,
+  commune,
+}: StepProps & { commune?: { codeInsee: string; nom: string } }) {
   const t = useTranslations("estimation.projet");
   const tl = useTranslations("labels");
 
@@ -30,6 +35,7 @@ export function StepProjet({ state, setField, errors }: StepProps) {
       <AddressAutocomplete
         value={state.adresse}
         onChange={(adresse) => setField("adresse", adresse)}
+        commune={commune}
       />
       {state.adresse ? (
         <QuartierStrip

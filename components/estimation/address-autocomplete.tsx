@@ -27,7 +27,7 @@ export function AddressAutocomplete({
 }: {
   value: Adresse | null;
   onChange: (adresse: Adresse | null) => void;
-  commune?: { codeInsee: string };
+  commune?: { codeInsee: string; nom: string };
 }) {
   const t = useTranslations("estimation.adresse");
   const [query, setQuery] = useState("");
@@ -161,7 +161,7 @@ export function AddressAutocomplete({
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onFocus={() => suggestions.length > 0 && setOpen(true)}
-        placeholder={t("placeholder")}
+        placeholder={commune ? t("placeholderCommune", { nom: commune.nom }) : t("placeholder")}
         autoComplete="off"
         inputMode="text"
         aria-label={t("libelle")}

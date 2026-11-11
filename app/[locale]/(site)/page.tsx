@@ -18,6 +18,7 @@ import { JsonLd } from "@/components/site/json-ld";
 import { SITE } from "@/lib/config";
 import { alternatesPour, inLanguage, openGraphPour } from "@/lib/i18n/seo";
 import { localeDeParams } from "@/lib/i18n/server";
+import { jsonLdAgentImmobilier } from "@/lib/seo/json-ld";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -60,30 +61,15 @@ export default async function HomePage({ params }: Props) {
   const exclusif = tc("honoraires.exclusif", { taux: SITE.honoraires.tauxExclusif });
   const simple = tc("honoraires.simple", { taux: SITE.honoraires.tauxSimple });
 
-  const jsonLdAgent = {
-    "@context": "https://schema.org",
-    "@type": "RealEstateAgent",
-    name: SITE.name,
+  const jsonLdAgent = jsonLdAgentImmobilier({
+    marque: SITE.name,
     url: SITE.url,
     telephone: SITE.agent.phoneHref.replace(/^tel:/, ""),
     email: SITE.agent.email,
     priceRange: t("jsonLd.priceRange", { exclusif }),
-    areaServed: { "@type": "Country", name: "France" },
-    employee: {
-      "@type": "Person",
-      name: SITE.agent.name,
-      jobTitle: tc("agent.jobTitle"),
-    },
-    makesOffer: {
-      "@type": "Offer",
-      itemOffered: {
-        "@type": "Service",
-        name: t("jsonLd.service"),
-      },
-      price: "0",
-      priceCurrency: "EUR",
-    },
-  };
+    agent: { nom: SITE.agent.name, jobTitle: tc("agent.jobTitle") },
+    service: t("jsonLd.service"),
+  });
 
   const jsonLdFaq = {
     "@context": "https://schema.org",

@@ -37,6 +37,7 @@
   },
   "adresse": {
     "placeholder": "12 rue des Lilas, 75011 Paris",
+    "placeholderCommune": "Street number and street in {nom}",
     "modifier": "Change the address",
     "aucune": "No address found - add the street number and the town.",
     "indisponible": "The address service is temporarily unavailable. Try again shortly or give us a call.",

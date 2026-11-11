@@ -1,6 +1,6 @@
 {
   "meta": {
-    "titre": "Prix immobilier à {nom} ({cp}) - Prix au m² {annee}",
+    "titre": "Estimation immobilière {nom} ({cp}) : prix au m² {annee}",
     "descriptionVentes": "Prix médian à {nom} : {prix}, d'après les ventes réelles (base DVF). Estimation gratuite et immédiate de votre bien en ligne.",
     "descriptionLoyers": "Marché immobilier de {nom} : loyers de référence ANIL et estimation gratuite de votre bien par une conseillère locale.",
     "introuvable": "Commune introuvable"
@@ -15,7 +15,7 @@
     "accueil": "Accueil",
     "prix": "Prix immobilier"
   },
-  "h1": "Prix immobilier à {nom}",
+  "h1": "Estimation immobilière {nom} ({cp}) : prix au m² {annee}",
   "intro": {
     "sansVentes": "À {nom}, les transactions immobilières ne sont pas publiées dans la base DVF (régime du Livre foncier en Alsace-Moselle, ou volume de ventes insuffisant). Vous trouverez ci-dessous les loyers de référence observés, et notre équipe réalise gratuitement une estimation personnalisée de votre bien sur simple demande.",
     "v0": "Le marché immobilier de {nom} affiche un prix médian de {prix}, calculé à partir des ventes réellement enregistrées par les services de l'État (base DVF). {fenetre, select, 36m {Sur les trois dernières années de données publiées} other {Sur les douze derniers mois de données publiées}}, {ventes, plural, =0 {aucune vente n'a été analysée} one {# vente a été analysée} other {# ventes ont été analysées}} sur la commune.",
@@ -103,8 +103,8 @@
     "note": "{anil} (millésime {millesime}). Loyers d'annonce charges comprises."
   },
   "cta": {
-    "titre": "Combien vaut votre bien à {nom} ?",
-    "texte": "Estimation gratuite en 2 minutes, basée sur les ventes réelles de votre quartier - résultat immédiat.",
+    "titre": "Estimez votre bien à {nom} en 2 minutes",
+    "texte": "Gratuit et immédiat : votre bien est comparé aux ventes réelles de votre quartier, puis votre conseillère locale affine l'estimation si vous le souhaitez.",
     "bouton": "Estimer mon bien"
   },
   "faq": {
