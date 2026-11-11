@@ -7,6 +7,7 @@ import type {
   EstimationVente,
 } from "@/lib/estimation/types";
 import type { EstimationFormState } from "./form-state";
+import { fourchetteFraisNotaire } from "@/lib/estimation/frais-notaire";
 import { C } from "./design";
 import { QuartierBlock } from "./quartier-block";
 import { SITE } from "@/lib/config";
@@ -240,6 +241,11 @@ export function ResultatEstimation({
   const confiance = vente
     ? tl(`confiance.${est.confiance}`)
     : tl("confiance.indicative");
+  // Frais d'acquisition indicatifs (vente seulement) : hors prix estimé, à la
+  // charge de l'acquéreur, fourchette couvrante 4,5-5 % de droits + barème.
+  const fraisNotaire = vente
+    ? fourchetteFraisNotaire(est.fourchetteBasse, est.fourchetteHaute)
+    : null;
 
   return (
     <div className="dcx-step" style={{ textAlign: "center", paddingTop: 6 }}>
@@ -327,6 +333,34 @@ export function ResultatEstimation({
         })}
       </p>
 
+      {fraisNotaire && (
+        <div
+          style={{
+            margin: "0 0 22px",
+            padding: "12px 16px",
+            borderRadius: 12,
+            background: C.cardBg,
+            border: `1px solid ${C.borderSoft}`,
+            textAlign: "left",
+            lineHeight: 1.6,
+          }}
+        >
+          <div style={{ fontSize: 13, color: C.muted }}>
+            <b style={{ color: C.label }}>{t("notaire.titre")}</b>{" "}
+            <b style={{ color: C.ink }}>
+              {t("notaire.montant", {
+                bas: euro(fraisNotaire.bas),
+                haut: euro(fraisNotaire.haut),
+              })}
+            </b>
+            , {t("notaire.part", { pctBas: fraisNotaire.pctBas, pctHaut: fraisNotaire.pctHaut })}.
+          </div>
+          <p style={{ margin: "6px 0 0", fontSize: 11, color: C.faint2 }}>
+            {t("notaire.note")}
+          </p>
+        </div>
+      )}
+
       <div
         style={{
           display: "grid",
@@ -395,9 +429,17 @@ export function ResultatEstimation({
       <CarteConseillere vente={vente} />
 
       <p style={{ margin: "14px 0 0", fontSize: 11.5, color: C.faint2 }}>
-        {vente
-          ? t("sourceVente", { n: est.nbComparables, dvf: tc("mentions.dvf") })
-          : t("sourceLocation", { anil: tc("mentions.anil") })}
+        {!vente
+          ? t("sourceLocation", { anil: tc("mentions.anil") })
+          : est.ventesDu && est.ventesAu
+            ? t("sourceVenteFenetre", {
+                n: est.nbComparables,
+                du: new Date(`${est.ventesDu}T12:00:00Z`),
+                au: new Date(`${est.ventesAu}T12:00:00Z`),
+                ecartes: est.nbEcartes ?? 0,
+                dvf: tc("mentions.dvf"),
+              })
+            : t("sourceVente", { n: est.nbComparables, dvf: tc("mentions.dvf") })}
       </p>
 
       <RestartLink onRestart={onRestart} />

@@ -60,7 +60,13 @@ export interface EstimationVente {
   /** Médiane pondérée €/m² de la zone, AVANT ajustements. */
   prixM2Zone: number;
   prixM2Ajuste: number;
+  /** Comparables utilisés après écrêtage des prix atypiques. */
   nbComparables: number;
+  /** Ventes du palier écartées comme atypiques (règle de Tukey, dès 12 ventes). */
+  nbEcartes: number;
+  /** Fenêtre de dates des ventes interrogées (ISO), null si inconnue. */
+  ventesDu: string | null;
+  ventesAu: string | null;
   /** Rayon du palier retenu (null si palier commune/département). */
   rayonM: number | null;
   palier: Palier["type"];

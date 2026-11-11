@@ -10,9 +10,13 @@
  *  3. ajustements qualitatifs (somme plafonnée ±25 %)
  *  4. fourchette = médiane ± pct fonction de la dispersion (IQR), 5–10 %
  *  5. confiance : haute (≥15 comp., rayon ≤800 m), moyenne (≥8, ≤3 km), faible sinon
+ *
+ * Depuis la 3.0.0 (audit P2/P5) : la fenêtre de 30 mois est ancrée sur la
+ * dernière vente connue (couche data), et les ventes atypiques du palier
+ * retenu sont écartées avant le calcul (règle de Tukey, dès 12 comparables).
  */
 import { calculerAjustement } from "./ajustements";
-import { arrondi, clamp, iqr, moisEntre, weightedMedian } from "./stats";
+import { arrondi, clamp, iqr, moisEntre, quantile, weightedMedian } from "./stats";
 import type {
   CaracteristiquesBien,
   Comparable,
@@ -26,6 +30,10 @@ export const MIN_COMPARABLES = 8;
 export const MOIS_MAX_MUTATION = 30;
 export const RATIO_SURFACE_MIN = 0.7;
 export const RATIO_SURFACE_MAX = 1.3;
+/** Écrêtage des prix atypiques : seulement à partir de ce nombre de comparables. */
+export const SEUIL_ECRETAGE = 12;
+/** Règle de Tukey : hors [Q1 − k·IQR ; Q3 + k·IQR] = atypique. */
+export const FACTEUR_TUKEY = 1.5;
 
 /** Comparables collectés par la couche data (repository) pour chaque palier. */
 export interface ComparablesParPalier {
@@ -33,6 +41,32 @@ export interface ComparablesParPalier {
   rayon3000: Comparable[];
   commune: Comparable[];
   departement: Comparable[];
+  /** Fenêtre de dates interrogée (ISO), pour l'affichage. */
+  fenetre?: { du: string; au: string };
+}
+
+/**
+ * Écarte les ventes au prix/m² atypique (règle de Tukey sur l'écart
+ * interquartile) quand l'échantillon est assez grand pour que les quartiles
+ * aient un sens. En dessous de SEUIL_ECRETAGE, tout est conservé.
+ */
+export function ecarterAtypiques(comparables: Comparable[]): {
+  gardes: Comparable[];
+  ecartes: Comparable[];
+} {
+  if (comparables.length < SEUIL_ECRETAGE) return { gardes: comparables, ecartes: [] };
+  const prix = comparables.map((c) => c.prix_m2);
+  const q1 = quantile(prix, 0.25);
+  const q3 = quantile(prix, 0.75);
+  const marge = FACTEUR_TUKEY * (q3 - q1);
+  const min = q1 - marge;
+  const max = q3 + marge;
+  const gardes: Comparable[] = [];
+  const ecartes: Comparable[] = [];
+  for (const c of comparables) {
+    (c.prix_m2 < min || c.prix_m2 > max ? ecartes : gardes).push(c);
+  }
+  return { gardes, ecartes };
 }
 
 export function choisirPalier(
@@ -84,7 +118,8 @@ export function estimerVente(
   const selection = choisirPalier(comparables);
   if (!selection) return null;
 
-  const { retenus, palier } = selection;
+  const { palier } = selection;
+  const { gardes: retenus, ecartes } = ecarterAtypiques(selection.retenus);
 
   const prixM2Zone = weightedMedian(
     retenus.map((c) => ({
@@ -112,6 +147,9 @@ export function estimerVente(
     prixM2Zone: Math.round(prixM2Zone),
     prixM2Ajuste: Math.round(prixM2Ajuste),
     nbComparables: retenus.length,
+    nbEcartes: ecartes.length,
+    ventesDu: comparables.fenetre?.du ?? null,
+    ventesAu: comparables.fenetre?.au ?? null,
     rayonM: palier.type === "rayon" ? palier.rayonM : null,
     palier: palier.type,
     confiance: confiancePour(retenus.length, palier),

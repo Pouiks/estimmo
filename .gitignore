@@ -43,3 +43,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# audit du calcul (données téléchargées et sorties générées)
+/audit/data
+/audit/sorties

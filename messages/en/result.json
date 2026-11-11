@@ -29,7 +29,14 @@
     "texte": "This estimate relies on the closest sales of similar properties in your department: it gives an order of magnitude, not a local market price. {agent} offers a free, no-obligation on-site appraisal to refine it."
   },
   "sourceVente": "Based on {n, plural, one {# comparable sale} other {# comparable sales}}. {dvf}.",
+  "sourceVenteFenetre": "Based on {n, plural, one {# comparable sale recorded} other {# comparable sales recorded}} between {du, date, short} and {au, date, short}{ecartes, plural, =0 {} one { (# sale with an atypical price set aside)} other { (# sales with atypical prices set aside)}}. {dvf}.",
   "sourceLocation": "{anil}.",
+  "notaire": {
+    "titre": "Estimated notary fees*",
+    "montant": "between {bas} and {haut}",
+    "part": "about {pctBas} to {pctHaut}% of the price, paid by the buyer, not included in the valuation above",
+    "note": "* Indicative estimate of the purchase costs for an existing property, calculated on the range above: transfer duties (4.5 to 5% depending on the department), notary fees under the current statutory scale, land registry contribution and disbursements. The actual amount depends on the final price, the department, any furniture included and the file: only the notary can set it. This information is not contractually binding."
+  },
   "carte": {
     "titre": "Refine your price with {agent}",
     "texte": "A call back for a precise appraisal, with no obligation.",

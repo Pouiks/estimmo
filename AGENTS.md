@@ -40,6 +40,13 @@ Vitest · pnpm. Déploiement Vercel.
   `dvf_mutations` est au format compact (lat/lon en micro-degrés, prix_m2 real,
   type 'A'/'M', pas de PostGIS stocké) : ~92 octets/ligne, ~210 Mo France entière
   → tient dans le plan Supabase **gratuit** (500 Mo). Moteur et signatures SQL inchangés
+- **Nettoyage DVF 2.0.0 (11/11/2026, après audit `audit/RAPPORT-estimation-vente.md`)** :
+  deux logements identiques à lots distincts ou deux lignes strictement identiques sur la
+  même parcelle = multi-logements (exclue) ; mutation exclue à partir de 2 dépendances
+  (`dependances`) ; appartement : surface Carrez du lot retenue si ratio 0,5-1,5 avec la
+  surface réelle (`surface_source`). Rejoue : `audit/reproduire-estimation.ts` ; mesure
+  avant/après en base : `audit/comparables-base.ts`. Toute modification du calcul =
+  entrée **majeure** dans `CHANGELOG.md` (règles en tête du fichier) + `package.json`
 - Email : Resend (pas Brevo - Brevo bloquait l'envoi des comptes gratuits). `lib/email`, `EMAIL_FROM` sur domaine vérifié estimmo-direct.com. Sans clé en dev → simulation console
 - CRM sans clé en dev → file en pending
 - Départements sans DVF : 57, 67, 68, 976 (le brief inversait 67/68) → fallback estimation manuelle
@@ -50,7 +57,7 @@ Vitest · pnpm. Déploiement Vercel.
 - [x] Phase 1 - Socle (Next 16, migrations, auth admin)
 - [x] Phase 1bis - Supabase cloud (eu-west-1, pooler aws-0) : migrations + admin + imports
 - [x] 16/10/2026 - Nouveau projet Supabase gratuit (mppdrdqykslyflmejzbt) : 6 migrations, ANIL 2025, DVF compact
-- [x] Phase 2 - Imports : DVF France 2023-2025 (2 290 975 ventes, ~650 Mo), ANIL 2025 (34 900 communes)
+- [x] Phase 2 - Imports : DVF France 2023-2025 (1 721 982 ventes depuis le réimport 2.0.0 du 11/11/2026 ; 2 290 975 avant), ANIL 2025 (34 900 communes)
 - [x] Phase 3 - Moteur estimation (64 tests Vitest)
 - [x] Phase 4 - Formulaire 4 étapes + API leads + résultat (E2E : Nice vente/location, Strasbourg→manuelle)
 - [x] Phase 5 - Brevo (simulation sans clé) + file CRM + cron (E2E mock : 500→retry backoff→sent, idempotence)
@@ -60,6 +67,7 @@ Vitest · pnpm. Déploiement Vercel.
 - [x] 18/10/2026 - i18n fr/en complet (next-intl) : site, tunnel, SEO, emails, blog ; 170+ tests Vitest
 - [x] 29/10/2026 - Blog : versions FR/EN dans un même article (onglets admin, `articles.traductions`) ; 274 tests
 - [x] 01/11/2026 - Analytics du formulaire : événements par étape et par champ, section `/admin/analytics` ; 319 tests
+- [x] 11/11/2026 - Audit du calcul de vente (`audit/`) + `CHANGELOG.md` (SemVer) ; 2.0.0 = réimport DVF avec lots distincts, ≤ 1 dépendance, surface Carrez ; 2.1.0 = frais de notaire estimés sous le résultat ; 3.0.0 = fenêtre 30 mois ancrée sur la dernière vente connue (`dvf_meta`, migration `20261111120000` appliquée le 11/11) + écrêtage Tukey dès 12 comparables ; 337 tests
 
 ## i18n (18/10/2026) - next-intl 4, fr par défaut / en
 - **URLs** : français sans préfixe (URLs historiques inchangées), anglais sous `/en/...`,

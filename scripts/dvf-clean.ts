@@ -1,14 +1,23 @@
 /**
  * Nettoyage DVF - logique pure (testée dans dvf-clean.test.ts).
  *
- * Règles (cf. starter.md) :
+ * Règles (cf. starter.md, révisées en 2.0.0 après l'audit du 11/11/2026) :
  *  - nature_mutation = 'Vente' uniquement (exclut VEFA, échanges, adjudications)
- *  - type_local ∈ {Appartement, Maison} ; les Dépendances (cave, parking…)
- *    vendues avec le logement sont ignorées sans invalider la mutation ;
- *    la présence d'un local industriel/commercial invalide la mutation
+ *  - type_local ∈ {Appartement, Maison} ; la présence d'un local
+ *    industriel/commercial invalide la mutation
+ *  - Dépendances (cave, parking…) : une seule est tolérée (son prix reste dans
+ *    la valeur foncière) ; à partir de deux, la mutation est exclue car le prix
+ *    des annexes fausse trop le prix au m² du logement
  *  - une mutation multi-lignes (même id_mutation) est réduite à UNE ligne si
- *    elle porte sur un seul logement ; les mutations portant sur plusieurs
- *    logements sont exclues (le prix global n'est pas attribuable à un bien)
+ *    elle porte sur un seul logement. Une ligne de logement répétée sur
+ *    plusieurs parcelles ou natures de culture est un doublon ; en revanche
+ *    deux logements identiques (même type, surface, pièces) portant des
+ *    numéros de lot différents, ou deux lignes strictement identiques sur la
+ *    même parcelle, sont deux logements → mutation exclue (le prix global
+ *    n'est pas attribuable à un bien)
+ *  - appartement : si le lot vendu a une surface Carrez plausible (entre 0,5 et
+ *    1,5 fois la surface réelle bâtie), c'est elle qui est retenue comme
+ *    surface, car le prospect saisit sa surface Carrez
  *  - bornes : surface 8–500 m², valeur 5 000 € – 10 M€, prix/m² 200–25 000 €
  *  - coordonnées lat/lon obligatoires
  */
@@ -27,13 +36,27 @@ export interface DvfRawRow {
   nombre_pieces_principales: string;
   longitude: string;
   latitude: string;
+  /** Colonnes geo-dvf utilisées pour distinguer doublons et logements multiples. */
+  numero_disposition?: string;
+  id_parcelle?: string;
+  numero_volume?: string;
+  nature_culture?: string;
+  nature_culture_speciale?: string;
+  lot1_numero?: string;
+  lot1_surface_carrez?: string;
+  lot2_surface_carrez?: string;
+  lot3_surface_carrez?: string;
+  lot4_surface_carrez?: string;
+  lot5_surface_carrez?: string;
 }
 
 export interface CleanMutation {
   date_mutation: string;
   valeur_fonciere: number;
   type_local: "appartement" | "maison";
+  /** Surface retenue : Carrez du lot pour un appartement quand elle est plausible, sinon surface réelle bâtie. */
   surface_reelle_bati: number;
+  surface_source: "carrez" | "reelle";
   nb_pieces: number | null;
   code_insee: string;
   code_departement: string;
@@ -48,6 +71,7 @@ export type ExclusionReason =
   | "local_non_habitation"
   | "aucun_logement"
   | "multi_logements"
+  | "dependances"
   | "valeur"
   | "surface"
   | "prix_m2"
@@ -57,7 +81,15 @@ interface HousingLocal {
   type: "appartement" | "maison";
   surface: number;
   pieces: number | null;
+  /** Somme des surfaces Carrez des lots de la ligne (null si absente). */
+  carrez: number | null;
 }
+
+/** Au-delà d'une dépendance, le prix des annexes fausse le prix au m². */
+export const MAX_DEPENDANCES = 1;
+/** Surface Carrez retenue seulement si elle reste cohérente avec la surface réelle bâtie. */
+export const RATIO_CARREZ_MIN = 0.5;
+export const RATIO_CARREZ_MAX = 1.5;
 
 export interface MutationGroup {
   nature: string;
@@ -69,9 +101,28 @@ export interface MutationGroup {
   nomCommune: string;
   lon: number | null;
   lat: number | null;
+  /** Clés de logement (type|surface|pièces|lot) déjà vues : doublons par parcelle/nature de culture. */
   seenLocalKeys: Set<string>;
+  /** Lignes strictement identiques (disposition, parcelle, volume, nature de culture, logement) déjà vues. */
+  seenLineKeys: Set<string>;
   housing: HousingLocal[];
   hasNonHousingLocal: boolean;
+  nbDependances: number;
+}
+
+function surfaceCarrez(row: DvfRawRow): number | null {
+  let total = 0;
+  for (const value of [
+    row.lot1_surface_carrez,
+    row.lot2_surface_carrez,
+    row.lot3_surface_carrez,
+    row.lot4_surface_carrez,
+    row.lot5_surface_carrez,
+  ]) {
+    const n = toNumber(value ?? "");
+    if (n !== null && n > 0) total += n;
+  }
+  return total > 0 ? total : null;
 }
 
 const TYPE_MAP: Record<string, "appartement" | "maison"> = {
@@ -103,8 +154,10 @@ export function accumulateRow(
       lon: null,
       lat: null,
       seenLocalKeys: new Set(),
+      seenLineKeys: new Set(),
       housing: [],
       hasNonHousingLocal: false,
+      nbDependances: 0,
     };
     groups.set(row.id_mutation, group);
   }
@@ -112,7 +165,11 @@ export function accumulateRow(
   const type = row.type_local;
   if (!type) return; // ligne de parcelle seule (nature_culture) : rien à faire
 
-  if (type === "Dépendance") return; // cave/parking vendus avec : ignorés
+  if (type === "Dépendance") {
+    // Cave/parking vendus avec le logement : comptés, tranchés dans finalizeGroup
+    group.nbDependances++;
+    return;
+  }
 
   const mapped = TYPE_MAP[type];
   if (!mapped) {
@@ -121,16 +178,26 @@ export function accumulateRow(
     return;
   }
 
-  // Une même ligne de local peut être répétée (une par parcelle/lot) :
-  // on dédoublonne par (type, surface, pièces).
-  const key = `${mapped}|${row.surface_reelle_bati}|${row.nombre_pieces_principales}`;
-  if (group.seenLocalKeys.has(key)) return;
+  // Une même ligne de local est répétée quand la mutation couvre plusieurs
+  // parcelles ou natures de culture : même logement, même numéro de lot, mais
+  // parcelle/nature différente → doublon ignoré. Deux lignes strictement
+  // identiques (même parcelle, même nature) ou deux lots différents de mêmes
+  // caractéristiques sont deux logements : on les garde tous les deux, et la
+  // mutation sera exclue comme multi-logements.
+  const key = `${mapped}|${row.surface_reelle_bati}|${row.nombre_pieces_principales}|${row.lot1_numero ?? ""}`;
+  const lineKey = `${row.numero_disposition ?? ""}|${row.id_parcelle ?? ""}|${row.numero_volume ?? ""}|${row.nature_culture ?? ""}|${row.nature_culture_speciale ?? ""}|${key}`;
+  if (group.seenLocalKeys.has(key) && !group.seenLineKeys.has(lineKey)) {
+    group.seenLineKeys.add(lineKey);
+    return;
+  }
   group.seenLocalKeys.add(key);
+  group.seenLineKeys.add(lineKey);
 
   group.housing.push({
     type: mapped,
     surface: toNumber(row.surface_reelle_bati) ?? 0,
     pieces: toNumber(row.nombre_pieces_principales),
+    carrez: surfaceCarrez(row),
   });
 
   // Les coordonnées de la ligne du logement priment
@@ -150,6 +217,7 @@ export function finalizeGroup(
   if (group.hasNonHousingLocal) return { excluded: "local_non_habitation" };
   if (group.housing.length === 0) return { excluded: "aucun_logement" };
   if (group.housing.length > 1) return { excluded: "multi_logements" };
+  if (group.nbDependances > MAX_DEPENDANCES) return { excluded: "dependances" };
 
   const local = group.housing[0];
   const valeur = group.valeur;
@@ -157,10 +225,26 @@ export function finalizeGroup(
   if (valeur === null || valeur < 5_000 || valeur > 10_000_000) {
     return { excluded: "valeur" };
   }
-  if (local.surface < 8 || local.surface > 500) {
+
+  // Appartement : le prospect saisit une surface Carrez → on compare à la
+  // surface Carrez du lot vendu quand elle existe et reste cohérente.
+  let surface = local.surface;
+  let surfaceSource: CleanMutation["surface_source"] = "reelle";
+  if (
+    local.type === "appartement" &&
+    local.carrez !== null &&
+    local.surface > 0 &&
+    local.carrez / local.surface >= RATIO_CARREZ_MIN &&
+    local.carrez / local.surface <= RATIO_CARREZ_MAX
+  ) {
+    surface = local.carrez;
+    surfaceSource = "carrez";
+  }
+
+  if (surface < 8 || surface > 500) {
     return { excluded: "surface" };
   }
-  const prixM2 = valeur / local.surface;
+  const prixM2 = valeur / surface;
   if (prixM2 < 200 || prixM2 > 25_000) {
     return { excluded: "prix_m2" };
   }
@@ -173,7 +257,8 @@ export function finalizeGroup(
       date_mutation: group.date,
       valeur_fonciere: valeur,
       type_local: local.type,
-      surface_reelle_bati: local.surface,
+      surface_reelle_bati: surface,
+      surface_source: surfaceSource,
       nb_pieces: local.pieces,
       code_insee: group.codeInsee,
       code_departement: group.codeDept,

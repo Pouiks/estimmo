@@ -29,7 +29,14 @@
     "texte": "Cette estimation s'appuie sur les ventes de biens similaires les plus proches dans votre département : elle donne un ordre de grandeur, pas un prix de marché local. {agent} vous propose un avis de valeur sur place, gratuit et sans engagement, pour l'affiner."
   },
   "sourceVente": "Basé sur {n, plural, one {# vente comparable} other {# ventes comparables}}. {dvf}.",
+  "sourceVenteFenetre": "Basé sur {n, plural, one {# vente comparable enregistrée} other {# ventes comparables enregistrées}} entre le {du, date, short} et le {au, date, short}{ecartes, plural, =0 {} one { (# vente au prix atypique écartée)} other { (# ventes au prix atypique écartées)}}. {dvf}.",
   "sourceLocation": "{anil}.",
+  "notaire": {
+    "titre": "Frais de notaire estimés*",
+    "montant": "entre {bas} et {haut}",
+    "part": "soit environ {pctBas} à {pctHaut} % du prix, à la charge de l'acquéreur, non compris dans l'estimation ci-dessus",
+    "note": "* Estimation indicative des frais d'acquisition dans l'ancien, calculée sur la fourchette ci-dessus : droits de mutation (4,5 à 5 % selon le département), émoluments du notaire au barème en vigueur, contribution de sécurité immobilière et débours. Le montant réel dépend du prix définitif, du département, du mobilier éventuel et du dossier : seul le notaire peut l'établir. Cette information n'a pas de valeur contractuelle."
+  },
   "carte": {
     "titre": "Affinez votre prix avec {agent}",
     "texte": "Un rappel pour un avis de valeur précis, sans engagement.",

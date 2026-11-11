@@ -58,6 +58,8 @@ interface ImportStats {
   rows: number;
   mutations: number;
   kept: number;
+  /** Appartements dont la surface retenue est la surface Carrez du lot. */
+  carrez: number;
   excluded: Record<ExclusionReason, number>;
 }
 
@@ -66,11 +68,13 @@ function emptyStats(): ImportStats {
     rows: 0,
     mutations: 0,
     kept: 0,
+    carrez: 0,
     excluded: {
       nature: 0,
       local_non_habitation: 0,
       aucun_logement: 0,
       multi_logements: 0,
+      dependances: 0,
       valeur: 0,
       surface: 0,
       prix_m2: 0,
@@ -183,6 +187,7 @@ async function importDeptYear(
       continue;
     }
     stats.kept++;
+    if (result.row.surface_source === "carrez") stats.carrez++;
     cleanRows.push(result.row);
 
     // Référentiel communes : nom + code postal majoritaire
@@ -210,6 +215,7 @@ async function importDeptYear(
   totals.rows += stats.rows;
   totals.mutations += stats.mutations;
   totals.kept += stats.kept;
+  totals.carrez += stats.carrez;
   for (const key of Object.keys(stats.excluded) as ExclusionReason[]) {
     totals.excluded[key] += stats.excluded[key];
   }
@@ -292,6 +298,14 @@ async function main() {
       console.log(`Référentiel communes : ${formatCount(communes.size)} communes…`);
       await upsertCommunesRef(client, communes);
 
+      // Dernière vente connue : ancre la fenêtre de 30 mois du moteur (3.0.0)
+      await client.query(
+        `insert into dvf_meta (cle, valeur)
+         select 'derniere_vente', max(date_mutation)::text from dvf_mutations
+         where exists (select 1 from dvf_mutations)
+         on conflict (cle) do update set valeur = excluded.valeur, updated_at = now()`
+      );
+
       if (!skipStats) {
         console.log("Recalcul de communes_stats…");
         await client.query("select public.refresh_communes_stats()");
@@ -306,6 +320,7 @@ async function main() {
   console.log(`Lignes CSV lues     : ${formatCount(totals.rows)}`);
   console.log(`Mutations vues      : ${formatCount(totals.mutations)}`);
   console.log(`Mutations gardées   : ${formatCount(totals.kept)}`);
+  console.log(`  dont surface Carrez : ${formatCount(totals.carrez)} appartements`);
   for (const [reason, count] of Object.entries(totals.excluded)) {
     console.log(`  exclues (${reason}) : ${formatCount(count)}`);
   }

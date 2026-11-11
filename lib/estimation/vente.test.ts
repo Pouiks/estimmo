@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { CaracteristiquesBien, Comparable } from "./types";
 import {
   choisirPalier,
+  ecarterAtypiques,
   estimerVente,
   poidsComparable,
   type ComparablesParPalier,
@@ -202,5 +203,53 @@ describe("estimerVente", () => {
     );
     const estimation = estimerVente(bien(), palier({ rayon3000 }), NOW)!;
     expect(estimation.fourchettePct).toBe(10);
+    expect(estimation.nbEcartes).toBe(0); // dispersion uniforme : rien d'atypique
+  });
+
+  it("écarte les ventes atypiques dès 12 comparables (3.0.0)", () => {
+    // 12 ventes entre 2 800 et 3 200 €/m² + un lot fusionné à 7 500 €/m²
+    const rayon3000 = [
+      ...Array.from({ length: 12 }, (_, i) => comp(2800 + i * 36, 200, 6)),
+      comp(7500, 150, 3),
+    ];
+    const estimation = estimerVente(bien(), palier({ rayon3000 }), NOW)!;
+    expect(estimation.nbComparables).toBe(12);
+    expect(estimation.nbEcartes).toBe(1);
+    expect(estimation.prixM2Zone).toBeGreaterThanOrEqual(2800);
+    expect(estimation.prixM2Zone).toBeLessThanOrEqual(3200);
+    expect(estimation.fourchettePct).toBe(5); // la fourchette n'est plus gonflée par l'atypique
+  });
+
+  it("ne touche à rien sous 12 comparables (3.0.0)", () => {
+    const rayon3000 = [
+      ...Array.from({ length: 9 }, () => comp(3000, 200, 6)),
+      comp(9000, 150, 3),
+    ];
+    const estimation = estimerVente(bien(), palier({ rayon3000 }), NOW)!;
+    expect(estimation.nbComparables).toBe(10);
+    expect(estimation.nbEcartes).toBe(0);
+  });
+
+  it("reporte la fenêtre de dates fournie par la couche data (3.0.0)", () => {
+    const rayon3000 = Array.from({ length: 8 }, () => comp(3000, 200, 6));
+    const fenetre = { du: "2023-06-30", au: "2025-12-30" };
+    const avec = estimerVente(bien(), palier({ rayon3000, fenetre }), NOW)!;
+    expect(avec.ventesDu).toBe("2023-06-30");
+    expect(avec.ventesAu).toBe("2025-12-30");
+    const sans = estimerVente(bien(), palier({ rayon3000 }), NOW)!;
+    expect(sans.ventesDu).toBeNull();
+  });
+});
+
+describe("ecarterAtypiques", () => {
+  it("applique la règle de Tukey (Q1 − 1,5 IQR ; Q3 + 1,5 IQR)", () => {
+    const comparables = [
+      ...Array.from({ length: 12 }, (_, i) => comp(1000 + i * 100, 100)), // 1 000 → 2 100
+      comp(200, 100), // part indivise (Q1 ≈ 1 225, IQR ≈ 650 → borne basse ≈ 250)
+      comp(5833, 100), // lot fusionné
+    ];
+    const { gardes, ecartes } = ecarterAtypiques(comparables);
+    expect(ecartes.map((c) => c.prix_m2).sort((a, b) => a - b)).toEqual([200, 5833]);
+    expect(gardes).toHaveLength(12);
   });
 });

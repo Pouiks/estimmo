@@ -3,6 +3,7 @@
  * via le client service_role. Volontairement NON exportée par index.ts :
  * le cœur du moteur reste pur et testable sans base.
  */
+import { unstable_cache } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Comparable, LoyersCommune, TypeBien } from "./types";
 import { deptFromInsee } from "./zones";
@@ -22,10 +23,50 @@ export interface RechercheComparables {
   surface: number;
 }
 
-function dateMinMutation(now: Date): string {
-  const d = new Date(now);
-  d.setMonth(d.getMonth() - MOIS_MAX_MUTATION);
+function isoDate(d: Date): string {
   return d.toISOString().slice(0, 10);
+}
+
+/** Date ISO située `mois` mois avant la date ISO donnée (calcul en UTC). */
+export function moinsMois(dateIso: string, mois: number): string {
+  const d = new Date(`${dateIso}T12:00:00Z`);
+  d.setUTCMonth(d.getUTCMonth() - mois);
+  return isoDate(d);
+}
+
+/**
+ * Dernière vente DVF connue (posée par l'import dans dvf_meta), en cache
+ * 1 h : elle ne change qu'à chaque import semestriel. Null si la base est
+ * vide ou la migration 20261111120000 absente → repli sur la date du jour.
+ */
+const dateDerniereVenteCachee = unstable_cache(
+  async (): Promise<string | null> => {
+    const { data, error } = await createAdminClient().rpc("dvf_derniere_vente");
+    if (error || !data) return null;
+    return String(data).slice(0, 10);
+  },
+  ["dvf-derniere-vente"],
+  { revalidate: 3600, tags: ["dvf"] }
+);
+
+export async function fetchDateDerniereVente(): Promise<string | null> {
+  try {
+    return await dateDerniereVenteCachee();
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fenêtre des comparables : 30 mois avant la dernière vente connue (et non
+ * avant aujourd'hui, DVF étant publié avec 6 à 10 mois de retard - audit P2).
+ */
+export function fenetreComparables(
+  derniereVente: string | null,
+  now: Date
+): { du: string; au: string } {
+  const au = derniereVente ?? isoDate(now);
+  return { du: moinsMois(au, MOIS_MAX_MUTATION), au };
 }
 
 export async function fetchComparables(
@@ -33,6 +74,7 @@ export async function fetchComparables(
   now: Date = new Date()
 ): Promise<ComparablesParPalier> {
   const supabase = createAdminClient();
+  const fenetre = fenetreComparables(await fetchDateDerniereVente(), now);
 
   const commun = {
     p_lat: params.lat,
@@ -40,7 +82,7 @@ export async function fetchComparables(
     p_type_local: params.typeBien,
     p_surface_min: params.surface * RATIO_SURFACE_MIN,
     p_surface_max: params.surface * RATIO_SURFACE_MAX,
-    p_date_min: dateMinMutation(now),
+    p_date_min: fenetre.du,
   };
 
   const { data: rayon3000, error } = await supabase.rpc(
@@ -53,6 +95,7 @@ export async function fetchComparables(
     rayon3000: (rayon3000 ?? []) as Comparable[],
     commune: [],
     departement: [],
+    fenetre,
   };
 
   // Paliers suivants seulement si nécessaire (économise les requêtes).
