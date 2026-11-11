@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Mail, PhoneCall, PhoneIncoming } from "lucide-react";
+import { ArrowLeft, Mail, PhoneCall, PhoneIncoming, UserX } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -14,6 +14,8 @@ import {
   RetryCrmButton,
 } from "@/components/admin/lead-actions";
 import { LeadMenu } from "@/components/admin/lead-menu";
+import { AnonymiserProspect, BoutonsExport } from "@/components/admin/rgpd-actions";
+import { leadsDuProspect } from "@/lib/rgpd/serveur";
 import { requireAdmin } from "@/lib/supabase/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -92,6 +94,11 @@ export default async function LeadDetailPage({
     .eq("lead_id", id)
     .order("created_at", { ascending: false });
 
+  // Autres demandes d'estimation du même prospect (même email).
+  const groupe = lead.anonymise_le ? [] : await leadsDuProspect(id);
+  const autres = groupe.filter((l) => l.id !== id);
+  const anonymise = Boolean(lead.anonymise_le);
+
   const est = lead.estimation as Record<string, unknown> | null;
   const dateFmt = new Intl.DateTimeFormat("fr-FR", {
     dateStyle: "medium",
@@ -109,10 +116,17 @@ export default async function LeadDetailPage({
             <ArrowLeft className="size-4" /> Tous les leads
           </Link>
           <h1 className="text-2xl font-bold tracking-tight">
-            {lead.prenom} {lead.nom} <ScoreBadge score={lead.score_lead} />
+            {anonymise ? "Prospect anonymisé" : `${lead.prenom ?? ""} ${lead.nom ?? ""}`}{" "}
+            <ScoreBadge score={lead.score_lead} />
           </h1>
           <p className="text-sm text-muted-foreground">
             Reçu le {dateFmt.format(new Date(lead.created_at))}
+            {anonymise && (
+              <Badge className="ml-2 bg-slate-200 text-slate-800">
+                <UserX className="size-3" /> Anonymisé le{" "}
+                {dateFmt.format(new Date(lead.anonymise_le as string))}
+              </Badge>
+            )}
             {lead.estimation_manuelle && (
               <Badge className="ml-2 bg-red-100 text-red-800">
                 <PhoneCall className="size-3" /> Estimation manuelle à faire
@@ -144,16 +158,25 @@ export default async function LeadDetailPage({
             <CardTitle className="text-base">Contact</CardTitle>
           </CardHeader>
           <CardContent>
-            <Row label="Téléphone">
-              <a href={`tel:${lead.telephone}`} className="text-primary">
-                {lead.telephone}
-              </a>
-            </Row>
-            <Row label="Email">
-              <a href={`mailto:${lead.email}`} className="text-primary">
-                {lead.email}
-              </a>
-            </Row>
+            {anonymise ? (
+              <p className="pb-2 text-sm text-muted-foreground">
+                Identité, coordonnées, adresse et notes effacées à la demande de la
+                personne. Les autres données servent uniquement aux statistiques.
+              </p>
+            ) : (
+              <>
+                <Row label="Téléphone">
+                  <a href={`tel:${lead.telephone}`} className="text-primary">
+                    {lead.telephone}
+                  </a>
+                </Row>
+                <Row label="Email">
+                  <a href={`mailto:${lead.email}`} className="text-primary">
+                    {lead.email}
+                  </a>
+                </Row>
+              </>
+            )}
             <Row label="Consentement RGPD">
               {lead.consentement_rgpd ? "Oui" : "Non"} -{" "}
               {dateFmt.format(new Date(lead.date_consentement))}
@@ -227,7 +250,9 @@ export default async function LeadDetailPage({
               {Number(lead.surface)} m²{" "}
               {lead.surface_type === "carrez" ? "(Carrez)" : "(habitable)"}
             </Row>
-            <Row label="Adresse">{lead.adresse_libelle}</Row>
+            <Row label="Adresse">
+              {lead.adresse_libelle ?? (anonymise ? `Commune ${lead.code_insee ?? "-"}` : "-")}
+            </Row>
             <Row label="Pièces / chambres">
               {lead.pieces} / {lead.chambres}
             </Row>
@@ -332,29 +357,92 @@ export default async function LeadDetailPage({
         </CardContent>
       </Card>
 
+      {!anonymise && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Notes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-2 text-xs text-muted-foreground">
+              Pas de donnée sensible (santé, situation familiale, opinions…) : ces notes
+              font partie des données communiquées à la personne si elle demande l'accès.
+            </p>
+            <LeadNotesForm leadId={lead.id} notes={lead.notes} />
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Notes</CardTitle>
+          <CardTitle className="text-base">RGPD - droits de la personne</CardTitle>
         </CardHeader>
-        <CardContent>
-          <LeadNotesForm leadId={lead.id} notes={lead.notes} />
+        <CardContent className="space-y-4 text-sm">
+          {anonymise ? (
+            <p className="text-muted-foreground">
+              Demande traitée : plus aucune donnée personnelle sur cette fiche. Le
+              journal des demandes est dans <Link href="/admin/rgpd" className="text-primary hover:underline">RGPD</Link>.
+            </p>
+          ) : (
+            <>
+              <p className="text-muted-foreground">
+                {autres.length === 0
+                  ? "Ce prospect n'a fait qu'une demande d'estimation."
+                  : `Ce prospect a fait ${groupe.length} demandes d'estimation avec cet email ; les actions ci-dessous peuvent porter sur l'ensemble.`}
+              </p>
+              {autres.length > 0 && (
+                <ul className="space-y-1">
+                  {autres.map((autre) => (
+                    <li key={autre.id}>
+                      <Link
+                        href={`/admin/leads/${autre.id}`}
+                        className="text-primary hover:underline"
+                      >
+                        {dateFmt.format(new Date(autre.created_at))} ·{" "}
+                        {PROJET_LABELS[String(autre.projet)]} ·{" "}
+                        {String(autre.adresse_libelle ?? "")}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div className="space-y-2">
+                <p className="font-medium">Demande d'accès (copie des données)</p>
+                <BoutonsExport leadId={lead.id} tous={autres.length > 0} />
+              </div>
+              <div className="space-y-2">
+                <p className="font-medium">Demande d'effacement</p>
+                <AnonymiserProspect
+                  leadId={lead.id}
+                  email={lead.email}
+                  nombreDemandes={groupe.length}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Réponse sous un mois, à l'adresse email enregistrée. Chaque action est
+                consignée dans le journal RGPD avec les copies externes à traiter (CRM,
+                Resend, boîte mail).
+              </p>
+            </>
+          )}
         </CardContent>
       </Card>
 
-      <p className="flex gap-4 text-sm">
-        <a
-          className="flex items-center gap-1 text-primary hover:underline"
-          href={`tel:${lead.telephone}`}
-        >
-          <PhoneCall className="size-4" /> Appeler
-        </a>
-        <a
-          className="flex items-center gap-1 text-primary hover:underline"
-          href={`mailto:${lead.email}`}
-        >
-          <Mail className="size-4" /> Écrire
-        </a>
-      </p>
+      {!anonymise && (
+        <p className="flex gap-4 text-sm">
+          <a
+            className="flex items-center gap-1 text-primary hover:underline"
+            href={`tel:${lead.telephone}`}
+          >
+            <PhoneCall className="size-4" /> Appeler
+          </a>
+          <a
+            className="flex items-center gap-1 text-primary hover:underline"
+            href={`mailto:${lead.email}`}
+          >
+            <Mail className="size-4" /> Écrire
+          </a>
+        </p>
+      )}
     </div>
   );
 }

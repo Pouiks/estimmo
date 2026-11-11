@@ -9,6 +9,7 @@ import {
   Inbox,
   Languages,
   PhoneCall,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
@@ -26,6 +27,7 @@ const navItems = [
   { href: "/admin/traductions", label: "Traductions", icon: Languages },
   { href: "/admin/stats", label: "Stats", icon: BarChart3 },
   { href: "/admin/analytics", label: "Analytics", icon: Activity },
+  { href: "/admin/rgpd", label: "RGPD", icon: ShieldCheck },
 ];
 
 async function signOut() {

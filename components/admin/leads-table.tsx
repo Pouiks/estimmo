@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PhoneCall, PhoneIncoming } from "lucide-react";
+import { PhoneCall, PhoneIncoming, UserX } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -17,8 +17,8 @@ export interface LeadRow {
   created_at: string;
   prenom: string | null;
   nom: string | null;
-  telephone: string;
-  email: string;
+  telephone: string | null;
+  email: string | null;
   projet: string;
   type_bien: string;
   surface: number;
@@ -27,6 +27,7 @@ export interface LeadRow {
   statut: string;
   estimation_manuelle: boolean;
   demande_rappel?: boolean;
+  anonymise_le?: string | null;
 }
 
 const dateFormat = new Intl.DateTimeFormat("fr-FR", {
@@ -37,7 +38,14 @@ const dateFormat = new Intl.DateTimeFormat("fr-FR", {
   minute: "2-digit",
 });
 
-export function LeadsTable({ leads }: { leads: LeadRow[] }) {
+export function LeadsTable({
+  leads,
+  demandesParEmail,
+}: {
+  leads: LeadRow[];
+  /** Nombre de demandes par email (minuscules) : badge « ×N » si > 1. */
+  demandesParEmail?: Map<string, number>;
+}) {
   if (leads.length === 0) {
     return (
       <p className="rounded-xl border border-dashed p-10 text-center text-sm text-muted-foreground">
@@ -72,18 +80,37 @@ export function LeadsTable({ leads }: { leads: LeadRow[] }) {
                   href={`/admin/leads/${lead.id}`}
                   className="font-medium hover:underline"
                 >
-                  {lead.prenom} {lead.nom}
+                  {lead.anonymise_le ? (
+                    <span className="inline-flex items-center gap-1 text-muted-foreground">
+                      <UserX className="size-3.5" /> Prospect anonymisé
+                    </span>
+                  ) : (
+                    `${lead.prenom ?? ""} ${lead.nom ?? ""}`.trim() || lead.email
+                  )}
                   {/* étend la zone cliquable à toute la ligne */}
                   <span className="absolute inset-0" aria-hidden />
                 </Link>
+                {lead.email && (demandesParEmail?.get(lead.email.toLowerCase()) ?? 0) > 1 && (
+                  <Link
+                    href={`/admin/leads?q=${encodeURIComponent(lead.email)}`}
+                    className="relative z-10 ml-2"
+                    title="Toutes les demandes de ce prospect"
+                  >
+                    <Badge className="bg-slate-100 text-slate-700 hover:bg-slate-200">
+                      ×{demandesParEmail?.get(lead.email.toLowerCase())} demandes
+                    </Badge>
+                  </Link>
+                )}
                 {lead.demande_rappel && (
                   <Badge className="relative z-10 ml-2 bg-blue-100 text-blue-800">
                     <PhoneIncoming className="size-3" /> Rappel demandé
                   </Badge>
                 )}
-                <p className="text-xs text-muted-foreground">
-                  {lead.telephone} · {lead.email}
-                </p>
+                {!lead.anonymise_le && (
+                  <p className="text-xs text-muted-foreground">
+                    {lead.telephone} · {lead.email}
+                  </p>
+                )}
               </TableCell>
               <TableCell>
                 <p className="text-sm">
@@ -111,7 +138,8 @@ export function LeadsTable({ leads }: { leads: LeadRow[] }) {
                   leadId={lead.id}
                   libelle={
                     [lead.prenom, lead.nom].filter(Boolean).join(" ") ||
-                    lead.email
+                    lead.email ||
+                    "ce prospect anonymisé"
                   }
                 />
               </TableCell>

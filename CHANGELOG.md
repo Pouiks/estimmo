@@ -24,6 +24,54 @@ les chiffres **avant / après** sur le point de référence de l'audit (Béziers
 `package.json` porte le numéro de la dernière version publiée ; il est mis à jour dans
 le même commit que l'entrée du changelog.
 
+## [3.6.0] - 2026-11-13
+
+Module RGPD (audit préalable : `audit/RAPPORT-rgpd-cookies.md`). Migration
+`20261113100000_rgpd.sql` à appliquer **avant** de déployer (la liste des leads lit
+la colonne `anonymise_le`) ; cron quotidien `/api/cron/rgpd` ajouté à `vercel.json`.
+
+### Ajouté
+- **Recherche d'un prospect** dans `/admin/leads` par email, téléphone (toute écriture :
+  « +33 6… », « 06.12… ») ou nom : une demande reçue par mail se traite sans parcourir la
+  liste. Effet visible : champ de recherche en tête de liste, badge « ×N demandes » quand
+  un même email a fait plusieurs estimations (cas réel : 4 demandes en 4 minutes sur deux
+  adresses), lien vers l'ensemble, liste « autres demandes de ce prospect » sur la fiche.
+- **Export des données d'une personne** (droit d'accès, portabilité) depuis la fiche :
+  résumé texte dans la langue du prospect, prêt à coller dans la réponse, et JSON complet
+  (toutes les demandes du même email, transmissions CRM, dates de consentement). Chaque
+  téléchargement est consigné dans le journal.
+- **Anonymisation** sur demande (droit à l'effacement) : identité, coordonnées, adresse du
+  bien, coordonnées GPS et notes effacées en une transaction SQL (`anonymiser_leads`), file
+  CRM comprise (envois faits anonymisés, envois en attente abandonnés) ; bien, estimation,
+  statut, commune et source conservés pour les statistiques. Suppression définitive
+  journalisée conservée en alternative. Effet visible : carte « RGPD » sur la fiche, fiche
+  anonymisée en lecture seule.
+- **Journal des demandes** (`/admin/rgpd`, table `demandes_rgpd`) : type, demandeur,
+  échéance de réponse à un mois (prolongeable à trois), jours restants, retards en rouge,
+  cases des copies hors base à traiter à la main (CRM, Resend, boîte mail, exports CSV),
+  « réponse envoyée », historique. Les exports et effacements depuis une fiche s'y
+  inscrivent seuls ; une demande reçue par mail se saisit à la main.
+- **Purge automatique** (`purger_rgpd`, cron 03:30 UTC) appliquant la politique de
+  confidentialité : prospects sans contact depuis 3 ans anonymisés (clients sous mandat
+  exclus), événements du formulaire de plus de 25 mois et demandes traitées depuis plus
+  de 5 ans supprimés. Nouvelle colonne `leads.dernier_contact_le`, repoussée par trigger à
+  chaque changement de statut, note ou demande de rappel. `/admin/rgpd` montre la dernière
+  purge, les prospects concernés sous 30 jours et un bouton pour purger tout de suite.
+  Durées dans `lib/rgpd/constantes.ts`, injectées dans la politique.
+
+### Modifié
+- **Politique de confidentialité** (fr/en) réécrite : données réellement collectées
+  (langue, source de visite, demande de rappel, suivi commercial, pas d'IP), mesure du
+  formulaire sans donnée personnelle, hébergement en Irlande, transferts hors UE (Vercel,
+  Resend), conservation chiffrée et anonymisation automatique, portabilité, directives post
+  mortem, délai de réponse d'un mois, liste nominative des cookies avec durées, date de
+  version. `leads.email` et `leads.telephone` deviennent nullables (anonymisation) ; les
+  emails sont stockés en minuscules (nouveaux leads et existants).
+
+### Sécurité
+- `/api/geocode` ne journalise plus l'adresse saisie par le prospect (minimisation), seulement
+  sa longueur. Un lien « être rappelé » n'a plus d'effet sur un lead anonymisé.
+
 ## [Non publié]
 
 - Phase 6 du chantier SEO (performance), mesurée le 12/11/2026 en prod sur

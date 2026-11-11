@@ -43,6 +43,7 @@ export default async function RappelPage({ params, searchParams }: Props) {
         demande_rappel_at: new Date().toISOString(),
       })
       .eq("id", lead)
+      .is("anonymise_le", null)
       .select("prenom")
       .maybeSingle();
     if (data) {

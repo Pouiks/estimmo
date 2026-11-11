@@ -9,6 +9,10 @@
     {
       "path": "/api/cron/blog",
       "schedule": "5 6 * * *"
+    },
+    {
+      "path": "/api/cron/rgpd",
+      "schedule": "30 3 * * *"
     }
   ]
 }

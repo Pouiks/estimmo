@@ -36,27 +36,40 @@
     },
     "donnees": {
       "titre": "Données collectées",
-      "texte": "Lors d'une demande d'estimation, nous collectons : vos coordonnées (prénom, nom, email, téléphone), les caractéristiques du bien décrit (adresse, surface, état…) ainsi que la date et la preuve de votre consentement."
+      "texte": "Lors d'une demande d'estimation, nous collectons : vos coordonnées (prénom, nom, email, téléphone), les caractéristiques du bien décrit (adresse, surface, étage, état, DPE…), la langue de l'interface, la source de votre visite (paramètres de campagne présents dans l'adresse de la page, le cas échéant) ainsi que la date et la preuve de votre consentement. Si vous cliquez sur « être rappelé » dans l'email d'estimation, la date de cette demande est enregistrée. L'estimation calculée et le suivi commercial (statut, notes de la conseillère) sont rattachés à votre demande. Aucune adresse IP n'est conservée."
     },
     "finalites": {
       "titre": "Finalités et base légale",
-      "texte": "Ces données sont utilisées, sur la base de votre consentement explicite, pour : (1) calculer et vous transmettre l'estimation de votre bien ; (2) vous recontacter au sujet de votre projet immobilier. Elles ne sont jamais revendues à des tiers."
+      "texte": "Ces données sont utilisées, sur la base de votre consentement explicite, pour : (1) calculer et vous transmettre l'estimation de votre bien ; (2) vous recontacter au sujet de votre projet immobilier. Elles ne sont jamais revendues à des tiers. Le fonctionnement du formulaire (étapes affichées, champs renseignés ou non, durées) est mesuré sans identifiant ni donnée personnelle, sur la base de notre intérêt légitime à améliorer le service."
     },
     "destinataires": {
       "titre": "Destinataires et sous-traitants",
-      "texte": "Les données sont hébergées par Supabase (base de données) et Vercel (hébergement du site). L'envoi des emails transactionnels est assuré par Resend. Les données sont également transmises à l'outil de gestion de la relation client (CRM) du responsable de traitement."
+      "texte": "Les données sont hébergées par Supabase (base de données, serveurs situés en Irlande) et Vercel (hébergement du site). L'envoi des emails est assuré par Resend. Les données sont également transmises à l'outil de gestion de la relation client (CRM) de {agent}. Aucune donnée n'est vendue ni cédée à des tiers."
+    },
+    "transferts": {
+      "titre": "Transferts hors de l'Union européenne",
+      "texte": "Vercel et Resend sont des sociétés américaines : les données qui transitent par leurs services sont encadrées par des garanties appropriées (clauses contractuelles types de la Commission européenne et certification au cadre de protection des données UE-États-Unis). La base de données elle-même est hébergée dans l'Union européenne."
     },
     "conservation": {
       "titre": "Durée de conservation",
-      "texte": "Les données des prospects sont conservées <strong>3 ans après le dernier contact</strong>, puis supprimées ou anonymisées."
+      "texte": "Les données des prospects sont conservées <strong>{annees} ans après le dernier contact</strong>, puis anonymisées automatiquement : identité, coordonnées et adresse du bien sont effacées, seules des données statistiques sans lien avec vous sont conservées. Les mesures du formulaire (sans donnée personnelle) sont supprimées après {moisEvenements} mois. Les demandes d'exercice de droits et les réponses apportées sont archivées {anneesJournal} ans."
     },
     "droits": {
       "titre": "Vos droits",
-      "texte": "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation et d'opposition sur vos données. Pour l'exercer, écrivez à <lien>{email}</lien>. Vous pouvez également introduire une réclamation auprès de la CNIL (cnil.fr)."
+      "texte": "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité sur vos données, ainsi que du droit de définir des directives sur leur sort après votre décès. Pour l'exercer, écrivez à <lien>{email}</lien> depuis l'adresse email utilisée lors de votre demande d'estimation. Nous répondons sous {delai} mois ; ce délai peut être prolongé de deux mois pour une demande complexe, auquel cas vous en êtes informé. Vous pouvez également introduire une réclamation auprès de la CNIL (cnil.fr)."
     },
     "cookies": {
-      "titre": "Cookies",
-      "texte": "Ce site n'utilise pas de cookies publicitaires. Seuls des cookies techniques strictement nécessaires (session d'administration, langue choisie) et une mesure d'audience sans cookie sont utilisés."
+      "titre": "Cookies et traceurs",
+      "intro": "Ce site ne dépose aucun cookie publicitaire ni de suivi. Seuls des cookies strictement nécessaires au fonctionnement, exemptés de consentement, sont utilisés :",
+      "liste": {
+        "langue": "<strong>NEXT_LOCALE</strong> - mémorise la langue choisie (1 an).",
+        "admin": "<strong>sb-…-auth-token</strong> - session de l'espace d'administration, uniquement sur le navigateur de la conseillère.",
+        "suivi": "<strong>estimmo_sans_suivi</strong> - exclut des statistiques du formulaire les navigateurs ayant utilisé l'administration (1 an)."
+      },
+      "outro": "La mesure d'audience du site (Vercel Analytics) fonctionne sans cookie ni empreinte du navigateur. Si des outils soumis à consentement devaient être ajoutés, une bannière vous permettrait de les accepter ou de les refuser avant tout dépôt."
+    },
+    "version": {
+      "texte": "Politique en vigueur depuis le {date}."
     }
   }
 }

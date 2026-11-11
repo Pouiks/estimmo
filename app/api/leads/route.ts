@@ -70,7 +70,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const lead = parsed.data;
+  // Email en minuscules : le regroupement des demandes d'un même prospect et la
+  // recherche admin reposent sur une égalité exacte (migration 20261113100000).
+  const lead = { ...parsed.data, email: parsed.data.email.toLowerCase() };
 
   // Pot de miel : champ invisible pour un humain, rempli par les robots.
   // On répond comme un succès (écran « estimation manuelle ») sans rien

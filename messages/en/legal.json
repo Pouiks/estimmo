@@ -36,27 +36,40 @@
     },
     "donnees": {
       "titre": "Data collected",
-      "texte": "When you request a valuation, we collect: your contact details (first name, last name, email, phone), the features of the property described (address, surface area, condition…) and the date and proof of your consent."
+      "texte": "When you request a valuation, we collect: your contact details (first name, last name, email, phone), the features of the property described (address, surface area, floor, condition, energy rating…), the interface language, the source of your visit (campaign parameters present in the page address, if any) and the date and proof of your consent. If you click \"call me back\" in the valuation email, the date of that request is recorded. The calculated valuation and the sales follow-up (status, the advisor's notes) are attached to your request. No IP address is kept."
     },
     "finalites": {
       "titre": "Purposes and legal basis",
-      "texte": "This data is used, on the basis of your explicit consent, to: (1) calculate and send you the valuation of your property; (2) contact you about your real estate project. It is never sold to third parties."
+      "texte": "This data is used, on the basis of your explicit consent, to: (1) calculate and send you the valuation of your property; (2) contact you about your real estate project. It is never sold to third parties. How the form is used (steps displayed, fields filled in or not, durations) is measured without any identifier or personal data, on the basis of our legitimate interest in improving the service."
     },
     "destinataires": {
       "titre": "Recipients and processors",
-      "texte": "Data is hosted by Supabase (database) and Vercel (website hosting). Transactional emails are sent by Resend. Data is also transmitted to the data controller's customer relationship management (CRM) tool."
+      "texte": "Data is hosted by Supabase (database, servers located in Ireland) and Vercel (website hosting). Emails are sent by Resend. Data is also transmitted to the customer relationship management (CRM) tool of {agent}. No data is sold or passed on to third parties."
+    },
+    "transferts": {
+      "titre": "Transfers outside the European Union",
+      "texte": "Vercel and Resend are US companies: data passing through their services is covered by appropriate safeguards (European Commission standard contractual clauses and certification under the EU-US Data Privacy Framework). The database itself is hosted in the European Union."
     },
     "conservation": {
       "titre": "Retention period",
-      "texte": "Prospect data is kept for <strong>3 years after the last contact</strong>, then deleted or anonymised."
+      "texte": "Prospect data is kept for <strong>{annees} years after the last contact</strong>, then automatically anonymised: identity, contact details and property address are erased, and only statistical data with no link to you is kept. Form measurements (with no personal data) are deleted after {moisEvenements} months. Requests to exercise rights and the answers given are archived for {anneesJournal} years."
     },
     "droits": {
       "titre": "Your rights",
-      "texte": "Under the GDPR, you have the right to access, rectify, erase, restrict and object to the processing of your data. To exercise it, write to <lien>{email}</lien>. You may also lodge a complaint with the CNIL (cnil.fr), the French data protection authority."
+      "texte": "Under the GDPR, you have the right to access, rectify, erase, restrict, object to and port your data, and the right to give instructions on what happens to it after your death. To exercise it, write to <lien>{email}</lien> from the email address used for your valuation request. We reply within {delai} month; this period may be extended by two months for a complex request, in which case you will be informed. You may also lodge a complaint with the CNIL (cnil.fr), the French data protection authority."
     },
     "cookies": {
-      "titre": "Cookies",
-      "texte": "This site does not use advertising cookies. Only strictly necessary technical cookies (admin session, chosen language) and cookieless audience measurement are used."
+      "titre": "Cookies and trackers",
+      "intro": "This site sets no advertising or tracking cookies. Only cookies strictly necessary for the site to work, exempt from consent, are used:",
+      "liste": {
+        "langue": "<strong>NEXT_LOCALE</strong> - remembers the chosen language (1 year).",
+        "admin": "<strong>sb-…-auth-token</strong> - admin area session, only on the advisor's browser.",
+        "suivi": "<strong>estimmo_sans_suivi</strong> - excludes browsers that have used the admin area from the form statistics (1 year)."
+      },
+      "outro": "Site audience measurement (Vercel Analytics) works without cookies or browser fingerprinting. Should tools requiring consent be added, a banner would let you accept or refuse them before anything is set."
+    },
+    "version": {
+      "texte": "Policy in force since {date}."
     }
   }
 }

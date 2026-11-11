@@ -59,7 +59,8 @@ export async function GET(request: NextRequest) {
   cache.set(key, { at: Date.now(), data: suggestions, source });
 
   if (source !== "ign") {
-    console.warn(`[geocode] relais ${source} pour q="${q}" → ${suggestions.length} résultat(s)`);
+    // Pas la saisie elle-même dans les logs : c'est l'adresse d'un prospect (minimisation RGPD).
+    console.warn(`[geocode] relais ${source} (saisie de ${q.length} car.) → ${suggestions.length} résultat(s)`);
   }
   return NextResponse.json(
     { suggestions, source },

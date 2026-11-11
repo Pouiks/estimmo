@@ -1,8 +1,11 @@
 import Link from "next/link";
-import { Download } from "lucide-react";
+import { Download, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { LeadsTable, type LeadRow } from "@/components/admin/leads-table";
 import { STATUTS_LEAD } from "@/components/admin/badges";
+import { critereRecherche } from "@/lib/rgpd/recherche";
+import { demandesParEmail } from "@/lib/rgpd/serveur";
 import { requireAdmin } from "@/lib/supabase/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { cn } from "@/lib/utils";
@@ -17,6 +20,8 @@ interface Filters {
   score?: string;
   tri?: string;
   page?: string;
+  /** Recherche email / téléphone / nom (demandes RGPD reçues par mail). */
+  q?: string;
 }
 
 function buildQueryString(filters: Filters, patch: Partial<Filters>): string {
@@ -42,10 +47,12 @@ export default async function AdminLeadsPage({
   let query = supabase
     .from("leads")
     .select(
-      "id, created_at, prenom, nom, telephone, email, projet, type_bien, surface, adresse_libelle, score_lead, statut, estimation_manuelle, demande_rappel",
+      "id, created_at, prenom, nom, telephone, email, projet, type_bien, surface, adresse_libelle, score_lead, statut, estimation_manuelle, demande_rappel, anonymise_le",
       { count: "exact" }
     );
 
+  const recherche = critereRecherche(filters.q);
+  if (recherche.filtre) query = query.or(recherche.filtre);
   if (filters.statut) query = query.eq("statut", filters.statut);
   if (filters.projet) query = query.eq("projet", filters.projet);
   if (filters.score) {
@@ -68,6 +75,9 @@ export default async function AdminLeadsPage({
   const leads = (data ?? []) as LeadRow[];
   const total = count ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  // Un même prospect peut demander plusieurs estimations (plusieurs biens) :
+  // badge « ×N » qui regroupe ses demandes par email.
+  const parEmail = await demandesParEmail(leads.map((l) => l.email));
 
   return (
     <div className="space-y-6">
@@ -76,11 +86,35 @@ export default async function AdminLeadsPage({
           <h1 className="text-2xl font-bold tracking-tight">Leads</h1>
           <p className="text-sm text-muted-foreground">
             {total.toLocaleString("fr-FR")} lead(s)
-            {filters.statut || filters.projet || filters.score
+            {filters.statut || filters.projet || filters.score || recherche.texte
               ? " avec ces filtres"
               : ""}
           </p>
         </div>
+        <form method="get" className="flex items-center gap-2">
+          {filters.statut && <input type="hidden" name="statut" value={filters.statut} />}
+          {filters.projet && <input type="hidden" name="projet" value={filters.projet} />}
+          {filters.tri && <input type="hidden" name="tri" value={filters.tri} />}
+          <Input
+            type="search"
+            name="q"
+            defaultValue={recherche.texte}
+            placeholder="Email, téléphone ou nom"
+            aria-label="Rechercher un prospect"
+            className="w-64"
+          />
+          <Button type="submit" variant="outline" size="sm">
+            <Search className="size-4" /> Rechercher
+          </Button>
+          {recherche.texte && (
+            <Link
+              href={`/admin/leads${buildQueryString(filters, { q: undefined, page: undefined })}`}
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Effacer
+            </Link>
+          )}
+        </form>
         <Button
           variant="outline"
           size="sm"
@@ -148,7 +182,7 @@ export default async function AdminLeadsPage({
         />
       </div>
 
-      <LeadsTable leads={leads} />
+      <LeadsTable leads={leads} demandesParEmail={parEmail} />
 
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 text-sm">

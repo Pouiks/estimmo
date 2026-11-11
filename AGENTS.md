@@ -325,6 +325,33 @@ Vitest · pnpm. Déploiement Vercel.
   Communes : sous-titre = description (prix au m²). Instagram ne génère pas d'aperçu de lien.
 - JSON-LD (21/10/2026) : toujours via `<JsonLd data={…}>` (`components/site/json-ld.tsx`), qui échappe « < » (`serialiserJsonLd`, `lib/seo/json-ld.ts`) : une surcharge de traduction ou une FAQ saisie dans l'admin ne peut pas fermer la balise. Jamais de `JSON.stringify` direct dans un `<script>`. Fils d'Ariane : `jsonLdFilAriane([...])`, toujours le reflet du `<nav>` visible (landing, /blog, /prix-immobilier, baromètre, départements, communes, articles)
 
+## RGPD (13/11/2026, 3.6.0) - `audit/RAPPORT-rgpd-cookies.md`, `/admin/rgpd`
+- **Module** `lib/rgpd/` : `constantes.ts` (durées : leads 3 ans après dernier contact,
+  événements 25 mois, journal 5 ans, réponse 1 mois, version de la politique),
+  `demandes.ts` (échéances, états, libellés, contrôles externes), `recherche.ts` (saisie →
+  filtre PostgREST email/téléphone/nom), `export.ts` (export JSON + résumé texte fr/en),
+  `serveur.ts` (requêtes service_role). Tout est testé sauf `serveur.ts`.
+- **Données** (migration `20261113100000_rgpd.sql`) : `leads.dernier_contact_le` (trigger
+  sur statut/notes/rappel), `leads.anonymise_le`, `email`/`telephone` nullables, emails en
+  minuscules ; tables `demandes_rgpd` (journal) et `purges_rgpd` (traces) ; fonctions
+  `anonymiser_leads(uuid[])` (leads + `crm_sync_queue.payload`, atomique) et
+  `purger_rgpd(interval, interval, interval)` (clients `mandat_*` exclus). RLS, revoke.
+- **Admin** : recherche `?q=` et badge « ×N demandes » (même email) dans `/admin/leads` ;
+  fiche lead : carte RGPD (export txt/json via `/admin/leads/[id]/export`, anonymiser ou
+  supprimer avec journalisation, toutes les demandes de l'email ou une seule) ; fiche
+  anonymisée = lecture seule, sans contact ni notes. `/admin/rgpd` : demandes en cours
+  (échéance, retard), saisie manuelle, clôture avec cases CRM/Resend/boîte mail, historique,
+  purge (dernière exécution, prospects à venir sous 30 j, bouton). Le menu « … » de la liste
+  garde la suppression simple non journalisée (leads de test).
+- **Cron** `/api/cron/rgpd` (03:30 UTC, `CRON_SECRET`) = `executerPurge()`. Un lead
+  anonymisé n'apparaît plus dans les leads d'un prospect, ne reçoit rien et ignore le lien
+  « être rappelé ».
+- **Politique de confidentialité** : chiffres injectés depuis `RGPD` ; toute modification
+  des durées = changer la constante, la valeur par défaut SQL et `politiqueVersion`.
+- Règle : jamais de donnée personnelle dans les logs (`/api/geocode` ne journalise que la
+  longueur de la saisie). Pas encore de bannière cookies : à faire **avant** tout tag GTM
+  (lot 3.7.0, spécification § 3 du rapport).
+
 ## Contraintes déploiement
 - Fonctions Vercel en **`dub1`** (vercel.json `regions`) : Supabase est en eu-west-1.
   Par défaut elles tournaient à iad1 (Virginie) et chaque requête base/Storage
@@ -337,6 +364,12 @@ Vitest · pnpm. Déploiement Vercel.
   Sans CRM_WEBHOOK_URL le cron ne fait rien.
 
 ## Reste à faire (nécessite le client)
+- **RGPD (13/11/2026)** : 1) `pnpm db:migrate` (migration `20261113100000_rgpd.sql`,
+  validée en transaction annulée sur la prod) **avant** de déployer 3.6.0 (la liste des
+  leads lit `anonymise_le`) ; 2) vérifier le cron `/api/cron/rgpd` dans Vercel après
+  déploiement ; 3) décisions D1 (tags du conteneur GTM) et D7 (relecture des textes par
+  Carenza) du rapport avant la bannière cookies ; 4) documents hors code : registre des
+  traitements, DPA Supabase/Vercel/Resend, rétention Resend, identité légale.
 - **SEO communes (12/11/2026)** : 1) `pnpm db:migrate` (migrations `20261112100000` et
   `20261112110000`, refusées au robot par le classificateur de sécurité) ; 2) `pnpm import:geo`,
   `pnpm import:insee` (France entière, ~2 min) puis `pnpm import:dvf:annuel -- --depts 30,34`
