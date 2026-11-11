@@ -33,9 +33,11 @@ la colonne `anonymise_le`) ; cron quotidien `/api/cron/rgpd` ajouté à `vercel.
 ### Ajouté
 - **Recherche d'un prospect** dans `/admin/leads` par email, téléphone (toute écriture :
   « +33 6… », « 06.12… ») ou nom : une demande reçue par mail se traite sans parcourir la
-  liste. Effet visible : champ de recherche en tête de liste, badge « ×N demandes » quand
-  un même email a fait plusieurs estimations (cas réel : 4 demandes en 4 minutes sur deux
-  adresses), lien vers l'ensemble, liste « autres demandes de ce prospect » sur la fiche.
+  liste. Effet visible : champ de recherche en tête de liste ; un prospect ayant fait
+  plusieurs estimations (cas réel : 4 demandes en 4 minutes sur deux adresses) n'occupe
+  plus quatre lignes répétant ses coordonnées mais une ligne d'en-tête (nom, contact,
+  nombre de demandes, meilleur score) suivie de ses demandes ; liste « autres demandes de
+  ce prospect » sur la fiche.
 - **Export des données d'une personne** (droit d'accès, portabilité) depuis la fiche :
   résumé texte dans la langue du prospect, prêt à coller dans la réponse, et JSON complet
   (toutes les demandes du même email, transmissions CRM, dates de consentement). Chaque
