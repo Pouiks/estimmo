@@ -48,5 +48,5 @@ next-env.d.ts
 /audit/data
 /audit/sorties
 
-# documents de travail du client (non versionnés)
-/Documents
+# documents de travail du client (exports Search Console, non versionnés)
+/audit/documents

@@ -7,6 +7,7 @@ l'import sont reproduits en TypeScript (ils ne sont pas importables).
 
 | Fichier | Rôle |
 |---|---|
+| `RAPPORT-rgpd-cookies.md` | Audit RGPD / cookies (12/11/2026) : données traitées, cookies, écarts CNIL, spécification de la bannière maison, de GTM et du module RGPD admin (export, anonymisation, journal, purge), décisions à prendre |
 | `RAPPORT-estimation-vente.md` | Rapport d'audit : flux de calcul, 14 questions, écarts, bugs classés, propositions |
 | `reproduire-estimation.ts` | Rejoue le nettoyage et le moteur sur un export DVF (CSV geo-dvf, CSV ou JSON de l'explorateur DVF) |
 | `comparables-base.ts` | Ce que le site calcule réellement : lit la base de production (SELECT seulement) avec les mêmes fonctions SQL que `/api/leads`, puis applique le moteur |

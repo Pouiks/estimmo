@@ -4,6 +4,7 @@ import {
   evolutionLongueDe,
   inseeDe,
   prixAffiches,
+  prixVoisine,
   serieAnnuelleDe,
   tendanceDe,
   typeReferenceDe,
@@ -129,6 +130,20 @@ describe("briques", () => {
     });
     expect(inseeDe(null)).toBeNull();
     expect(inseeDe({ ...contexte, insee: { ...contexte.insee!, maisons: 500, appartements: 500 } })?.dominante).toBe("mixte");
+  });
+});
+
+describe("prixVoisine : même exigence de fiabilité que la commune", () => {
+  it("12 mois si ≥ 10 ventes/an, sinon 36 mois si ≥ 30 ventes, sinon rien", () => {
+    const v = voisine("Dions", 1182, 2.2);
+    expect(prixVoisine({ ...v, nb_ventes_12m: 20 }, "M", "12m")).toBe(1182);
+    // 3 ventes sur l'année, 40 sur 3 ans : médiane 3 ans (1082)
+    expect(prixVoisine({ ...v, nb_ventes_12m: 3, nb_ventes_36m: 40 }, "M", "12m")).toBe(1082);
+    // 3 ventes sur l'année, 12 sur 3 ans : exclue de la comparaison
+    expect(prixVoisine({ ...v, nb_ventes_12m: 3, nb_ventes_36m: 12 }, "M", "12m")).toBeNull();
+    // Commune en fenêtre 36 mois : voisines sur 36 mois d'abord
+    expect(prixVoisine({ ...v, nb_ventes_12m: 20, nb_ventes_36m: 60 }, "M", "36m")).toBe(1082);
+    expect(prixVoisine({ ...v, nb_ventes_12m: 20, nb_ventes_36m: 12 }, "M", "36m")).toBe(1182);
   });
 });
 

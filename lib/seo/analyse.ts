@@ -143,13 +143,23 @@ export function prixAffiches(stats: StatsCommune, fenetre: Fenetre): PrixAffiche
   };
 }
 
-/** Prix d'une voisine pour un type, dans la fenêtre de la commune (repli sur 12 mois). */
-function prixVoisine(v: VoisineContexte, type: TypeLocal, fenetre: Fenetre): number | null {
-  if (fenetre === "36m") {
-    const p36 = type === "A" ? v.prix_m2_median_36m_appartement : v.prix_m2_median_36m_maison;
-    if (p36) return p36;
-  }
-  return type === "A" ? v.prix_m2_median_appartement : v.prix_m2_median_maison;
+/** Volume sur 36 mois à partir duquel la médiane 3 ans d'une voisine est retenue. */
+const SEUIL_VOISINE_36M = 30;
+
+/**
+ * Prix d'une voisine pour un type, avec la même exigence de fiabilité que la
+ * commune elle-même : médiane 12 mois si elle a au moins 10 ventes par an,
+ * sinon médiane 36 mois si elle a au moins 30 ventes sur 3 ans, sinon aucun
+ * prix (une médiane sur 3 ventes fausserait la comparaison). Si la commune
+ * est elle-même en fenêtre 36 mois, les voisines le sont aussi.
+ */
+export function prixVoisine(v: VoisineContexte, type: TypeLocal, fenetre: Fenetre): number | null {
+  const p12 = type === "A" ? v.prix_m2_median_appartement : v.prix_m2_median_maison;
+  const p36 = type === "A" ? v.prix_m2_median_36m_appartement : v.prix_m2_median_36m_maison;
+  const fiable36 = (v.nb_ventes_36m ?? 0) >= SEUIL_VOISINE_36M && p36 ? p36 : null;
+  if (fenetre === "36m") return fiable36 ?? (v.nb_ventes_12m >= SEUIL_EVOLUTION ? p12 : null);
+  if (v.nb_ventes_12m >= SEUIL_EVOLUTION && p12) return p12;
+  return fiable36;
 }
 
 function mediane(valeurs: number[]): number | null {

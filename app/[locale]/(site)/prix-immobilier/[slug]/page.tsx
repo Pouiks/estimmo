@@ -444,6 +444,7 @@ export default async function CommunePage({ params }: Props) {
                 )}
               </TableBody>
             </Table>
+            <p className="mt-2 text-xs text-muted-foreground">{t("voisines.note")}</p>
           </section>
         )}
 

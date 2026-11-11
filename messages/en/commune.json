@@ -71,6 +71,7 @@
     "prix": "Median price ({type, select, A {flats} other {houses}})",
     "ventes": "Sales (12 months)",
     "km": "{km, number, decimal1} km",
+    "note": "For a neighbouring town with fewer than 10 sales a year, the median price is that of the last three years; without 30 sales over three years, the town is left out of the comparison.",
     "ligneDepartement": "Department ({nom})",
     "pct": "{v, number, decimal1}%"
   },

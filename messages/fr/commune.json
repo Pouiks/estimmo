@@ -71,6 +71,7 @@
     "prix": "Prix médian ({type, select, A {appartements} other {maisons}})",
     "ventes": "Ventes (12 mois)",
     "km": "{km, number, decimal1} km",
+    "note": "Pour une commune voisine à moins de 10 ventes par an, le prix médian est celui des trois dernières années ; sans 30 ventes sur trois ans, la commune n'entre pas dans la comparaison.",
     "ligneDepartement": "Département ({nom})",
     "pct": "{v, number, decimal1} %"
   },

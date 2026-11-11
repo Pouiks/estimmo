@@ -35,6 +35,16 @@ le même commit que l'entrée du changelog.
 - Propositions restantes de l'audit du calcul : P6 (contrôle du géocodage), P7 (fourchette),
   P8 (rayon à l'écran), P9 (identifiant de mutation), P10.
 
+## [3.5.2] - 2026-11-12
+
+### Corrigé
+- **Comparaison avec les voisines faussée par les très petites communes** : après l'import,
+  La Calmette ressortait « 34 % plus chère » que ses voisines parce que Dions (3 ventes,
+  1 182 €/m²) et La Rouvière (5 ventes) entraient dans la médiane. Une voisine est maintenant
+  comparée avec la même exigence que la commune : médiane 12 mois si au moins 10 ventes par
+  an, sinon médiane 3 ans si au moins 30 ventes sur 3 ans, sinon exclue de la comparaison
+  (elle reste dans les liens). Note explicative sous le tableau.
+
 ## [3.5.1] - 2026-11-12
 
 ### Corrigé
