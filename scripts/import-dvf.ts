@@ -232,7 +232,8 @@ async function main() {
   const depts =
     typeof args.get("depts") === "string"
       ? String(args.get("depts"))
-        .split(",")
+        .split(/[\s,;]+/)
+        .filter(Boolean)
         .map((d) => d.trim().toUpperCase().padStart(2, "0"))
       : DVF_DEPARTEMENTS;
 

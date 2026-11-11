@@ -47,3 +47,6 @@ next-env.d.ts
 # audit du calcul (données téléchargées et sorties générées)
 /audit/data
 /audit/sorties
+
+# documents de travail du client (non versionnés)
+/Documents

@@ -9,8 +9,8 @@
  * principal (scripts/dvf-clean.ts), donc mêmes médianes à périmètre égal.
  *
  * Usage :
- *   pnpm import:dvf:annuel -- --depts 30,34          # départements pilotes
- *   pnpm import:dvf:annuel                           # France entière (long)
+ *   pnpm import:dvf:annuel                           # France entière (plusieurs heures)
+ *   pnpm import:dvf:annuel -- --depts 30,34          # quelques départements (~10 min)
  *   pnpm import:dvf:annuel -- --years 2021,2022      # millésimes choisis
  *   pnpm import:dvf:annuel -- --dry-run
  */
@@ -107,7 +107,7 @@ async function main() {
   const dryRun = args.has("dry-run");
   const annees =
     typeof args.get("years") === "string"
-      ? String(args.get("years")).split(",").map((y) => Number.parseInt(y.trim(), 10))
+      ? String(args.get("years")).split(/[\s,;]+/).filter(Boolean).map((y) => Number.parseInt(y, 10))
       : await millesimesDisponibles();
   const depts =
     typeof args.get("depts") === "string"

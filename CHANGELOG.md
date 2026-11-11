@@ -35,6 +35,14 @@ le même commit que l'entrée du changelog.
 - Propositions restantes de l'audit du calcul : P6 (contrôle du géocodage), P7 (fourchette),
   P8 (rayon à l'écran), P9 (identifiant de mutation), P10.
 
+## [3.5.1] - 2026-11-12
+
+### Corrigé
+- **`--depts 30,34` ignoré sous PowerShell** : PowerShell transmet « 30 34 » (virgule
+  remplacée par un espace) et les scripts `import:dvf:annuel` et `import:dvf` cherchaient un
+  département « 30 34 » inexistant (« fichier absent » sur tous les millésimes, 0 ligne).
+  Les listes de départements et de millésimes acceptent maintenant virgules et espaces.
+
 ## [3.5.0] - 2026-11-12
 
 Phase 7 du chantier SEO : confiance et crédibilité.

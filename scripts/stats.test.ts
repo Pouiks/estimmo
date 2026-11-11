@@ -19,5 +19,7 @@ describe("mediane", () => {
 describe("parseDepartements", () => {
   it("normalise les codes", () => {
     expect(parseDepartements("30, 34,2a,974, 1")).toEqual(["30", "34", "2A", "974", "01"]);
+    // PowerShell passe « --depts 30,34 » comme « 30 34 »
+    expect(parseDepartements("30 34")).toEqual(["30", "34"]);
   });
 });
