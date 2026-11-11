@@ -40,6 +40,7 @@ const nice: CommuneStats = {
   nb_ventes_12m: 1234,
   evolution_1an_pct: 3.26,
   updated_at: "2026-10-01T00:00:00Z",
+  contenu_modifie_le: "2026-10-01T00:00:00Z",
 };
 
 const loyers: LoyersCommuneRow = {

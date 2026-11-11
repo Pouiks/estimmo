@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/lib/i18n/routing";
 import { cheminDe, urlAbsolue, type Chemins } from "@/lib/i18n/seo";
 import { escapeHtml } from "@/lib/security/html";
+import { DEPARTEMENTS } from "./departements";
 
 /**
  * Construction des sitemaps multilingues (fonctions pures, testées).
@@ -9,16 +10,29 @@ import { escapeHtml } from "@/lib/security/html";
  * alternates hreflang de toutes les versions (recommandation Google).
  *
  * Fichiers servis par les route handlers :
- *  - /sitemap.xml                 index (app/sitemap.xml/route.ts)
- *  - /sitemaps/pages.xml          pages fixes, départements, blog
- *  - /sitemaps/communes-N.xml     communes par tranches (fr + en)
+ *  - /sitemap.xml                   index (app/sitemap.xml/route.ts)
+ *  - /sitemaps/pages.xml            pages fixes, départements, blog
+ *  - /sitemaps/communes-<dept>.xml  communes d'un département (ex. communes-30.xml,
+ *                                   communes-2a.xml) : un fichier par département,
+ *                                   quelques centaines d'URLs chacun, lastmod réel
  */
-
-/** Communes par fichier : 2 langues × 20 000 = 40 000 URLs < 50 000 (limite). */
-export const COMMUNES_PAR_SITEMAP = 20_000;
 
 export type EntreeSitemap = MetadataRoute.Sitemap[number];
 type Extra = Pick<EntreeSitemap, "lastModified" | "changeFrequency" | "priority" | "images">;
+
+/**
+ * Date de la dernière modification du gabarit des pages communes (contenu,
+ * structure, balisage). Le lastmod d'une commune est le plus récent entre
+ * cette date et la date de modification de ses chiffres : quand le gabarit
+ * change, toutes les pages ont réellement changé.
+ */
+export const GABARIT_COMMUNE_MODIFIE_LE = new Date("2026-11-12T00:00:00Z");
+
+/** lastmod d'une page commune. */
+export function lastmodCommune(contenuModifieLe: string | Date): Date {
+  const chiffres = new Date(contenuModifieLe);
+  return chiffres > GABARIT_COMMUNE_MODIFIE_LE ? chiffres : GABARIT_COMMUNE_MODIFIE_LE;
+}
 
 /**
  * Alternates hreflang d'une page existant dans toutes les langues. `chemins` :
@@ -50,37 +64,32 @@ export function entreeMonolingue(
   return { url: urlAbsolue(cheminFr, locale), ...extra };
 }
 
-/** Nombre de fichiers « communes » pour n communes (au moins 1). */
-export function nombreTranchesCommunes(nbCommunes: number): number {
-  return Math.max(1, Math.ceil(nbCommunes / COMMUNES_PAR_SITEMAP));
+/** « 30 » → « communes-30.xml », « 2A » → « communes-2a.xml ». */
+export function nomFichierCommunes(departement: string): string {
+  return `communes-${departement.toLowerCase()}.xml`;
 }
 
-/** Noms des fichiers : pages.xml puis communes-1.xml … communes-n.xml. */
-export function nomsFichiersSitemap(nbCommunes: number): string[] {
-  const tranches = nombreTranchesCommunes(nbCommunes);
+/** Noms des fichiers : pages.xml puis un fichier par département présent en base. */
+export function nomsFichiersSitemap(departements: readonly string[]): string[] {
   return [
     "pages.xml",
-    ...Array.from({ length: tranches }, (_, i) => `communes-${i + 1}.xml`),
+    ...departements.filter((d) => d in DEPARTEMENTS).map(nomFichierCommunes),
   ];
 }
 
-/** « communes-2.xml » → 2 ; autre chose → null. */
-export function trancheDuFichier(nom: string): number | null {
-  const m = /^communes-([1-9]\d*)\.xml$/.exec(nom);
-  return m ? Number(m[1]) : null;
-}
-
-/** Indices [début, fin) des communes couvertes par la tranche n (≥ 1). */
-export function trancheCommunes(n: number): { debut: number; fin: number } {
-  const debut = (n - 1) * COMMUNES_PAR_SITEMAP;
-  return { debut, fin: debut + COMMUNES_PAR_SITEMAP };
+/** « communes-30.xml » → « 30 », « communes-2a.xml » → « 2A » ; autre chose → null. */
+export function departementDuFichier(nom: string): string | null {
+  const m = /^communes-([0-9]{2,3}|2[ab])\.xml$/i.exec(nom);
+  if (!m) return null;
+  const code = m[1].toUpperCase();
+  return code in DEPARTEMENTS ? code : null;
 }
 
 const ENTETE = `<?xml version="1.0" encoding="UTF-8"?>\n`;
 
 /** XML d'index listant les fichiers (servi sur /sitemap.xml). */
-export function sitemapIndexXml(base: string, nbCommunes: number): string {
-  const lignes = nomsFichiersSitemap(nbCommunes)
+export function sitemapIndexXml(base: string, departements: readonly string[]): string {
+  const lignes = nomsFichiersSitemap(departements)
     .map((nom) => `  <sitemap><loc>${base}/sitemaps/${nom}</loc></sitemap>`)
     .join("\n");
   return `${ENTETE}<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${lignes}\n</sitemapindex>\n`;

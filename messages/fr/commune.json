@@ -1,7 +1,7 @@
 {
   "meta": {
     "titre": "Prix immobilier à {nom} ({cp}) - Prix au m² {annee}",
-    "descriptionVentes": "Prix médian à {nom} : {appart}/m² en appartement{aMaison, select, true {, {maison}/m² en maison} other {}}. Données officielles DVF, loyers ANIL et estimation gratuite en ligne.",
+    "descriptionVentes": "Prix médian à {nom} : {prix}, d'après les ventes réelles (base DVF). Estimation gratuite et immédiate de votre bien en ligne.",
     "descriptionLoyers": "Marché immobilier de {nom} : loyers de référence ANIL et estimation gratuite de votre bien par une conseillère locale.",
     "introuvable": "Commune introuvable"
   },

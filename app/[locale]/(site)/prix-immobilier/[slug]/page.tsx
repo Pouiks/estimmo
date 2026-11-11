@@ -24,10 +24,12 @@ import {
 import { hrefDepartement, nomDepartement } from "@/lib/seo/departements";
 import { jsonLdFilAriane } from "@/lib/seo/json-ld";
 import {
+  evolutionAffichable,
   evolutionTexte,
   faqCommune,
   formatEvo,
   introCommune,
+  prixTexte,
 } from "@/lib/seo/textes";
 
 /** ISR : revalidation quotidienne, pages hors top 2000 générées à la demande. */
@@ -53,10 +55,9 @@ export async function generateStaticParams({
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const [{ slug }, locale] = await Promise.all([params, localeDeParams(params)]);
-  const [stats, t, format] = await Promise.all([
+  const [stats, t] = await Promise.all([
     getCommuneBySlug(slug),
     getTranslations({ locale, namespace: "commune" }),
-    getFormatter({ locale }),
   ]);
   if (!stats) return { title: t("meta.introuvable") };
 
@@ -64,15 +65,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const annee = String(new Date(stats.updated_at).getFullYear());
   const cp = stats.code_postal ?? stats.departement;
   const title = t("meta.titre", { nom, cp, annee });
-  const description = stats.prix_m2_median_appartement
-    ? t("meta.descriptionVentes", {
-        nom,
-        appart: format.number(stats.prix_m2_median_appartement, "currency"),
-        aMaison: String(Boolean(stats.prix_m2_median_maison)),
-        maison: stats.prix_m2_median_maison
-          ? format.number(stats.prix_m2_median_maison, "currency")
-          : "",
-      })
+  // Prix médian maison et/ou appartement ; sans aucune vente, loyers seulement.
+  const prix = prixTexte(stats, t);
+  const description = prix
+    ? t("meta.descriptionVentes", { nom, prix })
     : t("meta.descriptionLoyers", { nom });
   const chemin = `/prix-immobilier/${slug}`;
 
@@ -248,7 +244,9 @@ export default async function CommunePage({ params }: Props) {
                 {t("chiffres.evolution")}
               </p>
               <p className="text-2xl font-bold">
-                {formatEvo(stats.evolution_1an_pct, t, na)}
+                {evolutionAffichable(stats)
+                  ? formatEvo(stats.evolution_1an_pct, t, na)
+                  : na}
               </p>
             </CardContent>
           </Card>

@@ -1,13 +1,13 @@
 import "server-only";
 import { imagesPubliees, type Visuels } from "@/lib/blog/images";
 import { cheminsBlog, languesEnLigne, slugsPublics, type AvecSlug } from "@/lib/blog/traductions";
-import { getAllCommuneSlugs, getDepartementsResume } from "@/lib/seo/communes";
+import { getCommunesSitemap, getDepartementsResume } from "@/lib/seo/communes";
 import { hrefDepartement, nomDepartement } from "@/lib/seo/departements";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   entreeMonolingue,
   entreesBilingues,
-  trancheCommunes,
+  lastmodCommune,
   type EntreeSitemap,
 } from "./sitemap";
 
@@ -73,18 +73,20 @@ export async function sitemapPagesFixes(): Promise<EntreeSitemap[]> {
   return [...statiques, ...pagesDepartements, ...pagesArticles];
 }
 
-export async function sitemapCommunes(tranche: number): Promise<EntreeSitemap[]> {
-  const communes = await getAllCommuneSlugs();
-  const { debut, fin } = trancheCommunes(tranche);
-  return communes.slice(debut, fin).flatMap((c) =>
+/** Communes d'un département (fr et en, hreflang), lastmod réel. */
+export async function sitemapCommunes(departement: string): Promise<EntreeSitemap[]> {
+  const communes = await getCommunesSitemap(departement);
+  return communes.flatMap((c) =>
     entreesBilingues(`/prix-immobilier/${c.slug}`, {
-      lastModified: new Date(c.updated_at),
+      lastModified: lastmodCommune(c.contenu_modifie_le),
       changeFrequency: "weekly",
       priority: 0.7,
     })
   );
 }
 
-export async function nombreCommunes(): Promise<number> {
-  return (await getAllCommuneSlugs()).length;
+/** Codes des départements présents en base (un fichier de sitemap chacun). */
+export async function departementsSitemap(): Promise<string[]> {
+  const resume = await getDepartementsResume().catch(() => []);
+  return resume.map((d) => d.departement);
 }

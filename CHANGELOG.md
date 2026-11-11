@@ -29,6 +29,41 @@ le même commit que l'entrée du changelog.
 Rien pour l'instant. Propositions restantes de l'audit : P6 (contrôle du géocodage),
 P7 (fourchette), P8 (rayon à l'écran), P9 (identifiant de mutation), P10.
 
+## [3.0.2] - 2026-11-12
+
+Phase 1 du chantier SEO des pages communes (audit du 11/11/2026 : pages indexées puis
+désindexées par Google, version anglaise ressortant sur des requêtes françaises).
+Correctifs techniques, France entière. Migration `20261112100000_communes_stats_modifie_le.sql`
+à appliquer par `pnpm db:migrate` ; sans elle le site fonctionne mais le sitemap garde
+l'ancienne date uniforme.
+
+### Corrigé
+- **Meta description des communes sans appartement** : une commune n'ayant que des
+  ventes de maisons (la majorité des communes rurales, ex. La Calmette à 2 764 €/m²)
+  affichait « loyers de référence ANIL… » sans aucun prix. La description donne
+  maintenant le prix médian maison et/ou appartement, puis l'appel à l'estimation
+  gratuite ; les communes sans aucune vente gardent la description « loyers ».
+- **Tuile « Évolution sur 1 an » masquée sous 10 ventes** (`evolutionAffichable`,
+  `SEUIL_EVOLUTION`) : +15,2 % calculé sur 15 ventes était affiché comme un signal.
+  Même seuil que le texte d'évolution ; en dessous, la tuile affiche « n.d. ».
+- **Robots Google sans « bot » dans leur nom** (Google-InspectionTool, GoogleOther,
+  Mediapartners…) recevaient la redirection de langue 307 vers `/en/` dès qu'ils
+  annonçaient un Accept-Language anglais ; ils sont maintenant reconnus comme robots
+  et voient la page française à la racine, comme Googlebot.
+
+### Modifié
+- **lastmod réel dans les sitemaps** : nouvelle colonne `communes_stats.contenu_modifie_le`,
+  changée par `refresh_communes_stats()` seulement quand les chiffres de la commune
+  changent (fusion au lieu de vider la table). Le lastmod publié est le plus récent entre
+  cette date et la date du gabarit (`GABARIT_COMMUNE_MODIFIE_LE`, à avancer à chaque
+  changement du gabarit). Avant : la même heure de recalcul sur les 69 832 URLs, changée
+  à chaque import, que Google finit par ignorer.
+- **Sitemaps des communes découpés par département** : `/sitemaps/communes-<dept>.xml`
+  (ex. `communes-30.xml`, `communes-2a.xml`), quelques centaines d'URLs chacun, listés
+  dans l'index `/sitemap.xml` ; les anciens `communes-1.xml` et `communes-2.xml`
+  (40 000 URLs, 23 Mo) répondent 404. Permet de suivre l'indexation département par
+  département dans la Search Console.
+
 ## [3.0.1] - 2026-11-11 **[critique]**
 
 Correctif publié en urgence le 11/11/2026 au soir : la recherche d'adresse du formulaire

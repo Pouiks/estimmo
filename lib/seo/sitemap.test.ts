@@ -1,17 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { SITE } from "@/lib/config";
 import {
-  COMMUNES_PAR_SITEMAP,
+  GABARIT_COMMUNE_MODIFIE_LE,
   alternatesSitemap,
+  departementDuFichier,
   entreeMonolingue,
   entreesBilingues,
-  nombreTranchesCommunes,
+  lastmodCommune,
+  nomFichierCommunes,
   nomsFichiersSitemap,
   reponseXml,
   sitemapIndexXml,
   sitemapXml,
-  trancheCommunes,
-  trancheDuFichier,
 } from "./sitemap";
 
 const base = SITE.url;
@@ -75,44 +75,44 @@ describe("entreeMonolingue", () => {
   });
 });
 
-describe("découpage des communes", () => {
-  it("au moins un fichier, puis un par tranche de 20 000", () => {
-    expect(nombreTranchesCommunes(0)).toBe(1);
-    expect(nombreTranchesCommunes(COMMUNES_PAR_SITEMAP)).toBe(1);
-    expect(nombreTranchesCommunes(COMMUNES_PAR_SITEMAP + 1)).toBe(2);
-    expect(nombreTranchesCommunes(34_923)).toBe(2);
-  });
-
-  it("noms des fichiers : pages puis les tranches", () => {
-    expect(nomsFichiersSitemap(34_923)).toEqual([
+describe("découpage des communes par département", () => {
+  it("un fichier par département connu, en minuscules", () => {
+    expect(nomFichierCommunes("30")).toBe("communes-30.xml");
+    expect(nomFichierCommunes("2A")).toBe("communes-2a.xml");
+    expect(nomsFichiersSitemap(["01", "2A", "30", "999", "XX"])).toEqual([
       "pages.xml",
-      "communes-1.xml",
-      "communes-2.xml",
+      "communes-01.xml",
+      "communes-2a.xml",
+      "communes-30.xml",
     ]);
   });
 
-  it("tranche d'un nom de fichier", () => {
-    expect(trancheDuFichier("communes-1.xml")).toBe(1);
-    expect(trancheDuFichier("communes-12.xml")).toBe(12);
-    expect(trancheDuFichier("communes-0.xml")).toBeNull();
-    expect(trancheDuFichier("pages.xml")).toBeNull();
-    expect(trancheDuFichier("../etc/passwd")).toBeNull();
-    expect(trancheCommunes(1)).toEqual({ debut: 0, fin: 20_000 });
-    expect(trancheCommunes(2)).toEqual({ debut: 20_000, fin: 40_000 });
+  it("département d'un nom de fichier", () => {
+    expect(departementDuFichier("communes-30.xml")).toBe("30");
+    expect(departementDuFichier("communes-2a.xml")).toBe("2A");
+    expect(departementDuFichier("communes-974.xml")).toBe("974");
+    expect(departementDuFichier("communes-1.xml")).toBeNull();
+    expect(departementDuFichier("communes-99.xml")).toBeNull();
+    expect(departementDuFichier("pages.xml")).toBeNull();
+    expect(departementDuFichier("../etc/passwd")).toBeNull();
   });
 
-  it("chaque fichier reste sous 50 000 URLs (2 langues)", () => {
-    expect(COMMUNES_PAR_SITEMAP * 2).toBeLessThan(50_000);
+  it("lastmod réel : chiffres de la commune ou gabarit, le plus récent", () => {
+    const avant = new Date(GABARIT_COMMUNE_MODIFIE_LE.getTime() - 86_400_000);
+    const apres = new Date(GABARIT_COMMUNE_MODIFIE_LE.getTime() + 86_400_000);
+    expect(lastmodCommune(avant.toISOString())).toEqual(GABARIT_COMMUNE_MODIFIE_LE);
+    expect(lastmodCommune(apres)).toEqual(apres);
   });
 });
 
 describe("sitemapIndexXml", () => {
-  it("liste tous les fichiers", () => {
-    const xml = sitemapIndexXml(base, 34_923);
+  it("liste pages.xml puis les départements présents en base", () => {
+    const xml = sitemapIndexXml(base, ["30", "34"]);
     expect(xml).toContain("<sitemapindex");
     expect(xml).toContain(`<loc>${base}/sitemaps/pages.xml</loc>`);
-    expect(xml).toContain(`<loc>${base}/sitemaps/communes-2.xml</loc>`);
-    expect(xml).not.toContain("communes-3.xml");
+    expect(xml).toContain(`<loc>${base}/sitemaps/communes-30.xml</loc>`);
+    expect(xml).toContain(`<loc>${base}/sitemaps/communes-34.xml</loc>`);
+    expect(xml).not.toContain("communes-1.xml");
   });
 });
 

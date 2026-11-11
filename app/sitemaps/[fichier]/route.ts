@@ -1,11 +1,11 @@
-import { reponseXml, sitemapXml, trancheDuFichier } from "@/lib/seo/sitemap";
+import { departementDuFichier, reponseXml, sitemapXml } from "@/lib/seo/sitemap";
 import { sitemapCommunes, sitemapPagesFixes } from "@/lib/seo/sitemap-source";
 
 export const revalidate = 86400;
 
 /**
- * /sitemaps/pages.xml        pages fixes + départements + blog (fr et en)
- * /sitemaps/communes-N.xml   tranche N des communes (fr et en, hreflang)
+ * /sitemaps/pages.xml            pages fixes + départements + blog (fr et en)
+ * /sitemaps/communes-<dept>.xml  communes du département (ex. communes-30.xml)
  * Le point dans l'URL exclut ces routes du proxy i18n.
  */
 export async function GET(
@@ -15,7 +15,7 @@ export async function GET(
   const { fichier } = await params;
   if (fichier === "pages.xml") return reponseXml(sitemapXml(await sitemapPagesFixes()));
 
-  const tranche = trancheDuFichier(fichier);
-  if (tranche === null) return new Response("Not found", { status: 404 });
-  return reponseXml(sitemapXml(await sitemapCommunes(tranche)));
+  const departement = departementDuFichier(fichier);
+  if (!departement) return new Response("Not found", { status: 404 });
+  return reponseXml(sitemapXml(await sitemapCommunes(departement)));
 }

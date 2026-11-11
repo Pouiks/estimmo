@@ -14,6 +14,13 @@ describe("estRobot", () => {
     expect(estRobot("DuckDuckBot/1.0")).toBe(true);
   });
 
+  it("reconnaît tous les agents Google, même sans « bot » dans le nom", () => {
+    expect(estRobot("Mozilla/5.0 (compatible; Google-InspectionTool/1.0;)")).toBe(true);
+    expect(estRobot("GoogleOther")).toBe(true);
+    expect(estRobot("Mediapartners-Google")).toBe(true);
+    expect(estRobot("Google-Site-Verification/1.0")).toBe(true);
+  });
+
   it("laisse passer les navigateurs et curl", () => {
     expect(
       estRobot(

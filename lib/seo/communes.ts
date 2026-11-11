@@ -16,7 +16,10 @@ export interface CommuneStats {
   prix_m2_median_maison: number | null;
   nb_ventes_12m: number;
   evolution_1an_pct: number | null;
+  /** Heure du dernier recalcul (identique pour toutes les communes). */
   updated_at: string;
+  /** Dernière fois que les chiffres de cette commune ont changé (lastmod). */
+  contenu_modifie_le: string;
 }
 
 export interface LoyersCommuneRow {
@@ -172,21 +175,38 @@ export async function getDepartementsResume(): Promise<DepartementResume[]> {
   }));
 }
 
-/** Tous les slugs (pour le sitemap). */
-export async function getAllCommuneSlugs(): Promise<
-  { slug: string; updated_at: string }[]
-> {
+/**
+ * Communes d'un département pour le sitemap : slug et date de modification
+ * réelle. Tant que la migration 20261112100000 n'est pas appliquée (colonne
+ * absente), on retombe sur updated_at pour ne pas vider le sitemap.
+ */
+export async function getCommunesSitemap(
+  departement: string
+): Promise<{ slug: string; contenu_modifie_le: string }[]> {
   const supabase = createAdminClient();
   const pageSize = 1000;
-  const all: { slug: string; updated_at: string }[] = [];
+  const all: { slug: string; contenu_modifie_le: string }[] = [];
+  let colonne: "contenu_modifie_le" | "updated_at" = "contenu_modifie_le";
   for (let from = 0; ; from += pageSize) {
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("communes_stats")
-      .select("slug, updated_at")
+      .select(`slug, ${colonne}`)
+      .eq("departement", departement)
       .order("slug")
       .range(from, from + pageSize - 1);
+    if (error && colonne === "contenu_modifie_le") {
+      colonne = "updated_at";
+      ({ data, error } = await supabase
+        .from("communes_stats")
+        .select(`slug, ${colonne}`)
+        .eq("departement", departement)
+        .order("slug")
+        .range(from, from + pageSize - 1));
+    }
     if (error || !data || data.length === 0) break;
-    all.push(...data);
+    for (const ligne of data as unknown as Record<string, string>[]) {
+      all.push({ slug: ligne.slug, contenu_modifie_le: ligne[colonne] });
+    }
     if (data.length < pageSize) break;
   }
   return all;

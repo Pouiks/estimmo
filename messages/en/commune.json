@@ -1,7 +1,7 @@
 {
   "meta": {
     "titre": "Property prices in {nom} ({cp}) - Price per m² {annee}",
-    "descriptionVentes": "Median price in {nom}: {appart}/m² for flats{aMaison, select, true {, {maison}/m² for houses} other {}}. Official DVF data, ANIL rents and free online valuation.",
+    "descriptionVentes": "Median price in {nom}: {prix}, based on actual sales (DVF data). Free, instant online valuation of your property.",
     "descriptionLoyers": "Property market in {nom}: ANIL reference rents and a free valuation of your property by a local advisor.",
     "introuvable": "Town not found"
   },

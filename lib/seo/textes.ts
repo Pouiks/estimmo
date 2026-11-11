@@ -17,6 +17,18 @@ export function variante(codeInsee: string, nb: number): number {
   return hash % nb;
 }
 
+/**
+ * Sous ce volume annuel, l'évolution sur un an n'est que du bruit (+15 % sur
+ * 15 ventes) : ni le texte ni la tuile ne l'affichent.
+ */
+export const SEUIL_EVOLUTION = 10;
+
+export function evolutionAffichable(
+  stats: Pick<CommuneStats, "nb_ventes_12m" | "evolution_1an_pct">
+): boolean {
+  return stats.evolution_1an_pct !== null && stats.nb_ventes_12m >= SEUIL_EVOLUTION;
+}
+
 const INTROS = ["intro.v0", "intro.v1", "intro.v2"] as const;
 const STABLES = ["evolution.stableV0", "evolution.stableV1"] as const;
 const TENDANCES = ["evolution.tendanceV0", "evolution.tendanceV1"] as const;
@@ -54,9 +66,8 @@ export function evolutionTexte(
   t: TraducteurCommune,
   na: string
 ): string | null {
-  const brut = stats.evolution_1an_pct;
-  if (brut === null || stats.nb_ventes_12m < 10) return null;
-  const evoNum = Number(brut);
+  if (!evolutionAffichable(stats)) return null;
+  const evoNum = Number(stats.evolution_1an_pct);
   const nom = stats.nom_commune;
   const evo = formatEvo(evoNum, t, na);
   const v = variante(stats.code_insee, 2);
