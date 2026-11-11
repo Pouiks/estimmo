@@ -23,6 +23,10 @@ Vitest · pnpm. Déploiement Vercel.
 - `pnpm db:migrate` - applique `supabase/migrations/*.sql` (runner maison, table `_migrations`)
 - `pnpm admin:create <email> <mdp>` - crée l'utilisateur admin
 - `pnpm import:dvf` / `pnpm import:loyers` - ingestion données (local, jamais Vercel)
+- `pnpm import:geo` / `pnpm import:insee` / `pnpm import:dvf:annuel -- --depts 30,34` - contexte
+  des pages communes (centres + population, INSEE logement, séries annuelles DVF) ; `--dry-run` partout
+- `pnpm seo:verif -- --depts 30,34 --n 12` - contrôle de bout en bout des pages communes en prod
+  (200, canonical, noindex selon seuil, sitemap, orphelines, JSON-LD, version EN) ; code 1 si échec
 - Les scripts lisent `.env.local` via `node --env-file-if-exists`
 
 ## Architecture
@@ -67,6 +71,10 @@ Vitest · pnpm. Déploiement Vercel.
 - [x] 18/10/2026 - i18n fr/en complet (next-intl) : site, tunnel, SEO, emails, blog ; 170+ tests Vitest
 - [x] 29/10/2026 - Blog : versions FR/EN dans un même article (onglets admin, `articles.traductions`) ; 274 tests
 - [x] 01/11/2026 - Analytics du formulaire : événements par étape et par champ, section `/admin/analytics` ; 319 tests
+- [x] 12/11/2026 - Chantier SEO pages communes (`audit/RAPPORT-seo-communes.md`) : 3.0.1 relais
+  géocodage Photon, 3.0.2 correctifs techniques, 3.1.0 contenu propre à chaque commune (30 et 34
+  pilotes), 3.2.0 on-page + formulaire, 3.3.0 EN noindex, 3.4.0 régions + maillage + `seo:verif`,
+  3.5.0 pages Qui sommes-nous / Méthodologie ; 382 tests
 - [x] 11/11/2026 - Audit du calcul de vente (`audit/`) + `CHANGELOG.md` (SemVer) ; 2.0.0 = réimport DVF avec lots distincts, ≤ 1 dépendance, surface Carrez ; 2.1.0 = frais de notaire estimés sous le résultat ; 3.0.0 = fenêtre 30 mois ancrée sur la dernière vente connue (`dvf_meta`, migration `20261111120000` appliquée le 11/11) + écrêtage Tukey dès 12 comparables ; 337 tests
 
 ## i18n (18/10/2026) - next-intl 4, fr par défaut / en
@@ -252,6 +260,44 @@ Vitest · pnpm. Déploiement Vercel.
 - Volume : ~40 événements/parcours complet, ~10 requêtes ; pas de purge
   automatique (à envisager si la table grossit, Supabase gratuit).
 
+## SEO pages communes (12/11/2026) - `audit/RAPPORT-seo-communes.md`
+- **Problème** : pages `/prix-immobilier/<commune>-<cp>` indexées puis désindexées (3-9 % de
+  contenu unique, 74 % des communes < 10 ventes/an), `/en/` ressortant sur des requêtes FR.
+- **Régime par département** (`lib/seo/indexation.ts`, `DEPARTEMENTS_PILOTES` = 30, 34) :
+  page indexable si prix médian ET (≥ 10 ventes/12 mois OU ≥ 30 ventes/36 mois → médianes
+  3 ans affichées, `fenetre: "36m"`) ; sinon `noindex, follow` + hors sitemap, toujours liée
+  depuis la page département. Hors pilotes : statu quo (indexable, 12 mois). Étendre = ajouter
+  des codes à la liste + lancer `import:dvf:annuel` pour ces départements.
+- **Données** (migration `20261112110000_communes_contexte.sql`) : `communes_geo` (geo.api.gouv.fr),
+  `communes_insee` (RP2022), `communes_stats_annuelles` (DVF 2021→ par année/type, agrégés à
+  l'import sans stocker les mutations), `departements_stats`, colonnes 36 mois dans
+  `communes_stats`, RPC `commune_contexte(code_insee)` (10 plus proches à vol d'oiseau, dept,
+  séries, INSEE, dernière vente). `lib/seo/contexte.ts` renvoie null si la RPC manque : la page se
+  rend sans ces sections. Migration `20261112100000` : `contenu_modifie_le` (lastmod réel, refresh
+  par fusion) ; le sitemap retombe sur `updated_at` tant qu'elle n'est pas appliquée.
+- **Textes** : `lib/seo/analyse.ts` (stats + contexte → faits : fenêtre, type de référence,
+  tendance, volume, position vs voisines/département, évolution longue, INSEE) puis
+  `lib/seo/textes.ts` (phrases à conditions, variantes par hash INSEE, FAQ 3-5). Messages dans
+  `commune.json` (selects avec branche `other` obligatoire, parité fr/en testée).
+- **On-page** : title absolu « Estimation immobilière {Commune} ({CP}) : prix au m² {année} »
+  = H1 ; formulaire (`EstimationForm commune={…}`) sous le H1 (mobile) / colonne droite ;
+  JSON-LD Dataset + FAQPage + BreadcrumbList + RealEstateAgent (`jsonLdAgentImmobilier`).
+  Pages communes : canonical seul, **sans hreflang** ; `/en/` commune = `noindex, follow`.
+- **Sitemaps** : `/sitemap.xml` → `pages.xml` (fixes, régions, départements, blog, fr+en) +
+  `communes-<dept>.xml` (fr seulement, indexables seulement, lastmod = max(contenu_modifie_le,
+  `GABARIT_COMMUNE_MODIFIE_LE`) ; **avancer cette constante à chaque changement du gabarit**).
+- **Maillage** : accueil > /prix-immobilier > région (`lib/seo/regions.ts`,
+  `/prix-immobilier/region/<slug>`) > département > commune ; 3 clics max ; bloc « Communes
+  voisines » = 10 plus proches avec distance (repli : 8 plus actives du département).
+- **Confiance** : `/qui-sommes-nous`, `/methodologie` (constantes injectées depuis le moteur),
+  liées depuis chaque commune et le footer ; identité légale dans `SITE.agent` (vide = non affiché).
+- **Robots** : `lib/i18n/robots.ts` reconnaît tout UA contenant « google » (Inspection Tool,
+  GoogleOther) : jamais de 307 de langue pour eux.
+- **Géocodage** (3.0.1) : `lib/geo/geocodage.ts` IGN → Photon (code INSEE retrouvé dans
+  `communes_ref` par CP + nom) ; `citycode` pour les pages communes ; 502 + message si tout échoue.
+- Performance (phase 6, 12/11/2026, Lighthouse mobile prod la-calmette) : 95, LCP 1,3 s, CLS 0,
+  TBT 190 ms ; rien de bloquant, 26 Ko de JS inutilisé (bundle du formulaire).
+
 ## Sécurité (16/10/2026)
 - Admin (19/10/2026) : chaque action serveur commence par `requireAdmin()` (session
   Supabase + rôle `profiles`) ; `proxy.ts` redirige /admin vers /admin/login.
@@ -291,6 +337,13 @@ Vitest · pnpm. Déploiement Vercel.
   Sans CRM_WEBHOOK_URL le cron ne fait rien.
 
 ## Reste à faire (nécessite le client)
+- **SEO communes (12/11/2026)** : 1) `pnpm db:migrate` (migrations `20261112100000` et
+  `20261112110000`, refusées au robot par le classificateur de sécurité) ; 2) `pnpm import:geo`,
+  `pnpm import:insee` (France entière, ~2 min) puis `pnpm import:dvf:annuel -- --depts 30,34`
+  (~10 min) ; 3) `pnpm seo:verif -- --depts 30,34` ; 4) renseigner `SITE.agent.reseau/rsac/
+  siren/adresse/cartePro` (`lib/config.ts`) ; 5) Search Console : relire `/sitemap.xml`
+  (index → `communes-<dept>.xml`), demander l'indexation de 5-10 communes du 30/34, suivre
+  « Pages » par sitemap ; 6) après validation, étendre `DEPARTEMENTS_PILOTES` + imports.
 - Analytics (01/11/2026) : appliquer `pnpm db:migrate` (migration
   `20261101120000_analytics_formulaire.sql`) **avant** de déployer : sans elle,
   les insertions de `/api/track` échouent (événements perdus) et `/admin/analytics`

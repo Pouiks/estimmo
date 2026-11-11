@@ -26,8 +26,14 @@ le même commit que l'entrée du changelog.
 
 ## [Non publié]
 
-Rien pour l'instant. Propositions restantes de l'audit : P6 (contrôle du géocodage),
-P7 (fourchette), P8 (rayon à l'écran), P9 (identifiant de mutation), P10.
+- Phase 6 du chantier SEO (performance), mesurée le 12/11/2026 en prod sur
+  `/prix-immobilier/la-calmette-30190` (Lighthouse 12, mobile simulé) : performance 95,
+  LCP 1,3 s, CLS 0, TBT 190 ms, poids 424 Ko ; aucun script bloquant, polices préchargées.
+  Seul reste 26 Ko de JavaScript inutilisé dans le bundle partagé du formulaire : aucun
+  correctif engagé, le formulaire doit rester visible sans défilement. À remesurer sur le
+  terrain (Search Console → Signaux Web essentiels) une fois les pages réindexées.
+- Propositions restantes de l'audit du calcul : P6 (contrôle du géocodage), P7 (fourchette),
+  P8 (rayon à l'écran), P9 (identifiant de mutation), P10.
 
 ## [3.5.0] - 2026-11-12
 
