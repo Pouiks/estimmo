@@ -109,14 +109,17 @@ export function LeadsTable({
               return <LigneDemande key={premier.id} lead={premier} contact />;
             }
 
-            const meilleurScore = Math.max(...groupe.leads.map((l) => l.score_lead ?? 0));
+            const statuts = new Map<string, number>();
+            for (const l of groupe.leads) {
+              statuts.set(l.statut, (statuts.get(l.statut) ?? 0) + 1);
+            }
             return (
               <LigneProspect
                 key={groupe.cle}
                 lead={premier}
                 nombre={groupe.leads.length}
                 total={total}
-                meilleurScore={meilleurScore}
+                statuts={[...statuts.entries()]}
                 rappel={groupe.leads.some((l) => l.demande_rappel)}
               >
                 {groupe.leads.map((lead) => (
@@ -131,115 +134,123 @@ export function LeadsTable({
   );
 }
 
-/** Ligne d'en-tête d'un prospect à plusieurs demandes, suivie de ses demandes. */
+/**
+ * En-tête d'un prospect à plusieurs demandes : pleine largeur, liseré bleu,
+ * nom et coordonnées une seule fois, résumé des statuts ; ses demandes
+ * suivent avec le même liseré, sans colonne contact.
+ */
 function LigneProspect({
   lead,
   nombre,
   total,
-  meilleurScore,
+  statuts,
   rappel,
   children,
 }: {
   lead: LeadRow;
   nombre: number;
   total: number;
-  meilleurScore: number;
+  statuts: Array<[string, number]>;
   rappel: boolean;
   children: React.ReactNode;
 }) {
+  const lien = `/admin/leads?q=${encodeURIComponent(lead.email ?? "")}`;
   return (
     <>
-      <TableRow className="bg-muted/40 hover:bg-muted/40">
-        <TableCell className="text-muted-foreground">
-          <Users className="size-4" />
-        </TableCell>
-        <TableCell>
-          <Link
-            href={`/admin/leads?q=${encodeURIComponent(lead.email ?? "")}`}
-            className="font-medium hover:underline"
-            title="Toutes les demandes de ce prospect"
-          >
-            {nomProspect(lead)}
-          </Link>
-          {rappel && (
-            <Badge className="ml-2 bg-blue-100 text-blue-800">
-              <PhoneIncoming className="size-3" /> Rappel demandé
-            </Badge>
-          )}
-          <p className="text-xs text-muted-foreground">
-            {lead.telephone} · {lead.email}
+      <TableRow className="border-l-4 border-l-primary bg-primary/5 hover:bg-primary/5">
+        <TableCell colSpan={3} className="py-3">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <Users className="size-4 text-primary" />
+            <Link
+              href={lien}
+              className="text-base font-semibold hover:underline"
+              title="Toutes les demandes de ce prospect"
+            >
+              {nomProspect(lead)}
+            </Link>
+            <span className="text-sm text-muted-foreground">
+              {lead.telephone} · {lead.email}
+            </span>
+            {rappel && (
+              <Badge className="bg-blue-100 text-blue-800">
+                <PhoneIncoming className="size-3" /> Rappel demandé
+              </Badge>
+            )}
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {total} demandes d&apos;estimation
+            {nombre < total && (
+              <>
+                {" "}· {nombre} sur cette page ·{" "}
+                <Link href={lien} className="text-primary hover:underline">
+                  tout voir
+                </Link>
+              </>
+            )}
           </p>
         </TableCell>
-        <TableCell className="text-sm text-muted-foreground">
-          {total} demandes d&apos;estimation
-          {nombre < total && (
-            <>
-              {" "}
-              ({nombre} sur cette page ·{" "}
-              <Link
-                href={`/admin/leads?q=${encodeURIComponent(lead.email ?? "")}`}
-                className="text-primary hover:underline"
-              >
-                tout voir
-              </Link>
-              )
-            </>
-          )}
-        </TableCell>
-        <TableCell className="text-center">
-          <ScoreBadge score={meilleurScore} />
-        </TableCell>
         <TableCell />
-        <TableCell />
+        <TableCell colSpan={2}>
+          <div className="flex flex-wrap gap-2">
+            {statuts.map(([statut, n]) => (
+              <span key={statut} className="inline-flex items-center gap-1 text-xs">
+                <StatutBadge statut={statut} />
+                {n > 1 && <span className="text-muted-foreground">×{n}</span>}
+              </span>
+            ))}
+          </div>
+        </TableCell>
       </TableRow>
       {children}
     </>
   );
 }
 
-/** Une demande d'estimation ; `contact` = afficher le nom et les coordonnées (prospect seul). */
+/**
+ * Une demande d'estimation. `contact` = prospect seul (nom et coordonnées
+ * affichés) ; sinon la ligne est sous un en-tête de prospect et le bien
+ * occupe aussi la colonne contact.
+ */
 function LigneDemande({ lead, contact }: { lead: LeadRow; contact: boolean }) {
+  const fiche = `/admin/leads/${lead.id}`;
   return (
-    <TableRow className="relative">
-      <TableCell
-        className={cn(
-          "whitespace-nowrap text-muted-foreground",
-          !contact && "border-l-4 border-l-muted pl-6"
-        )}
-      >
+    <TableRow className={cn("relative", !contact && "border-l-4 border-l-primary/30")}>
+      <TableCell className="whitespace-nowrap text-muted-foreground">
         {dateFormat.format(new Date(lead.created_at))}
       </TableCell>
-      <TableCell>
-        <Link
-          href={`/admin/leads/${lead.id}`}
-          className={cn("hover:underline", contact ? "font-medium" : "text-sm text-muted-foreground")}
-        >
-          {contact ? (
-            lead.anonymise_le ? (
+      {contact && (
+        <TableCell>
+          <Link href={fiche} className="font-medium hover:underline">
+            {lead.anonymise_le ? (
               <span className="inline-flex items-center gap-1 text-muted-foreground">
                 <UserX className="size-3.5" /> Prospect anonymisé
               </span>
             ) : (
               nomProspect(lead)
-            )
-          ) : (
-            "Ouvrir la demande"
+            )}
+            {/* étend la zone cliquable à toute la ligne */}
+            <span className="absolute inset-0" aria-hidden />
+          </Link>
+          {lead.demande_rappel && (
+            <Badge className="relative z-10 ml-2 bg-blue-100 text-blue-800">
+              <PhoneIncoming className="size-3" /> Rappel demandé
+            </Badge>
           )}
-          {/* étend la zone cliquable à toute la ligne */}
-          <span className="absolute inset-0" aria-hidden />
-        </Link>
-        {contact && lead.demande_rappel && (
-          <Badge className="relative z-10 ml-2 bg-blue-100 text-blue-800">
-            <PhoneIncoming className="size-3" /> Rappel demandé
-          </Badge>
+          {!lead.anonymise_le && (
+            <p className="text-xs text-muted-foreground">
+              {lead.telephone} · {lead.email}
+            </p>
+          )}
+        </TableCell>
+      )}
+      <TableCell colSpan={contact ? 1 : 2}>
+        {!contact && (
+          <Link href={fiche} className="hover:underline">
+            {/* la ligne entière ouvre la demande */}
+            <span className="absolute inset-0" aria-hidden />
+            <span className="sr-only">Ouvrir la demande</span>
+          </Link>
         )}
-        {contact && !lead.anonymise_le && (
-          <p className="text-xs text-muted-foreground">
-            {lead.telephone} · {lead.email}
-          </p>
-        )}
-      </TableCell>
-      <TableCell>
         <p className="text-sm">
           {PROJET_LABELS[lead.projet]} ·{" "}
           {lead.type_bien === "appartement" ? "Appt" : "Maison"} {Number(lead.surface)} m²
@@ -254,7 +265,7 @@ function LigneDemande({ lead, contact }: { lead: LeadRow; contact: boolean }) {
             </Badge>
           )}
         </p>
-        <p className="max-w-72 truncate text-xs text-muted-foreground">
+        <p className="max-w-96 truncate text-xs text-muted-foreground">
           {lead.adresse_libelle}
         </p>
       </TableCell>
