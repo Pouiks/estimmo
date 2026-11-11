@@ -3,8 +3,13 @@
     "titre": "Legal notice",
     "editeur": {
       "titre": "Site publisher",
-      "texte": "The {marque} website is published by {agent}, real estate agent.",
-      "contact": "Contact: {email} - {telephone}."
+      "texte": "The {marque} website is published by {agent}, {statut}{reseau, select, true {, member of the {nomReseau} network} other {}}.",
+      "rsac": "Commercial agent registered with the RSAC under number {rsac}.",
+      "siren": "SIREN: {siren}.",
+      "adresse": "Business address: {adresse}.",
+      "cartePro": "Professional licence (property and business transactions): {cartePro}.",
+      "contact": "Contact: {email} - {telephone}.",
+      "directeur": "Publication director: {agent}."
     },
     "hebergement": {
       "titre": "Hosting",

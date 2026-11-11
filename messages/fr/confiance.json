@@ -1,0 +1,77 @@
+{
+  "qui": {
+    "meta": {
+      "titre": "Qui sommes-nous ? {agent}, conseillère immobilière",
+      "description": "{marque} est l'estimateur immobilier en ligne de {agent}, conseillère immobilière. Estimation gratuite fondée sur les ventes réelles, puis accompagnement personnalisé de votre vente."
+    },
+    "filAriane": "Qui sommes-nous ?",
+    "h1": "Qui sommes-nous ?",
+    "intro": "{marque} est le service d'estimation immobilière en ligne de {agent}, conseillère immobilière. Il donne aux propriétaires une première estimation gratuite et immédiate, fondée sur les ventes réellement enregistrées, puis propose un accompagnement personnalisé pour vendre ou louer.",
+    "conseillere": {
+      "titre": "Votre conseillère",
+      "p1": "{agent} exerce comme {statut}{reseau, select, true { au sein du réseau {nomReseau}} other {}}. Elle accompagne les vendeurs de la première estimation jusqu'à la signature : avis de valeur après visite, mise en vente, visites, négociation et suivi jusqu'à l'acte authentique.",
+      "p2": "L'estimation en ligne sert de point de départ. Pour un avis de valeur précis, une visite du bien reste indispensable : {agent} vous rappelle gratuitement et sans engagement si vous le souhaitez.",
+      "contact": "Contact : {telephone} - {email}."
+    },
+    "engagements": {
+      "titre": "Nos engagements",
+      "gratuit": "Estimation gratuite et sans engagement : aucun compte à créer, aucune obligation de mandat.",
+      "donnees": "Des chiffres vérifiables : prix issus de la base publique DVF (ventes enregistrées par l'État), loyers de référence ANIL, données INSEE. La méthode est publiée.",
+      "confidentialite": "Vos informations restent confidentielles : adresse et coordonnées ne servent qu'à calculer l'estimation et à vous recontacter, jamais revendues.",
+      "honoraires": "Honoraires annoncés dès le départ : {exclusif} du prix de vente en mandat exclusif, {simple} en mandat simple."
+    },
+    "zone": {
+      "titre": "Où intervenons-nous ?",
+      "texte": "L'estimateur en ligne couvre la France entière (hors Alsace-Moselle et Mayotte pour les prix de vente, non publiés dans DVF). L'accompagnement personnalisé de {agent} s'organise selon la localisation de votre bien : contactez-la pour en parler."
+    },
+    "liens": {
+      "methode": "Comment sont calculés les prix ? Lire la méthodologie",
+      "estimer": "Estimer mon bien gratuitement",
+      "mentions": "Mentions légales"
+    }
+  },
+  "methode": {
+    "meta": {
+      "titre": "Méthodologie : d'où viennent les prix et comment ils sont calculés",
+      "description": "Sources (DVF, ANIL, INSEE), règles de nettoyage des ventes, calcul des prix médians par commune et méthode d'estimation d'un bien sur {marque}. Transparence complète."
+    },
+    "filAriane": "Méthodologie",
+    "h1": "Méthodologie : d'où viennent nos prix et comment nous les calculons",
+    "intro": "Tous les chiffres affichés sur {marque} proviennent de données publiques, retraitées selon des règles fixes et documentées ici. Aucune estimation n'est saisie à la main : la même méthode s'applique à toutes les communes et à tous les biens.",
+    "sources": {
+      "titre": "1. Les sources",
+      "dvf": "Prix de vente : base « Demandes de valeurs foncières » (DVF) de la DGFiP, publiée sur data.gouv.fr sous Licence Ouverte 2.0. Elle recense les ventes immobilières enregistrées par les services de l'État (prix, surface, date, adresse). Elle est publiée avec six à dix mois de retard, deux fois par an : la date de la dernière vente connue est indiquée sur chaque page. Nous n'affichons que des statistiques agrégées, jamais une vente individuelle.",
+      "anil": "Loyers : « Carte des loyers » de l'ANIL, estimations à partir des annonces du Groupe SeLoger et de leboncoin (loyers d'annonce charges comprises, millésime indiqué sur chaque page).",
+      "insee": "Population et logements : INSEE (recensement de la population, base « Logement », populations légales) via l'API Découpage administratif, qui fournit aussi le centre de chaque commune pour les distances.",
+      "geo": "Adresses : Géoplateforme IGN (base adresse nationale), avec un relais OpenStreetMap (Photon) en cas de panne."
+    },
+    "nettoyage": {
+      "titre": "2. Le nettoyage des ventes",
+      "p1": "DVF contient aussi des ventes qui ne disent rien du prix d'un logement. Avant tout calcul, nous écartons : les ventes qui ne sont pas des logements (terrains, locaux, dépendances seules) ; les ventes groupées de plusieurs logements (un immeuble entier, deux appartements dans le même acte) dont le prix ne peut pas être rapporté à un seul bien ; les ventes avec plus d'une dépendance ; les prix au m² hors de toute vraisemblance (moins de 200 € ou plus de 25 000 € le m²) ; les ventes sans surface ou sans position.",
+      "p2": "Pour un appartement, la surface retenue est la surface Carrez du lot quand elle est cohérente avec la surface du bâti (rapport entre {ratioMin} et {ratioMax}), sinon la surface réelle. Ces règles sont versionnées : tout changement est consigné dans le journal des versions du site."
+    },
+    "communes": {
+      "titre": "3. Les prix par commune",
+      "p1": "Le prix médian au m² d'une commune est la médiane des ventes nettoyées des douze derniers mois de données publiées (fenêtre comptée depuis la dernière vente connue, pas depuis la date du jour), séparément pour les appartements et les maisons. La médiane est préférée à la moyenne : une vente exceptionnelle ne la déplace pas.",
+      "p2": "Quand une commune compte moins de {seuil12} ventes sur douze mois, la médiane est calculée sur les trois dernières années (au moins {seuil36} ventes), et la page le signale. En dessous de ces seuils, la page reste consultable mais n'est pas proposée aux moteurs de recherche : trop peu de ventes pour un chiffre fiable.",
+      "p3": "L'évolution sur un an compare la médiane des douze derniers mois à celle des douze mois précédents ; elle n'est affichée qu'à partir de {seuil12} ventes. Les séries par année, la comparaison avec les communes les plus proches (à vol d'oiseau, parmi celles qui ont une page) et avec le département reposent sur les mêmes ventes nettoyées. Les pages sont recalculées à chaque publication DVF ; la date de mise à jour des chiffres figure en bas de chaque page."
+    },
+    "estimation": {
+      "titre": "4. L'estimation d'un bien",
+      "p1": "L'estimateur compare votre bien aux ventes nettoyées du même type (appartement ou maison), de surface comparable (de {ratioMin} à {ratioMax} fois la vôtre), signées au cours des {mois} derniers mois de données publiées. Il cherche d'abord à {rayons} autour de l'adresse, puis dans la commune, puis dans le département, et retient le premier cercle qui réunit au moins {minComparables} ventes.",
+      "p2": "À partir de {seuilEcretage} ventes, les prix atypiques sont écartés (règle de Tukey sur l'écart interquartile). Le prix au m² de référence est la médiane pondérée des ventes restantes : une vente proche et récente pèse plus qu'une vente lointaine ou ancienne.",
+      "p3": "Les caractéristiques déclarées (état, étage, ascenseur, extérieur, stationnement, DPE, année de construction…) ajustent ce prix de référence, avec un plafond de ±25 % au total. La fourchette affichée s'élargit avec la dispersion des ventes retenues (±5 à ±10 %). L'indice de confiance dépend du nombre de ventes et du rayon : élevé dès 15 ventes à moins de 800 m, moyen dès 8 ventes à moins de 3 km, faible au-delà.",
+      "p4": "Les loyers estimés s'appuient sur les indicateurs ANIL de la commune (studio-T2, T3 et plus, maison), ajustés de la même façon."
+    },
+    "limites": {
+      "titre": "5. Limites",
+      "p1": "Une estimation en ligne est indicative : elle ne constitue pas un avis de valeur. Elle ne voit ni l'état réel, ni la vue, ni les nuisances, ni les travaux à prévoir. DVF ne couvre pas l'Alsace-Moselle (Livre foncier) ni Mayotte, et ne publie pas les ventes des derniers mois.",
+      "p2": "Pour un prix de vente fiable, une visite reste indispensable : {agent}, conseillère immobilière, vous rappelle gratuitement."
+    },
+    "liens": {
+      "qui": "Qui sommes-nous ?",
+      "estimer": "Estimer mon bien gratuitement",
+      "changelog": "Les changements de méthode sont consignés dans le journal des versions, disponible sur demande."
+    }
+  }
+}

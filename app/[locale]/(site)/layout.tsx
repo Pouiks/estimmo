@@ -121,6 +121,16 @@ export default async function SiteLayout({
                 </Link>
               </li>
               <li>
+                <Link href="/qui-sommes-nous" className="hover:text-foreground">
+                  {t("nav.quiSommesNous")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/methodologie" className="hover:text-foreground">
+                  {t("nav.methodologie")}
+                </Link>
+              </li>
+              <li>
                 <Link href="/mentions-legales" className="hover:text-foreground">
                   {t("nav.mentionsLegales")}
                 </Link>

@@ -91,7 +91,9 @@
     "dvfSansDate": "Prix de vente : base DVF (DGFiP, data.gouv.fr), nettoyée par nos soins (hors ventes multi-logements, dépendances et valeurs aberrantes).",
     "insee": "Population et logements : INSEE, recensement {millesime} et populations légales (via geo.api.gouv.fr).",
     "anil": "Loyers : {anil}, millésime {millesime}.",
-    "maj": "Chiffres de la commune mis à jour le {date, date, long}."
+    "maj": "Chiffres de la commune mis à jour le {date, date, long}.",
+    "methode": "Comment ces prix sont calculés : notre méthodologie",
+    "qui": "Qui sommes-nous ?"
   },
   "loyers": {
     "titre": "Quel loyer à {nom} ?",

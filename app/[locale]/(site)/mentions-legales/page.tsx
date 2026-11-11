@@ -24,9 +24,18 @@ export default async function MentionsLegalesPage({ params }: Props) {
     agent: SITE.agent.name,
     email: SITE.agent.email,
     telephone: SITE.agent.phone,
+    statut: tc("agent.jobTitle").toLowerCase(),
+    reseau: String(Boolean(SITE.agent.reseau)),
+    nomReseau: SITE.agent.reseau,
+    rsac: SITE.agent.rsac,
+    siren: SITE.agent.siren,
+    adresse: SITE.agent.adresse,
+    cartePro: SITE.agent.cartePro,
     exclusif: tc("honoraires.exclusif", { taux: SITE.honoraires.tauxExclusif }),
     simple: tc("honoraires.simple", { taux: SITE.honoraires.tauxSimple }),
   };
+  // Lignes d'identité affichées seulement quand la donnée est renseignée (lib/config.ts).
+  const identite = (["rsac", "siren", "adresse", "cartePro"] as const).filter((cle) => SITE.agent[cle]);
 
   return (
     <div className="prose prose-neutral mx-auto max-w-3xl px-4 py-16 dark:prose-invert">
@@ -37,8 +46,14 @@ export default async function MentionsLegalesPage({ params }: Props) {
         <p className="text-muted-foreground">
           {t("mentions.editeur.texte", valeurs)}
           <br />
-          {/* À COMPLÉTER : forme juridique, SIREN/SIRET, carte professionnelle
-              (CPI), garantie financière, RCP, adresse du siège. */}
+          {t("mentions.editeur.directeur", valeurs)}
+          {identite.map((cle) => (
+            <span key={cle}>
+              <br />
+              {t(`mentions.editeur.${cle}`, valeurs)}
+            </span>
+          ))}
+          <br />
           {t("mentions.editeur.contact", valeurs)}
         </p>
       </section>

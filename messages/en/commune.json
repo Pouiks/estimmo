@@ -91,7 +91,9 @@
     "dvfSansDate": "Sale prices: DVF database (DGFiP, data.gouv.fr), cleaned by us (excluding multi-dwelling sales, outbuildings and outliers).",
     "insee": "Population and housing: INSEE, {millesime} census and legal populations (via geo.api.gouv.fr).",
     "anil": "Rents: {anil}, {millesime} edition.",
-    "maj": "Town figures updated on {date, date, long}."
+    "maj": "Town figures updated on {date, date, long}.",
+    "methode": "How these prices are calculated: our methodology",
+    "qui": "About us"
   },
   "loyers": {
     "titre": "What rent in {nom}?",

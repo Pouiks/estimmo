@@ -29,6 +29,32 @@ le même commit que l'entrée du changelog.
 Rien pour l'instant. Propositions restantes de l'audit : P6 (contrôle du géocodage),
 P7 (fourchette), P8 (rayon à l'écran), P9 (identifiant de mutation), P10.
 
+## [3.5.0] - 2026-11-12
+
+Phase 7 du chantier SEO : confiance et crédibilité.
+
+### Ajouté
+- **Page « Qui sommes-nous »** (`/qui-sommes-nous`, fr/en, indexable, sitemap) : la
+  conseillère, son statut, ses coordonnées, les engagements (gratuit, données
+  vérifiables, confidentialité, honoraires annoncés), la zone couverte ; fiche
+  `RealEstateAgent` et fil d'Ariane en JSON-LD.
+- **Page « Méthodologie »** (`/methodologie`, fr/en, indexable, sitemap) : sources (DVF,
+  ANIL, INSEE, IGN/Photon), règles de nettoyage des ventes, calcul des prix par commune
+  (médiane 12 mois ancrée sur la dernière vente publiée, 36 mois sous 10 ventes, seuil de
+  qualité), méthode d'estimation d'un bien (paliers, 8 comparables, fenêtre 30 mois,
+  écrêtage dès 12 ventes, médiane pondérée, ajustements ±25 %, fourchette, confiance),
+  limites. Les nombres sont injectés depuis les constantes du moteur
+  (`lib/estimation/vente.ts`, `scripts/dvf-clean.ts`, `lib/seo/indexation.ts`) : la page
+  ne peut pas diverger du code.
+- **Liens** vers ces deux pages depuis chaque page commune (bloc « Sources et mise à
+  jour ») et depuis le pied de page de tout le site.
+- **Mentions légales** : directrice de la publication, statut, et lignes réseau, RSAC,
+  SIREN, adresse professionnelle, carte professionnelle affichées dès qu'elles sont
+  renseignées dans `lib/config.ts` (`SITE.agent.reseau`, `rsac`, `siren`, `adresse`,
+  `cartePro`, vides pour l'instant : **à compléter par la cliente**). La politique de
+  confidentialité existait déjà (responsable, données, finalités, destinataires,
+  conservation, droits, cookies) ; les deux pages restent en noindex.
+
 ## [3.4.0] - 2026-11-12
 
 Phase 5 du chantier SEO : maillage interne.

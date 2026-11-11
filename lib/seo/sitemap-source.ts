@@ -36,6 +36,8 @@ export async function sitemapPagesFixes(): Promise<EntreeSitemap[]> {
     ...entreesBilingues("/prix-immobilier", { changeFrequency: "daily", priority: 0.8 }),
     ...entreesBilingues("/barometre-immobilier", { changeFrequency: "daily", priority: 0.8 }),
     ...entreesBilingues("/blog", { changeFrequency: "weekly", priority: 0.6 }),
+    ...entreesBilingues("/qui-sommes-nous", { changeFrequency: "monthly", priority: 0.5 }),
+    ...entreesBilingues("/methodologie", { changeFrequency: "monthly", priority: 0.5 }),
   ];
 
   // Régions dont au moins un département est en base (Mayotte n'a ni DVF ni ANIL).

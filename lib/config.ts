@@ -34,6 +34,17 @@ export const SITE = {
     phone: "06 11 11 84 69",
     phoneHref: "tel:+33611118469",
     email: "carenza.brown@iadfrance.fr",
+    /**
+     * Identité légale (mentions légales, page « Qui sommes-nous »). Une valeur
+     * vide n'est pas affichée. À COMPLÉTER par la cliente : réseau (ex. « iad
+     * France »), n° RSAC et ville du greffe, SIREN, adresse professionnelle,
+     * carte professionnelle du titulaire (n° CPI et CCI de délivrance).
+     */
+    reseau: "",
+    rsac: "",
+    siren: "",
+    adresse: "",
+    cartePro: "",
   },
   /**
    * Nom affiché dans la boîte mail du prospect (colonne « expéditeur »).

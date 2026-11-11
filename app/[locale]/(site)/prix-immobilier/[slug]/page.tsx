@@ -600,6 +600,14 @@ export default async function CommunePage({ params }: Props) {
             )}
             <li>{t("sources.maj", { date: majPage })}</li>
           </ul>
+          <p className="mt-3 space-x-3">
+            <Link href="/methodologie" className="font-medium text-primary underline underline-offset-4">
+              {t("sources.methode")}
+            </Link>
+            <Link href="/qui-sommes-nous" className="font-medium text-primary underline underline-offset-4">
+              {t("sources.qui")}
+            </Link>
+          </p>
         </section>
 
         {/* Maillage interne : communes voisines (distance à vol d'oiseau),

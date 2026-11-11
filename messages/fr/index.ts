@@ -2,6 +2,7 @@ import barometre from "./barometre.json";
 import blog from "./blog.json";
 import common from "./common.json";
 import commune from "./commune.json";
+import confiance from "./confiance.json";
 import departement from "./departement.json";
 import email from "./email.json";
 import estimation from "./estimation.json";
@@ -23,6 +24,7 @@ const fr = {
   blog,
   common,
   commune,
+  confiance,
   departement,
   email,
   estimation,

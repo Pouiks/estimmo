@@ -1,0 +1,77 @@
+{
+  "qui": {
+    "meta": {
+      "titre": "About us: {agent}, real estate advisor",
+      "description": "{marque} is the online property estimator of {agent}, real estate advisor. Free valuation based on actual sales, then personalised support for your sale."
+    },
+    "filAriane": "About us",
+    "h1": "About us",
+    "intro": "{marque} is the online property valuation service of {agent}, real estate advisor. It gives owners a free, instant first estimate based on sales actually recorded, then offers personalised support to sell or rent out.",
+    "conseillere": {
+      "titre": "Your advisor",
+      "p1": "{agent} works as {statut}{reseau, select, true { within the {nomReseau} network} other {}}. She supports sellers from the first estimate to signature: appraisal after a visit, listing, viewings, negotiation and follow-up until the deed.",
+      "p2": "The online estimate is a starting point. For a precise appraisal, a visit of the property remains essential: {agent} calls you back free of charge and without obligation if you wish.",
+      "contact": "Contact: {telephone} - {email}."
+    },
+    "engagements": {
+      "titre": "Our commitments",
+      "gratuit": "Free valuation with no obligation: no account to create, no mandate required.",
+      "donnees": "Verifiable figures: prices from the public DVF database (sales recorded by the French State), ANIL reference rents, INSEE data. The method is published.",
+      "confidentialite": "Your information stays confidential: address and contact details are used only to calculate the estimate and to call you back, never sold.",
+      "honoraires": "Fees announced upfront: {exclusif} of the sale price with an exclusive mandate, {simple} with a simple mandate."
+    },
+    "zone": {
+      "titre": "Where do we operate?",
+      "texte": "The online estimator covers the whole of France (except Alsace-Moselle and Mayotte for sale prices, which are not published in DVF). {agent}'s personalised support depends on where your property is located: get in touch to discuss it."
+    },
+    "liens": {
+      "methode": "How are prices calculated? Read the methodology",
+      "estimer": "Value my property for free",
+      "mentions": "Legal notice"
+    }
+  },
+  "methode": {
+    "meta": {
+      "titre": "Methodology: where the prices come from and how they are calculated",
+      "description": "Sources (DVF, ANIL, INSEE), sales cleaning rules, median price calculation per town and property valuation method on {marque}. Full transparency."
+    },
+    "filAriane": "Methodology",
+    "h1": "Methodology: where our prices come from and how we calculate them",
+    "intro": "Every figure shown on {marque} comes from public data, processed according to fixed rules documented here. No estimate is entered by hand: the same method applies to every town and every property.",
+    "sources": {
+      "titre": "1. Sources",
+      "dvf": "Sale prices: the DGFiP \"Demandes de valeurs foncières\" (DVF) database, published on data.gouv.fr under the Licence Ouverte 2.0. It lists property sales recorded by the French State (price, surface, date, address). It is published six to ten months late, twice a year: the date of the latest known sale is shown on each page. We only display aggregated statistics, never an individual sale.",
+      "anil": "Rents: the ANIL \"Carte des loyers\", estimates based on listings from Groupe SeLoger and leboncoin (advertised rents including charges, edition shown on each page).",
+      "insee": "Population and housing: INSEE (population census, \"Logement\" database, legal populations) via the administrative divisions API, which also provides each town's centre for distances.",
+      "geo": "Addresses: IGN Géoplateforme (national address database), with an OpenStreetMap fallback (Photon) in case of outage."
+    },
+    "nettoyage": {
+      "titre": "2. Cleaning the sales",
+      "p1": "DVF also contains sales that say nothing about the price of a home. Before any calculation we exclude: sales that are not dwellings (land, commercial premises, outbuildings alone); grouped sales of several dwellings (a whole building, two flats in the same deed) whose price cannot be attributed to a single property; sales with more than one outbuilding; implausible prices per m² (under €200 or over €25,000 per m²); sales without a surface or a location.",
+      "p2": "For a flat, the surface used is the Carrez surface of the lot when consistent with the built surface (ratio between {ratioMin} and {ratioMax}), otherwise the actual surface. These rules are versioned: every change is recorded in the site's changelog."
+    },
+    "communes": {
+      "titre": "3. Prices by town",
+      "p1": "A town's median price per m² is the median of cleaned sales over the last twelve months of published data (window counted from the latest known sale, not from today), separately for flats and houses. The median is preferred to the mean: an exceptional sale does not move it.",
+      "p2": "When a town has fewer than {seuil12} sales in twelve months, the median is calculated over the last three years (at least {seuil36} sales), and the page says so. Below these thresholds the page remains available but is not submitted to search engines: too few sales for a reliable figure.",
+      "p3": "The one-year change compares the median of the last twelve months with that of the previous twelve; it is shown only from {seuil12} sales. The yearly series, the comparison with the nearest towns (as the crow flies, among those with a page) and with the department rely on the same cleaned sales. Pages are recalculated at each DVF release; the figures' update date appears at the bottom of each page."
+    },
+    "estimation": {
+      "titre": "4. Valuing a property",
+      "p1": "The estimator compares your property with cleaned sales of the same type (flat or house), of comparable surface ({ratioMin} to {ratioMax} times yours), signed in the last {mois} months of published data. It first looks within {rayons} of the address, then in the town, then in the department, and keeps the first circle gathering at least {minComparables} sales.",
+      "p2": "From {seuilEcretage} sales, outliers are excluded (Tukey's rule on the interquartile range). The reference price per m² is the weighted median of the remaining sales: a nearby, recent sale weighs more than a distant or old one.",
+      "p3": "The declared characteristics (condition, floor, lift, outdoor space, parking, energy rating, construction year…) adjust this reference price, capped at ±25% in total. The displayed range widens with the dispersion of the retained sales (±5 to ±10%). The confidence index depends on the number of sales and the radius: high from 15 sales within 800 m, medium from 8 sales within 3 km, low beyond.",
+      "p4": "Estimated rents rely on the town's ANIL indicators (studio-1 bed, 2 beds and more, house), adjusted the same way."
+    },
+    "limites": {
+      "titre": "5. Limits",
+      "p1": "An online estimate is indicative: it is not an appraisal. It cannot see the actual condition, the view, nuisances or works to plan. DVF does not cover Alsace-Moselle (Livre foncier) or Mayotte, and does not publish the most recent months of sales.",
+      "p2": "For a reliable selling price, a visit remains essential: {agent}, real estate advisor, calls you back free of charge."
+    },
+    "liens": {
+      "qui": "About us",
+      "estimer": "Value my property for free",
+      "changelog": "Changes to the method are recorded in the changelog, available on request."
+    }
+  }
+}

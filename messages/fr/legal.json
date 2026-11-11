@@ -3,8 +3,13 @@
     "titre": "Mentions légales",
     "editeur": {
       "titre": "Éditeur du site",
-      "texte": "Le site {marque} est édité par {agent}, agent immobilier.",
-      "contact": "Contact : {email} - {telephone}."
+      "texte": "Le site {marque} est édité par {agent}, {statut}{reseau, select, true {, membre du réseau {nomReseau}} other {}}.",
+      "rsac": "Agent commercial immatriculé au RSAC sous le numéro {rsac}.",
+      "siren": "SIREN : {siren}.",
+      "adresse": "Adresse professionnelle : {adresse}.",
+      "cartePro": "Carte professionnelle (transactions sur immeubles et fonds de commerce) : {cartePro}.",
+      "contact": "Contact : {email} - {telephone}.",
+      "directeur": "Directrice de la publication : {agent}."
     },
     "hebergement": {
       "titre": "Hébergement",
