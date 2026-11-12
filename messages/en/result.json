@@ -40,7 +40,6 @@
   "carte": {
     "titre": "Refine your price with {agent}",
     "texte": "A call back for a precise appraisal, with no obligation.",
-    "honoraires": "Fees {exclusif} with an exclusive mandate versus {simple} with a simple mandate.",
     "rappel": "Request a call back - {telephone}"
   },
   "refaire": "Start a new valuation"

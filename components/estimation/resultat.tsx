@@ -55,9 +55,8 @@ function Badge({ label }: { label: string }) {
   );
 }
 
-function CarteConseillere({ vente }: { vente: boolean }) {
+function CarteConseillere() {
   const t = useTranslations("result.carte");
-  const tc = useTranslations("common");
   return (
     <div
       style={{
@@ -91,14 +90,6 @@ function CarteConseillere({ vente }: { vente: boolean }) {
           <div style={{ fontSize: 13, opacity: 0.85 }}>{t("texte")}</div>
         </div>
       </div>
-      {vente && (
-        <div style={{ fontSize: 12.5, opacity: 0.85, marginTop: 12 }}>
-          {t("honoraires", {
-            exclusif: tc("honoraires.exclusif", { taux: SITE.honoraires.tauxExclusif }),
-            simple: tc("honoraires.simple", { taux: SITE.honoraires.tauxSimple }),
-          })}
-        </div>
-      )}
       <a
         href={SITE.agent.phoneHref}
         style={{
@@ -222,7 +213,7 @@ export function ResultatEstimation({
           adresse={state.adresse}
           statsInitiales={state.quartierStats}
         />
-        <CarteConseillere vente />
+        <CarteConseillere />
         <br />
         <RestartLink onRestart={onRestart} />
       </div>
@@ -426,7 +417,7 @@ export function ResultatEstimation({
         statsInitiales={state.quartierStats}
       />
 
-      <CarteConseillere vente={vente} />
+      <CarteConseillere />
 
       <p style={{ margin: "14px 0 0", fontSize: 11.5, color: C.faint2 }}>
         {!vente

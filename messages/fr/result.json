@@ -40,7 +40,6 @@
   "carte": {
     "titre": "Affinez votre prix avec {agent}",
     "texte": "Un rappel pour un avis de valeur précis, sans engagement.",
-    "honoraires": "Honoraires {exclusif} en mandat exclusif contre {simple} en mandat simple.",
     "rappel": "Être rappelé(e) - {telephone}"
   },
   "refaire": "Refaire une estimation"
